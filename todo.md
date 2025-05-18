@@ -1,0 +1,385 @@
+# InterviewCrew MVP: Project Checklist
+
+This checklist is derived from the "InterviewCrew MVP: Development Blueprint & LLM Prompts" document.
+
+## Phase 1: Project Foundation & Core Schemas
+
+### [ ] Prompt 1.1: Initialize Next.js Project
+- [ ] Initialize Next.js project "interview-crew-platform" with TypeScript
+- [ ] Set up Tailwind CSS
+- [ ] Ensure local run (npm run dev)
+- [ ] Create basic README.md
+
+### [ ] Prompt 1.2: Install and Configure Core Dev Dependencies
+- [ ] Install Drizzle ORM, Drizzle Kit, pg
+- [ ] Install Zod
+- [ ] Install Vitest, @vitest/ui, jsdom
+- [ ] Configure Drizzle Kit (drizzle.config.ts, package.json scripts)
+- [ ] Configure Vitest (vitest.config.ts, package.json script)
+- [ ] Initialize shadcn/ui (npx shadcn-ui@latest init, configure tailwind.config.js, globals.css)
+
+### [ ] Prompt 1.3: Basic Project Structure and DB Connection
+- [ ] Create directory structure (app, components/ui, lib/db.ts, lib/utils.ts, db/schema.ts, services, app/api)
+- [ ] Implement Drizzle client setup in src/lib/db.ts (env vars for DB connection)
+- [ ] Create initial empty src/db/schema.ts
+- [ ] Generate initial empty migration (npm run db:generate)
+
+## Phase 2: Core Entity Schemas & Basic CRUD APIs (Account Management Focus)
+
+### [ ] Prompt 2.1: AccountManager Schema and Zod Validation
+- [ ] Define AccountManager Drizzle schema (accountManagers table)
+- [ ] Create AccountManager Zod schemas (createAccountManagerSchema, updateAccountManagerSchema) in src/lib/validators/accountManager.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/accountManager.test.ts
+- [ ] Generate database migration (create_account_managers_table)
+- [ ] Apply migration
+
+### [ ] Prompt 2.2: Client Schema and Zod Validation
+- [ ] Define Client Drizzle schema (clients table with FK to accountManagers)
+- [ ] Create Client Zod schemas (createClientSchema, updateClientSchema) in src/lib/validators/client.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/client.test.ts
+- [ ] Generate database migration (create_clients_table)
+- [ ] Apply migration
+
+### [ ] Prompt 2.3: HiringPipeline Schema and Zod Validation
+- [ ] Define HiringPipeline Drizzle schema (hiringPipelines table with FKs to clients, accountManagers)
+- [ ] Create HiringPipeline Zod schemas (createHiringPipelineSchema, updateHiringPipelineSchema) in src/lib/validators/hiringPipeline.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/hiringPipeline.test.ts
+- [ ] Generate database migration (create_hiring_pipelines_table)
+- [ ] Apply migration
+
+### [ ] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
+- [ ] Create AccountManager CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/account-managers/
+- [ ] Implement handlers with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests for API endpoints in src/app/api/account-managers/accountManagers.test.ts
+
+### [ ] Prompt 2.5: Client CRUD API Endpoints
+- [ ] Create Client CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/clients/
+- [ ] Implement handlers with Drizzle, Zod validation, error handling, status codes (ensure accountManagerId exists on create)
+- [ ] Write integration tests for API endpoints in src/app/api/clients/clients.test.ts
+
+## Phase 3: Schemas for Interview Structure & Management
+
+### [ ] Prompt 3.1: OriginalAssignment Schema and Zod Validation
+- [ ] Define OriginalAssignment Drizzle schema (originalAssignments table)
+- [ ] Create OriginalAssignment Zod schemas (createOriginalAssignmentSchema, updateOriginalAssignmentSchema) in src/lib/validators/originalAssignment.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/originalAssignment.test.ts
+- [ ] Generate database migration (create_original_assignments_table)
+- [ ] Apply migration
+
+### [ ] Prompt 3.2: InterviewStep Schema and Zod Validation
+- [ ] Define interviewStepTypeEnum in src/db/schema.ts
+- [ ] Define InterviewStep Drizzle schema (interviewSteps table with FKs to hiringPipelines, originalAssignments, unique constraint on hiringPipelineId + sequenceNumber)
+- [ ] Create InterviewStep Zod schemas (createInterviewStepSchema, updateInterviewStepSchema) in src/lib/validators/interviewStep.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/interviewStep.test.ts
+- [ ] Generate database migration (create_interview_steps_table)
+- [ ] Apply migration
+
+## Phase 4: Schemas for Participants (Candidate, Interviewer) & Interview Artifacts
+
+### [ ] Prompt 4.1: Candidate Schema and Zod Validation
+- [ ] Define candidateStatusEnum in src/db/schema.ts
+- [ ] Define Candidate Drizzle schema (candidates table with FKs to hiringPipelines, interviewSteps)
+- [ ] Create Candidate Zod schemas (createCandidateSchema, updateCandidateSchema, addInterviewHistoryEventSchema) in src/lib/validators/candidate.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/candidate.test.ts
+- [ ] Generate database migration (create_candidates_table)
+- [ ] Apply migration
+
+### [ ] Prompt 4.2: Interviewer Schema and Zod Validation
+- [ ] Define Interviewer Drizzle schema (interviewers table)
+- [ ] Create Interviewer Zod schemas (createInterviewerSchema, updateInterviewerSchema, adjustInterviewerCreditsSchema) in src/lib/validators/interviewer.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/interviewer.test.ts
+- [ ] Generate database migration (create_interviewers_table)
+- [ ] Apply migration
+
+### [ ] Prompt 4.3: CopiedAssignment Schema and Zod Validation
+- [ ] Define CopiedAssignment Drizzle schema (copiedAssignments table with FKs to originalAssignments, candidates, interviewSteps, unique constraint on candidateId + interviewStepId)
+- [ ] Create CopiedAssignment Zod schemas (createCopiedAssignmentSchema) in src/lib/validators/copiedAssignment.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/copiedAssignment.test.ts
+- [ ] Generate database migration (create_copied_assignments_table)
+- [ ] Apply migration
+
+### [ ] Prompt 4.4: Evaluation Schema and Zod Validation
+- [ ] Define Evaluation Drizzle schema (evaluations table with FKs to candidates, interviewSteps, interviewers, copiedAssignments, unique constraint on candidateId + interviewStepId)
+- [ ] Create Evaluation Zod schemas (submitEvaluationSchema) in src/lib/validators/evaluation.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/evaluation.test.ts
+- [ ] Generate database migration (create_evaluations_table)
+- [ ] Apply migration
+
+### [ ] Prompt 4.5: Transcription Schema and Zod Validation
+- [ ] Define transcriptionProcessingStatusEnum in src/db/schema.ts
+- [ ] Define Transcription Drizzle schema (transcriptions table with FKs to evaluations, candidates, interviewSteps, unique constraint on evaluationId)
+- [ ] Create Transcription Zod schemas (createTranscriptionSchema, updateTranscriptionStatusSchema) in src/lib/validators/transcription.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/transcription.test.ts
+- [ ] Generate database migration (create_transcriptions_table)
+- [ ] Apply migration
+
+## Phase 5: API Endpoints for Core Interview Workflow Entities
+
+### [ ] Prompt 5.1: HiringPipeline CRUD API Endpoints
+- [ ] Create HiringPipeline CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/hiring-pipelines/
+- [ ] Implement with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests in src/app/api/hiring-pipelines/hiringPipelines.test.ts
+
+### [ ] Prompt 5.2: OriginalAssignment CRUD API Endpoints
+- [ ] Create OriginalAssignment CRUD API route handlers under src/app/api/original-assignments/
+- [ ] Implement with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests in src/app/api/original-assignments/originalAssignments.test.ts
+
+### [ ] Prompt 5.3: InterviewStep CRUD API Endpoints (within a Hiring Pipeline context)
+- [ ] Create nested InterviewStep CRUD API route handlers under src/app/api/hiring-pipelines/[pipelineId]/interview-steps/
+- [ ] Implement with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests in src/app/api/hiring-pipelines/interviewSteps.test.ts
+
+### [ ] Prompt 5.4: Candidate CRUD API Endpoints
+- [ ] Create Candidate CRUD API route handlers under src/app/api/candidates/
+- [ ] Implement with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests in src/app/api/candidates/candidates.test.ts
+
+### [ ] Prompt 5.5: Interviewer CRUD API Endpoints
+- [ ] Create Interviewer CRUD API route handlers (including PATCH /:id/credits) under src/app/api/interviewers/
+- [ ] Implement with Drizzle, Zod validation, error handling, status codes
+- [ ] Write integration tests in src/app/api/interviewers/interviewers.test.ts
+
+## Phase 6: Account Manager (AM) UI - Basic Management Pages
+
+### [ ] Prompt 6.1: Placeholder Authentication & AM Layout
+- [ ] Implement basic placeholder AM authentication (src/lib/auth.ts, getCurrentUser())
+- [ ] Protect relevant API routes and pages
+- [ ] Create AM layout src/app/(am)/layout.tsx (sidebar navigation, main content area)
+- [ ] Use shadcn/ui for styling
+
+### [ ] Prompt 6.2: AM UI - Client Management Page
+- [ ] Create page src/app/(am)/clients/page.tsx
+- [ ] List Clients (shadcn/ui Table)
+- [ ] "Create New Client" button (shadcn/ui Button, Dialog, Form with react-hook-form, Zod)
+- [ ] Form: name, contactInfo, select AccountManager
+- [ ] Table actions: Edit, Delete (with confirmation)
+- [ ] Implement client-side data fetching (/api/clients, /api/account-managers)
+- [ ] State management for form, dialogs, list updates
+- [ ] Basic component tests (Vitest)
+
+### [ ] Prompt 6.3: AM UI - Hiring Pipeline Management Page
+- [ ] Create page src/app/(am)/pipelines/page.tsx
+- [ ] List Hiring Pipelines (shadcn/ui Table)
+- [ ] Filter pipelines by Client
+- [ ] "Create New Pipeline" button (Dialog + Form)
+- [ ] Form fields: Select Client, Job Title, Details, Tech Stacks, Comp Range, Culture Notes
+- [ ] Table actions: Edit, Delete, View Details (link)
+- [ ] Client-side data fetching
+- [ ] Use shadcn/ui, react-hook-form, Zod
+
+### [ ] Prompt 6.4: AM UI - Hiring Pipeline Detail Page & Interview Step Management
+- [ ] Create dynamic route src/app/(am)/pipelines/[pipelineId]/page.tsx
+- [ ] Display Hiring Pipeline details
+- [ ] Section for InterviewSteps management:
+  - [ ] List steps (Table: Sequence, Name, Type, Assignment)
+  - [ ] Allow reordering (manual sequence edit or dnd)
+  - [ ] "Add Interview Step" button (Dialog + Form)
+  - [ ] Form fields: Sequence, Name, Type, Original Assignment (Select), Scheduling Link, Email Template
+  - [ ] Step actions: Edit, Delete
+- [ ] Client-side data fetching (pipeline, steps, original assignments)
+- [ ] Use shadcn/ui
+
+### [ ] Prompt 6.5: AM UI - Original Assignment Library Page
+- [ ] Create page src/app/(am)/assignments/page.tsx
+- [ ] List OriginalAssignments (Table: Name, Google Doc ID, Drive Path)
+- [ ] "Add New Assignment" button (Dialog + Form)
+- [ ] Form fields: Name, Google Doc File ID, Drive Folder Path
+- [ ] Table actions: Edit, Delete
+- [ ] Client-side data fetching
+- [ ] Use shadcn/ui
+
+### [ ] Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
+- [ ] Create page src/app/(am)/candidates/page.tsx
+- [ ] List Candidates (Table: Name, Email, Pipeline, Status, Current Step)
+- [ ] Filter by Pipeline, Status
+- [ ] "Import Candidate" button (Dialog + Form)
+- [ ] Form fields: Select Pipeline, Name, Email, Resume Info
+- [ ] Table actions: View Details (link), Edit, Delete
+- [ ] Client-side data fetching
+- [ ] Use shadcn/ui
+
+### [ ] Prompt 6.7: AM UI - Interviewer Management Page
+- [ ] Create page src/app/(am)/interviewers/page.tsx
+- [ ] List Interviewers (Table: Name, Email, Credits, Active Status)
+- [ ] "Add New Interviewer" button (Dialog + Form)
+- [ ] Form fields: Name, Email, Scheduling Tool ID
+- [ ] Table actions: Edit, Toggle Active, Adjust Credits
+- [ ] Client-side data fetching
+- [ ] Use shadcn/ui
+
+## Phase 7: AM Dashboard & Candidate Workflow UI
+
+### [ ] Prompt 7.1: AM Dashboard UI - Candidate Workflow Display
+- [ ] Create AM Dashboard page src/app/(am)/dashboard/page.tsx
+- [ ] Display candidates requiring action (Kanban or task list)
+- [ ] Columns/Sections for statuses/action buckets
+- [ ] Candidate card details: Name, Pipeline, Current Step, Status
+- [ ] Implement dashboard filters (by Hiring Pipeline)
+- [ ] Fetch candidate data with associations
+- [ ] Use shadcn/ui for cards and layout
+
+### [ ] Prompt 7.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
+- [ ] On Dashboard/Candidate Detail: UI buttons/actions for AM to transition candidate statuses:
+  - [ ] 'New' -> "Review Resume" -> 'PendingAmReview'
+  - [ ] 'PendingAmReview' -> "Approve Resume" / "Reject Resume"
+  - [ ] 'ResumeApproved' -> Display scheduling/email info, "Mark Invite Sent" button
+- [ ] API endpoints (PUT /api/candidates/[id]) to handle status updates, currentInterviewStepId, interviewHistory
+- [ ] Optimistic UI updates or re-fetch
+- [ ] Integration tests for API status transition logic
+
+## Phase 8: Google Drive Integration (Service & Basic API)
+
+### [ ] Prompt 8.1: Google Drive Service Setup & Credentials
+- [ ] Create src/services/googleDriveService.ts
+- [ ] Set up googleapis client library
+- [ ] Document Google Cloud Project setup (Drive & Docs API, Service Account)
+- [ ] Securely store Service Account JSON key (env var GOOGLE_SERVICE_ACCOUNT_KEY_JSON)
+- [ ] Implement helper functions for initializing Drive/Docs API clients
+- [ ] Ensure correct scopes
+- [ ] Configure "Generated Assignment Copies" folder ID (env var GOOGLE_GENERATED_ASSIGNMENTS_FOLDER_ID)
+
+### [ ] Prompt 8.2: Google Drive Service - Copy Document Function
+- [ ] Implement copyDocument(originalDocFileId, newFileName, candidateName) in googleDriveService.ts
+- [ ] Use Drive API files.copy
+- [ ] Name file distinctively
+- [ ] Use Drive API files.get for id, webViewLink
+- [ ] Return details
+- [ ] Comprehensive error handling
+- [ ] Unit tests for copyDocument (mock googleapis)
+
+### [ ] Prompt 8.3: Google Drive Service - Personalize & Set Permissions
+- [ ] Implement personalizeDocument(copiedDocFileId, candidateName) in googleDriveService.ts
+- [ ] Use Docs API documents.batchUpdate to replace {{CANDIDATE_NAME}}
+- [ ] Error handling
+- [ ] Implement setDocumentPermissionsAnyoneReader(fileId) in googleDriveService.ts
+- [ ] Use Drive API permissions.create (type=anyone, role=reader)
+- [ ] Error handling
+- [ ] Unit tests for these functions (mock API calls)
+
+### [ ] Prompt 8.4: API Endpoint for Assignment Generation
+- [ ] Create API route POST /api/interviews/generate-assignment (req body: candidateId, interviewStepId)
+- [ ] Endpoint logic:
+  - [ ] Fetch Candidate, InterviewStep, OriginalAssignment
+  - [ ] Construct new file name
+  - [ ] Call googleDriveService.copyDocument()
+  - [ ] Call googleDriveService.personalizeDocument()
+  - [ ] Call googleDriveService.setDocumentPermissionsAnyoneReader()
+  - [ ] Create CopiedAssignment DB record
+  - [ ] Return CopiedAssignment or webViewLink
+- [ ] Error handling, transactionality
+- [ ] Add button on AM dashboard to trigger this API
+- [ ] Integration tests (mock Google Drive service)
+
+## Phase 9: Interviewer View & Evaluation Submission
+
+### [ ] Prompt 9.1: Basic Interviewer View Page
+- [ ] Create page src/app/interview/[interviewSessionId]/page.tsx (use copiedAssignmentId as interviewSessionId)
+- [ ] Fetch CopiedAssignment, Candidate, InterviewStep info
+- [ ] Display Candidate Name, Job Title, Step Name/Type
+- [ ] Display iframe or link to CopiedAssignment.webViewLink
+- [ ] Basic styling
+
+### [ ] Prompt 9.2: Evaluation Form and Submission API
+- [ ] On Interviewer View page: add evaluation form (shadcn/ui Form, Textarea, Input)
+- [ ] Fields: "Overall Feedback / Notes", "Google Meet Recording Link" (mandatory)
+- [ ] "Submit Evaluation" button
+- [ ] Create API route POST /api/evaluations (req body: copiedAssignmentId/candidateId+stepId, interviewerId, structuredFormResponses, googleMeetRecordingLink)
+- [ ] Endpoint logic:
+  - [ ] Validate input
+  - [ ] Create Evaluation DB record
+  - [ ] Update Candidate.currentStatus to "EvaluationSubmitted"
+  - [ ] Update Candidate.currentInterviewStepId
+  - [ ] Increment Interviewer.accruedCredits
+  - [ ] Return success response
+- [ ] Client-side form submission logic
+- [ ] Integration tests for /api/evaluations
+
+## Phase 10: Transcription Service Integration (Placeholder & Basic Flow)
+
+### [ ] Prompt 10.1: Transcription Service Module & Placeholder
+- [ ] Create src/services/transcriptionService.ts
+- [ ] Implement placeholder transcribeAudioFromLink(recordingLink, evaluationId):
+  - [ ] Simulate download, extraction, API call, result (mock JSON)
+  - [ ] Simulate failure
+
+### [ ] Prompt 10.2: API/Job to Trigger Transcription
+- [ ] Modify POST /api/evaluations:
+  - [ ] After saving Evaluation, create Transcription record (status: 'Pending')
+  - [ ] Trigger background job/service call for transcription
+- [ ] Create API endpoint POST /api/transcriptions/process-pending (or background job function)
+- [ ] Find Transcription records with status: 'Pending'
+- [ ] Fetch Evaluation.googleMeetRecordingLink
+- [ ] Call transcriptionService.transcribeAudioFromLink()
+- [ ] On success: update Transcription (status: 'Complete', transcriptionData), update Candidate.currentStatus ("TranscriptionComplete")
+- [ ] On failure: update Transcription (status: 'Failed', errorMessage), update Candidate.currentStatus ("TranscriptionFailed")
+- [ ] Integration tests for transcription triggering/processing (mock transcribeAudioFromLink)
+
+## Phase 11: Background Job System & Integrating Long-Running Tasks
+
+### [ ] Prompt 11.1: Setup Background Job System (Vercel Cron Jobs + DB Table)
+- [ ] Create Drizzle schema for PendingJob (pendingJobs table: id, jobType enum, payload, status enum, attempts, createdAt, updatedAt)
+- [ ] Refactor POST /api/interviews/generate-assignment to add 'generateAssignment' job to PendingJobs
+- [ ] Refactor POST /api/evaluations to add 'transcribe' job to PendingJobs
+- [ ] Create API route POST /api/worker (protected):
+  - [ ] Fetches batch of 'pending' jobs
+  - [ ] Marks 'processing'
+  - [ ] Calls appropriate service function based on jobType
+  - [ ] Updates job status ('complete'/'failed', error message, retry logic)
+- [ ] Configure Vercel Cron Job in vercel.json to call /api/worker
+
+### [ ] Prompt 11.2: Background Job - Assignment Cleanup
+- [ ] Implement deleteFile(fileId) in googleDriveService.ts
+- [ ] Worker function for 'cleanupAssignments' job type:
+  - [ ] Find old CopiedAssignment records
+  - [ ] Call googleDriveService.deleteFile()
+  - [ ] Update CopiedAssignment.isDeletedFromDrive or delete record
+  - [ ] Handle errors
+- [ ] Mechanism to queue 'cleanupAssignments' job periodically (Vercel Cron)
+- [ ] Integration tests for cleanup logic (mock Drive API)
+
+## Phase 12: Finalizing AM Workflow & UI Polish
+
+### [ ] Prompt 12.1: AM Dashboard - Reviewing Results & Final Decisions
+- [ ] On AM Dashboard/Candidate Detail for "TranscriptionComplete" candidates:
+  - [ ] Display Evaluation summary/link
+  - [ ] Display Transcription summary/link
+  - [ ] Add AM action buttons:
+    - [ ] "Reject based on Evaluation/Transcription" -> Candidate.currentStatus = "EvaluationRejected"
+    - [ ] "Approve for Next Step" -> find next step, update Candidate.currentInterviewStepId, Candidate.currentStatus = "ResumeApproved" (for new step), add to interviewHistory
+    - [ ] "Mark Pipeline Completed" -> Candidate.currentStatus = "PipelineCompleted"
+- [ ] API endpoint updates (PUT /api/candidates/[id]) for these transitions
+- [ ] Integration tests for API transition logic
+
+### [ ] Prompt 12.2: UI Polish and Navigation
+- [ ] Review all AM-facing pages
+- [ ] Consistent shadcn/ui components (layout, tables, forms, dialogs, buttons, toasts)
+- [ ] Improve navigation (sidebar, breadcrumbs)
+- [ ] Make tables sortable, consider pagination
+- [ ] Test AM interface responsiveness
+
+## Phase 13: Real Transcription Service & End-to-End Testing
+
+### [ ] Prompt 13.1: (Optional) Integrate Real Transcription Service
+- [ ] Choose service, get API key (store securely)
+- [ ] Replace placeholder transcribeAudioFromLink in src/services/transcriptionService.ts:
+  - [ ] Download/access audio from googleMeetRecordingLink (handle Drive permissions, FFmpeg if needed)
+  - [ ] Upload audio to service / submit URL
+  - [ ] Handle async processing (polling/webhooks)
+  - [ ] Fetch and parse transcript
+  - [ ] Handle API errors, rate limits
+  - [ ] Delete temporary files
+- [ ] Update tests for transcriptionService.ts (mock real service client)
+
+### [ ] Prompt 13.2: Comprehensive End-to-End Testing
+- [ ] Manually test full AM workflow (Client setup -> Candidate journey -> Final decision):
+  - [ ] Create Client, Pipeline, Original Assignment, Interview Steps
+  - [ ] Import Candidate
+  - [ ] Move Candidate through statuses
+  - [ ] Trigger assignment generation
+  - [ ] Interviewer views assignment, submits evaluation
+  - [ ] Verify AM sees evaluation
+  - [ ] Verify transcription process
+  - [ ] AM reviews results, makes final decision
+- [ ] Write automated E2E tests (Playwright/Cypress) for critical paths (if feasible)
+- [ ] Review error handling and logging
