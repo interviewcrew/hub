@@ -18,11 +18,11 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Configure Vitest (vitest.config.ts, package.json script)
 - [x] Initialize shadcn/ui (npx shadcn@latest init, configure tailwind.config.ts, globals.css)
 
-### [ ] Prompt 1.3: Basic Project Structure and DB Connection
-- [ ] Create directory structure (app, components/ui, lib/db.ts, lib/utils.ts, db/schema.ts, services, app/api)
-- [ ] Implement Drizzle client setup in src/lib/db.ts (env vars for DB connection)
-- [ ] Create initial empty src/db/schema.ts
-- [ ] Generate initial empty migration (npm run db:generate)
+### [x] Prompt 1.3: Basic Project Structure and DB Connection
+- [x] Create directory structure (app, components/ui, lib/db.ts, lib/utils.ts, db/schema.ts, services, app/api)
+- [x] Implement Drizzle client setup in src/lib/db.ts (env vars for DB connection)
+- [x] Create initial empty src/db/schema.ts
+- [x] Generate initial empty migration (npm run db:generate)
 
 ## Phase 2: Core Entity Schemas & Basic CRUD APIs (Account Management Focus)
 
