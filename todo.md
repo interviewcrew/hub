@@ -10,13 +10,13 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Ensure local run (npm run dev)
 - [x] Create basic README.md
 
-### [ ] Prompt 1.2: Install and Configure Core Dev Dependencies
-- [ ] Install Drizzle ORM, Drizzle Kit, pg
-- [ ] Install Zod
-- [ ] Install Vitest, @vitest/ui, jsdom
-- [ ] Configure Drizzle Kit (drizzle.config.ts, package.json scripts)
-- [ ] Configure Vitest (vitest.config.ts, package.json script)
-- [ ] Initialize shadcn/ui (npx shadcn-ui@latest init, configure tailwind.config.js, globals.css)
+### [x] Prompt 1.2: Install and Configure Core Dev Dependencies
+- [x] Install Drizzle ORM, Drizzle Kit, pg
+- [x] Install Zod
+- [x] Install Vitest, @vitest/ui, jsdom
+- [x] Configure Drizzle Kit (drizzle.config.ts, package.json scripts)
+- [x] Configure Vitest (vitest.config.ts, package.json script)
+- [x] Initialize shadcn/ui (npx shadcn@latest init, configure tailwind.config.ts, globals.css)
 
 ### [ ] Prompt 1.3: Basic Project Structure and DB Connection
 - [ ] Create directory structure (app, components/ui, lib/db.ts, lib/utils.ts, db/schema.ts, services, app/api)
