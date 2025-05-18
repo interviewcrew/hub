@@ -4,11 +4,11 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 1: Project Foundation & Core Schemas
 
-### [ ] Prompt 1.1: Initialize Next.js Project
-- [ ] Initialize Next.js project "interview-crew-platform" with TypeScript
-- [ ] Set up Tailwind CSS
-- [ ] Ensure local run (npm run dev)
-- [ ] Create basic README.md
+### [x] Prompt 1.1: Initialize Next.js Project
+- [x] Initialize Next.js project "interview-crew-platform" with TypeScript
+- [x] Set up Tailwind CSS
+- [x] Ensure local run (npm run dev)
+- [x] Create basic README.md
 
 ### [ ] Prompt 1.2: Install and Configure Core Dev Dependencies
 - [ ] Install Drizzle ORM, Drizzle Kit, pg
