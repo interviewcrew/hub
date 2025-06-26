@@ -320,65 +320,65 @@ In `src/db/schema.ts`:
 5. Generate the database migration: `npm run db:generate --name="create_transcriptions_table"`.
 6. Apply the migration.
 
-## Phase 5: API Endpoints for Core Interview Workflow Entities
+## Phase 5: Server Actions for Core Interview Workflow Entities
 
-This phase focuses on creating API endpoints for managing entities central to the interview workflow, building upon the schemas defined earlier.
+This phase focuses on creating Server Actions for managing entities central to the interview workflow, building upon the schemas defined earlier.
 
-### Prompt 5.1: Position CRUD API Endpoints
+### Prompt 5.1: Position CRUD Server Actions
 
-1. Create Next.js API route handlers for `Position` CRUD operations under `src/app/api/positions/`:
-   - `POST /api/positions`: Create a new Position. Validate against `createPositionSchema`. Ensure `clientId` and `accountManagerId` exist.
-   - `GET /api/positions`: Get all Positions. Allow filtering by `clientId` and/or `accountManagerId`.
-   - `GET /api/positions/[id]`: Get a single Position by ID, optionally including its associated `InterviewStep`s (use Drizzle relations).
-   - `PUT /api/positions/[id]`: Update a Position. Validate against `updatePositionSchema`.
-   - `DELETE /api/positions/[id]`: Delete a Position. Consider cascading deletes or soft deletes for associated entities if necessary (for MVP, simple delete is fine, but note implications).
-2. Implement using Drizzle, include error handling, and use appropriate status codes.
-3. Write integration tests for these API endpoints using Vitest. Place tests in `src/app/api/positions/positions.test.ts`.
+1. Create Next.js Server Actions for `Position` CRUD operations in `src/lib/actions/positions.ts`:
+   - `createPosition`: Create a new Position. Validate against `createPositionSchema`. Ensure `clientId` and `accountManagerId` exist.
+   - `getPositions`: Get all Positions. Allow filtering by `clientId` and/or `accountManagerId`.
+   - `getPosition`: Get a single Position by ID, optionally including its associated `InterviewStep`s (use Drizzle relations).
+   - `updatePosition`: Update a Position. Validate against `updatePositionSchema`.
+   - `deletePosition`: Delete a Position. Consider cascading deletes or soft deletes for associated entities if necessary (for MVP, simple delete is fine, but note implications).
+2. Implement using Drizzle, include error handling, and return appropriate results.
+3. Write unit tests for these Server Actions using Vitest. Place tests in `src/lib/actions/positions.test.ts`.
 
-### Prompt 5.2: OriginalAssignment CRUD API Endpoints
+### Prompt 5.2: OriginalAssignment CRUD Server Actions
 
-1. Create Next.js API route handlers for `OriginalAssignment` CRUD operations under `src/app/api/original-assignments/`:
-   - `POST /api/original-assignments`: Create. Validate with `createOriginalAssignmentSchema`.
-   - `GET /api/original-assignments`: Get all.
-   - `GET /api/original-assignments/[id]`: Get by ID.
-   - `PUT /api/original-assignments/[id]`: Update. Validate with `updateOriginalAssignmentSchema`.
-   - `DELETE /api/original-assignments/[id]`: Delete.
-2. Implement using Drizzle, with error handling and status codes.
-3. Write integration tests in `src/app/api/original-assignments/originalAssignments.test.ts`.
+1. Create Next.js Server Actions for `OriginalAssignment` CRUD operations in `src/lib/actions/originalAssignments.ts`:
+   - `createOriginalAssignment`: Create. Validate with `createOriginalAssignmentSchema`.
+   - `getOriginalAssignments`: Get all.
+   - `getOriginalAssignment`: Get by ID.
+   - `updateOriginalAssignment`: Update. Validate with `updateOriginalAssignmentSchema`.
+   - `deleteOriginalAssignment`: Delete.
+2. Implement using Drizzle, with error handling.
+3. Write unit tests in `src/lib/actions/originalAssignments.test.ts`.
 
-### Prompt 5.3: InterviewStep CRUD API Endpoints (within a Position context)
+### Prompt 5.3: InterviewStep CRUD Server Actions (within a Position context)
 
-1. Create Next.js API route handlers for `InterviewStep` CRUD operations. These should ideally be nested under positions, e.g., `src/app/api/positions/[positionId]/interview-steps/`:
-   - `POST /api/positions/[positionId]/interview-steps`: Create an Interview Step for the given `positionId`. Validate with `createInterviewStepSchema` (ensure `positionId` from path matches body or is injected). Ensure `originalAssignmentId` (if provided) exists. Handle `sequenceNumber` uniqueness within the position.
-   - `GET /api/positions/[positionId]/interview-steps`: Get all Interview Steps for a position, ordered by `sequenceNumber`.
-   - `GET /api/positions/[positionId]/interview-steps/[stepId]`: Get a specific Interview Step.
-   - `PUT /api/positions/[positionId]/interview-steps/[stepId]`: Update an Interview Step. Validate with `updateInterviewStepSchema`. Handle `sequenceNumber` changes carefully (may require reordering other steps).
-   - `DELETE /api/positions/[positionId]/interview-steps/[stepId]`: Delete an Interview Step.
-2. Implement using Drizzle, with error handling and status codes.
-3. Write integration tests in `src/app/api/positions/interviewSteps.test.ts` (or a similarly named file that reflects the nested structure if your testing setup allows).
+1. Create Next.js Server Actions for `InterviewStep` CRUD operations in `src/lib/actions/interviewSteps.ts`:
+   - `createInterviewStep`: Create an Interview Step for the given `positionId`. Validate with `createInterviewStepSchema` (ensure `positionId` matches). Ensure `originalAssignmentId` (if provided) exists. Handle `sequenceNumber` uniqueness within the position.
+   - `getInterviewSteps`: Get all Interview Steps for a position, ordered by `sequenceNumber`.
+   - `getInterviewStep`: Get a specific Interview Step.
+   - `updateInterviewStep`: Update an Interview Step. Validate with `updateInterviewStepSchema`. Handle `sequenceNumber` changes carefully (may require reordering other steps).
+   - `deleteInterviewStep`: Delete an Interview Step.
+2. Implement using Drizzle, with error handling.
+3. Write unit tests in `src/lib/actions/interviewSteps.test.ts`.
 
-### Prompt 5.4: Candidate CRUD API Endpoints
+### Prompt 5.4: Candidate CRUD Server Actions
 
-1. Create Next.js API route handlers for `Candidate` CRUD operations under `src/app/api/candidates/`:
-   - `POST /api/candidates`: Create. Validate with `createCandidateSchema`. Set default status. Ensure `positionId` exists.
-   - `GET /api/candidates`: Get all. Allow filtering by `positionId`, `currentStatus`.
-   - `GET /api/candidates/[id]`: Get by ID. Optionally include `Position` info, `CurrentInterviewStep` info, and `Evaluation`s/`Transcription`s related to history.
-   - `PUT /api/candidates/[id]`: Update. Validate with `updateCandidateSchema`. This will be crucial for status updates.
-   - `DELETE /api/candidates/[id]`: Delete (or archive).
-2. Implement using Drizzle, with error handling and status codes.
-3. Write integration tests in `src/app/api/candidates/candidates.test.ts`.
+1. Create Next.js Server Actions for `Candidate` CRUD operations in `src/lib/actions/candidates.ts`:
+   - `createCandidate`: Create. Validate with `createCandidateSchema`. Set default status. Ensure `positionId` exists.
+   - `getCandidates`: Get all. Allow filtering by `positionId`, `currentStatus`.
+   - `getCandidate`: Get by ID. Optionally include `Position` info, `CurrentInterviewStep` info, and `Evaluation`s/`Transcription`s related to history.
+   - `updateCandidate`: Update. Validate with `updateCandidateSchema`. This will be crucial for status updates.
+   - `deleteCandidate`: Delete (or archive).
+2. Implement using Drizzle, with error handling.
+3. Write unit tests in `src/lib/actions/candidates.test.ts`.
 
-### Prompt 5.5: Interviewer CRUD API Endpoints
+### Prompt 5.5: Interviewer CRUD Server Actions
 
-1. Create Next.js API route handlers for `Interviewer` CRUD operations under `src/app/api/interviewers/`:
-   - `POST /api/interviewers`: Create. Validate with `createInterviewerSchema`.
-   - `GET /api/interviewers`: Get all. Allow filtering by `isActive`.
-   - `GET /api/interviewers/[id]`: Get by ID.
-   - `PUT /api/interviewers/[id]`: Update. Validate with `updateInterviewerSchema`.
-   - `PATCH /api/interviewers/[id]/credits`: Adjust credits. Validate with `adjustInterviewerCreditsSchema`.
-   - `DELETE /api/interviewers/[id]`: Delete (or set `isActive` to false).
-2. Implement using Drizzle, with error handling and status codes.
-3. Write integration tests in `src/app/api/interviewers/interviewers.test.ts`.
+1. Create Next.js Server Actions for `Interviewer` CRUD operations in `src/lib/actions/interviewers.ts`:
+   - `createInterviewer`: Create. Validate with `createInterviewerSchema`.
+   - `getInterviewers`: Get all. Allow filtering by `isActive`.
+   - `getInterviewer`: Get by ID.
+   - `updateInterviewer`: Update. Validate with `updateInterviewerSchema`.
+   - `adjustInterviewerCredits`: Adjust credits. Validate with `adjustInterviewerCreditsSchema`.
+   - `deleteInterviewer`: Delete (or set `isActive` to false).
+2. Implement using Drizzle, with error handling.
+3. Write unit tests in `src/lib/actions/interviewers.test.ts`.
 
 ## Phase 6: Account Manager (AM) UI - Basic Management Pages
 
@@ -404,7 +404,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - Include a "Create New Client" button (using shadcn/ui `Button` and `Dialog` with a `Form`).
     - The form (using `zod` for validation via `react-hook-form`, and shadcn/ui `Form` components) should allow input for Client `name`, `contactInfo`, and selection of an `AccountManager` (fetch AMs to populate a `Select` component).
     - Actions per client in the table: Edit (opens a similar dialog/form), Delete (with confirmation dialog).
-3. Implement client-side data fetching (e.g., using `useEffect` and `fetch`, or a library like SWR/React Query if preferred, but simple fetch is fine for now) to interact with the `/api/clients` and `/api/account-managers` endpoints.
+3. Implement Server Actions for data operations (e.g., using Server Actions for create, update, delete operations) and use `useEffect` for initial data fetching with Server Actions.
 4. Ensure proper state management for the form, dialogs, and list updates.
 5. Write basic component tests with Vitest if possible (e.g., for form validation logic or component rendering).
 
@@ -417,7 +417,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - "Create New Position" button (Dialog + Form).
         - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. AM is pre-filled or selectable.
     - Actions per position: Edit, Delete, View Details (navigates to a position detail page - to be created next).
-3. Implement client-side data fetching for positions and clients.
+3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components and `react-hook-form` with Zod.
 
 ### Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
@@ -430,7 +430,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - "Add Interview Step" button (Dialog + Form).
         - Form fields: Sequence Number, Name, Type (Select: Live Coding, System Design etc.), Original Assignment (Select populated from `OriginalAssignment` library), Scheduling Link (text input), Email Template (textarea).
     - Actions per step: Edit, Delete.
-4. Implement client-side data fetching for position details, its steps, and the original assignment library (for the select dropdown).
+4. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 5. Use shadcn/ui components.
 
 ### Prompt 6.5: AM UI - Original Assignment Library Page
@@ -441,7 +441,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - "Add New Assignment" button (Dialog + Form).
         - Form fields: Name, Google Doc File ID (manually entered string), Drive Folder Path (manually entered string).
     - Actions per assignment: Edit, Delete.
-3. Implement client-side data fetching.
+3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
 ### Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
@@ -453,7 +453,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - "Import Candidate" (Create New) button (Dialog + Form).
         - Form fields: Select Position, Name, Email, Resume Info (textarea or link). Status defaults to 'New'.
     - Actions per candidate: View Details (navigates to candidate detail page - to be created), Edit basic info, Delete.
-3. Implement client-side data fetching.
+3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
 ### Prompt 6.7: AM UI - Interviewer Management Page
@@ -464,7 +464,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - "Add New Interviewer" button (Dialog + Form).
         - Form fields: Name, Email, Scheduling Tool Identifier (optional). Credits default to 0.
     - Actions per interviewer: Edit, Toggle Active Status, Manually Adjust Credits (simple +/- form).
-3. Implement client-side data fetching.
+3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
 ## Phase 7: AM Dashboard & Candidate Workflow UI
@@ -484,14 +484,14 @@ This phase focuses on the AM's primary interface for managing the candidate flow
 ### Prompt 7.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
 
 1. On the AM Dashboard candidate cards (or a candidate detail view linked from the dashboard):
-    - Implement API endpoints and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
+    - Implement Server Actions and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
         - For a 'New' candidate: "Review Resume" (moves to 'PendingAmReview').
         - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their position), "Reject Resume" (moves to 'ResumeRejected').
         - For 'ResumeApproved' (for a specific step): Display `schedulingLink` and `emailTemplate` from the `InterviewStep`. Add "Mark Invite Sent" button (moves to 'InviteSent' for that `currentInterviewStepId`).
         - (Other transitions like 'EvaluationRejected', 'PipelineCompleted' will be added after evaluation/transcription parts).
-2. The API endpoints (likely `PUT /api/candidates/[id]`) should handle the logic for updating `currentStatus` and `currentInterviewStepId` and potentially adding to `interviewHistory`.
+2. The Server Actions should handle the logic for updating `currentStatus` and `currentInterviewStepId` and potentially adding to `interviewHistory`.
 3. Update the UI optimistically or re-fetch data after status changes.
-4. Write integration tests for the API endpoints handling these status transitions.
+4. Write unit tests for the Server Actions handling these status transitions.
 
 ## Phase 8: Google Drive Integration (Service & Basic API)
 

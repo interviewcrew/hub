@@ -48,14 +48,14 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Apply migration
 
 ### [ ] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
-- [ ] Create AccountManager CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/account-managers/
-- [ ] Implement handlers with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests for API endpoints in src/app/api/account-managers/accountManagers.test.ts
+- [ ] Create AccountManager CRUD Server Actions (createAccountManager, getAccountManagers, getAccountManager, updateAccountManager, deleteAccountManager) in src/lib/actions/accountManagers.ts
+- [ ] Implement Server Actions with Drizzle, Zod validation, error handling
+- [ ] Write unit tests for Server Actions in src/lib/actions/accountManagers.test.ts
 
-### [ ] Prompt 2.5: Client CRUD API Endpoints
-- [ ] Create Client CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/clients/
-- [ ] Implement handlers with Drizzle, Zod validation, error handling, status codes (ensure accountManagerId exists on create)
-- [ ] Write integration tests for API endpoints in src/app/api/clients/clients.test.ts
+### [ ] Prompt 2.5: Client CRUD Endpoints
+- [ ] Create Client CRUD Server Actions (createClient, getClients, getClient, updateClient, deleteClient) in src/lib/actions/clients.ts
+- [ ] Implement Server Actions with Drizzle, Zod validation, error handling (ensure accountManagerId exists on create)
+- [ ] Write unit tests for Server Actions in src/lib/actions/clients.test.ts
 
 ## Phase 3: Schemas for Interview Structure & Management
 
@@ -113,32 +113,32 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Generate database migration (create_transcriptions_table)
 - [ ] Apply migration
 
-## Phase 5: API Endpoints for Core Interview Workflow Entities
+## Phase 5: Server Actions for Core Interview Workflow Entities
 
-### [ ] Prompt 5.1: Position CRUD API Endpoints
-- [ ] Create Position CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/positions/
-- [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/positions/positions.test.ts
+### [ ] Prompt 5.1: Position CRUD Server Actions
+- [ ] Create Position CRUD Server Actions (createPosition, getPositions, getPosition, updatePosition, deletePosition) in src/lib/actions/positions.ts
+- [ ] Implement with Drizzle, Zod validation, error handling
+- [ ] Write unit tests in src/lib/actions/positions.test.ts
 
-### [ ] Prompt 5.2: OriginalAssignment CRUD API Endpoints
-- [ ] Create OriginalAssignment CRUD API route handlers under src/app/api/original-assignments/
-- [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/original-assignments/originalAssignments.test.ts
+### [ ] Prompt 5.2: OriginalAssignment CRUD Server Actions
+- [ ] Create OriginalAssignment CRUD Server Actions under src/lib/actions/originalAssignments.ts
+- [ ] Implement with Drizzle, Zod validation, error handling
+- [ ] Write unit tests in src/lib/actions/originalAssignments.test.ts
 
-### [ ] Prompt 5.3: InterviewStep CRUD API Endpoints (within a Position context)
-- [ ] Create nested InterviewStep CRUD API route handlers under src/app/api/positions/[positionId]/interview-steps/
-- [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/positions/interviewSteps.test.ts
+### [ ] Prompt 5.3: InterviewStep CRUD Server Actions (within a Position context)
+- [ ] Create nested InterviewStep CRUD Server Actions under src/lib/actions/interviewSteps.ts
+- [ ] Implement with Drizzle, Zod validation, error handling
+- [ ] Write unit tests in src/lib/actions/interviewSteps.test.ts
 
-### [ ] Prompt 5.4: Candidate CRUD API Endpoints
-- [ ] Create Candidate CRUD API route handlers under src/app/api/candidates/
-- [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/candidates/candidates.test.ts
+### [ ] Prompt 5.4: Candidate CRUD Server Actions
+- [ ] Create Candidate CRUD Server Actions under src/lib/actions/candidates.ts
+- [ ] Implement with Drizzle, Zod validation, error handling
+- [ ] Write unit tests in src/lib/actions/candidates.test.ts
 
-### [ ] Prompt 5.5: Interviewer CRUD API Endpoints
-- [ ] Create Interviewer CRUD API route handlers (including PATCH /:id/credits) under src/app/api/interviewers/
-- [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/interviewers/interviewers.test.ts
+### [ ] Prompt 5.5: Interviewer CRUD Server Actions
+- [ ] Create Interviewer CRUD Server Actions (including adjustInterviewerCredits) under src/lib/actions/interviewers.ts
+- [ ] Implement with Drizzle, Zod validation, error handling
+- [ ] Write unit tests in src/lib/actions/interviewers.test.ts
 
 ## Phase 6: Account Manager (AM) UI - Basic Management Pages
 
@@ -154,7 +154,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] "Create New Client" button (shadcn/ui Button, Dialog, Form with react-hook-form, Zod)
 - [ ] Form: name, contactInfo, select AccountManager
 - [ ] Table actions: Edit, Delete (with confirmation)
-- [ ] Implement client-side data fetching (/api/clients, /api/account-managers)
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] State management for form, dialogs, list updates
 - [ ] Basic component tests (Vitest)
 
@@ -165,7 +165,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] "Create New Position" button (Dialog + Form)
 - [ ] Form fields: Select Client, Job Title, Details, Tech Stacks, Comp Range, Culture Notes
 - [ ] Table actions: Edit, Delete, View Details (link)
-- [ ] Client-side data fetching
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] Use shadcn/ui, react-hook-form, Zod
 
 ### [ ] Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
@@ -177,7 +177,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
   - [ ] "Add Interview Step" button (Dialog + Form)
   - [ ] Form fields: Sequence, Name, Type, Original Assignment (Select), Scheduling Link, Email Template
   - [ ] Step actions: Edit, Delete
-- [ ] Client-side data fetching (position, steps, original assignments)
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] Use shadcn/ui
 
 ### [ ] Prompt 6.5: AM UI - Original Assignment Library Page
@@ -186,7 +186,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] "Add New Assignment" button (Dialog + Form)
 - [ ] Form fields: Name, Google Doc File ID, Drive Folder Path
 - [ ] Table actions: Edit, Delete
-- [ ] Client-side data fetching
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] Use shadcn/ui
 
 ### [ ] Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
@@ -196,7 +196,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] "Import Candidate" button (Dialog + Form)
 - [ ] Form fields: Select Position, Name, Email, Resume Info
 - [ ] Table actions: View Details (link), Edit, Delete
-- [ ] Client-side data fetching
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] Use shadcn/ui
 
 ### [ ] Prompt 6.7: AM UI - Interviewer Management Page
@@ -205,7 +205,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] "Add New Interviewer" button (Dialog + Form)
 - [ ] Form fields: Name, Email, Scheduling Tool ID
 - [ ] Table actions: Edit, Toggle Active, Adjust Credits
-- [ ] Client-side data fetching
+- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
 - [ ] Use shadcn/ui
 
 ## Phase 7: AM Dashboard & Candidate Workflow UI
@@ -224,9 +224,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
   - [ ] 'New' -> "Review Resume" -> 'PendingAmReview'
   - [ ] 'PendingAmReview' -> "Approve Resume" / "Reject Resume"
   - [ ] 'ResumeApproved' -> Display scheduling/email info, "Mark Invite Sent" button
-- [ ] API endpoints (PUT /api/candidates/[id]) to handle status updates, currentInterviewStepId, interviewHistory
+- [ ] Server Actions to handle status updates, currentInterviewStepId, interviewHistory
 - [ ] Optimistic UI updates or re-fetch
-- [ ] Integration tests for API status transition logic
+- [ ] Unit tests for Server Actions status transition logic
 
 ## Phase 8: Google Drive Integration (Service & Basic API)
 
