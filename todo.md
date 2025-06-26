@@ -40,12 +40,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_clients_table)
 - [x] Apply migration
 
-### [ ] Prompt 2.3: Position Schema and Zod Validation
-- [ ] Define Position Drizzle schema (positions table with FKs to clients, accountManagers)
-- [ ] Create Position Zod schemas (createPositionSchema, updatePositionSchema) in src/lib/validators/position.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/position.test.ts
-- [ ] Generate database migration (create_positions_table)
-- [ ] Apply migration
+### [x] Prompt 2.3: Position Schema and Zod Validation
+- [x] Define Position Drizzle schema (positions table with FKs to clients, accountManagers)
+- [x] Create Position Zod schemas (createPositionSchema, updatePositionSchema) in src/lib/validators/position.ts
+- [x] Write unit tests for Zod schemas in src/lib/validators/position.test.ts
+- [x] Generate database migration (create_positions_table)
+- [x] Apply migration
 
 ### [ ] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
 - [ ] Create AccountManager CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/account-managers/

@@ -15,6 +15,13 @@
       "when": 1750934598349,
       "tag": "0001_create_clients_table",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750948176478,
+      "tag": "0002_create_positions_table",
+      "breakpoints": true
     }
   ]
 }
