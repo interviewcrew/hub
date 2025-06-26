@@ -87,11 +87,11 @@ In `src/db/schema.ts`:
 4. Generate the database migration: `npm run db:generate --name="create_clients_table"`.
 5. Apply the migration.
 
-### Prompt 2.3: HiringPipeline Schema and Zod Validation
+### Prompt 2.3: Position Schema and Zod Validation
 
 In `src/db/schema.ts`:
 
-1. Define the Drizzle schema for `HiringPipeline` (`hiringPipelines` table).
+1. Define the Drizzle schema for `Position` (`positions` table).
    - Fields:
      - `id` (UUID, primary key, auto-generated)
      - `clientId` (UUID, foreign key referencing `clients.id`, not null)
@@ -104,11 +104,11 @@ In `src/db/schema.ts`:
      - `workflowTemplateId` (UUID, nullable - for future use with Workflow Templates)
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
-2. Create corresponding Zod schemas in `src/lib/validators/hiringPipeline.ts`:
-   - `createHiringPipelineSchema`: requires `clientId`, `jobTitle`, `accountManagerId`. Other fields optional. `techStacks` should be an array of strings.
-   - `updateHiringPipelineSchema`: all fields optional.
-3. Write unit tests for these Zod schemas in `src/lib/validators/hiringPipeline.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_hiring_pipelines_table"`.
+2. Create corresponding Zod schemas in `src/lib/validators/position.ts`:
+   - `createPositionSchema`: requires `clientId`, `jobTitle`, `accountManagerId`. Other fields optional. `techStacks` should be an array of strings.
+   - `updatePositionSchema`: all fields optional.
+3. Write unit tests for these Zod schemas in `src/lib/validators/position.test.ts`.
+4. Generate the database migration: `npm run db:generate --name="create_positions_table"`.
 5. Apply the migration.
 
 ### Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
@@ -177,7 +177,7 @@ In `src/db/schema.ts`:
 2. Define the Drizzle schema for `InterviewStep` (`interviewSteps` table).
    - Fields:
      - `id` (UUID, primary key, auto-generated)
-     - `hiringPipelineId` (UUID, foreign key referencing `hiringPipelines.id`, not null)
+     - `positionId` (UUID, foreign key referencing `positions.id`, not null)
      - `sequenceNumber` (integer, not null) // Order of the step in the pipeline
      - `name` (text, not null) // e.g., "Python Live Coding Round 1"
      - `type` (`interviewStepTypeEnum`, not null)
@@ -186,9 +186,9 @@ In `src/db/schema.ts`:
      - `emailTemplate` (text) // Manually entered email template text for MVP
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
-   - Add a unique constraint on (`hiringPipelineId`, `sequenceNumber`).
+   - Add a unique constraint on (`positionId`, `sequenceNumber`).
 3. Create corresponding Zod schemas in `src/lib/validators/interviewStep.ts`:
-   - `createInterviewStepSchema`: requires `hiringPipelineId`, `sequenceNumber`, `name`, `type`. Other fields optional.
+   - `createInterviewStepSchema`: requires `positionId`, `sequenceNumber`, `name`, `type`. Other fields optional.
    - `updateInterviewStepSchema`: all fields optional, but `sequenceNumber` might need special handling if reordering is complex.
 4. Write unit tests for these Zod schemas in `src/lib/validators/interviewStep.test.ts`.
 5. Generate the database migration: `npm run db:generate --name="create_interview_steps_table"`.
@@ -210,7 +210,7 @@ In `src/db/schema.ts`:
 2. Define the Drizzle schema for `Candidate` (`candidates` table).
    - Fields:
      - `id` (UUID, primary key, auto-generated)
-     - `hiringPipelineId` (UUID, foreign key referencing `hiringPipelines.id`, not null)
+     - `positionId` (UUID, foreign key referencing `positions.id`, not null)
      - `name` (text, not null)
      - `email` (text, not null, unique within a pipeline or globally - decide based on re-application rules, for now unique globally)
      - `resumeInfo` (text) // Could be a URL or pasted text
@@ -220,7 +220,7 @@ In `src/db/schema.ts`:
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
 3. Create corresponding Zod schemas in `src/lib/validators/candidate.ts`:
-   - `createCandidateSchema`: requires `hiringPipelineId`, `name`, `email`. `resumeInfo` optional. `currentStatus` defaults in DB.
+   - `createCandidateSchema`: requires `positionId`, `name`, `email`. `resumeInfo` optional. `currentStatus` defaults in DB.
    - `updateCandidateSchema`: allows updates to `name`, `email`, `resumeInfo`, `currentStatus`, `currentInterviewStepId`.
    - `addInterviewHistoryEventSchema`: for validating entries into `interviewHistory`.
 4. Write unit tests for these Zod schemas in `src/lib/validators/candidate.test.ts`.
@@ -324,16 +324,16 @@ In `src/db/schema.ts`:
 
 This phase focuses on creating API endpoints for managing entities central to the interview workflow, building upon the schemas defined earlier.
 
-### Prompt 5.1: HiringPipeline CRUD API Endpoints
+### Prompt 5.1: Position CRUD API Endpoints
 
-1. Create Next.js API route handlers for `HiringPipeline` CRUD operations under `src/app/api/hiring-pipelines/`:
-   - `POST /api/hiring-pipelines`: Create a new Hiring Pipeline. Validate against `createHiringPipelineSchema`. Ensure `clientId` and `accountManagerId` exist.
-   - `GET /api/hiring-pipelines`: Get all Hiring Pipelines. Allow filtering by `clientId` and/or `accountManagerId`.
-   - `GET /api/hiring-pipelines/[id]`: Get a single Hiring Pipeline by ID, optionally including its associated `InterviewStep`s (use Drizzle relations).
-   - `PUT /api/hiring-pipelines/[id]`: Update a Hiring Pipeline. Validate against `updateHiringPipelineSchema`.
-   - `DELETE /api/hiring-pipelines/[id]`: Delete a Hiring Pipeline. Consider cascading deletes or soft deletes for associated entities if necessary (for MVP, simple delete is fine, but note implications).
+1. Create Next.js API route handlers for `Position` CRUD operations under `src/app/api/positions/`:
+   - `POST /api/positions`: Create a new Position. Validate against `createPositionSchema`. Ensure `clientId` and `accountManagerId` exist.
+   - `GET /api/positions`: Get all Positions. Allow filtering by `clientId` and/or `accountManagerId`.
+   - `GET /api/positions/[id]`: Get a single Position by ID, optionally including its associated `InterviewStep`s (use Drizzle relations).
+   - `PUT /api/positions/[id]`: Update a Position. Validate against `updatePositionSchema`.
+   - `DELETE /api/positions/[id]`: Delete a Position. Consider cascading deletes or soft deletes for associated entities if necessary (for MVP, simple delete is fine, but note implications).
 2. Implement using Drizzle, include error handling, and use appropriate status codes.
-3. Write integration tests for these API endpoints using Vitest. Place tests in `src/app/api/hiring-pipelines/hiringPipelines.test.ts`.
+3. Write integration tests for these API endpoints using Vitest. Place tests in `src/app/api/positions/positions.test.ts`.
 
 ### Prompt 5.2: OriginalAssignment CRUD API Endpoints
 
@@ -346,23 +346,23 @@ This phase focuses on creating API endpoints for managing entities central to th
 2. Implement using Drizzle, with error handling and status codes.
 3. Write integration tests in `src/app/api/original-assignments/originalAssignments.test.ts`.
 
-### Prompt 5.3: InterviewStep CRUD API Endpoints (within a Hiring Pipeline context)
+### Prompt 5.3: InterviewStep CRUD API Endpoints (within a Position context)
 
-1. Create Next.js API route handlers for `InterviewStep` CRUD operations. These should ideally be nested under hiring pipelines, e.g., `src/app/api/hiring-pipelines/[pipelineId]/interview-steps/`:
-   - `POST /api/hiring-pipelines/[pipelineId]/interview-steps`: Create an Interview Step for the given `pipelineId`. Validate with `createInterviewStepSchema` (ensure `hiringPipelineId` from path matches body or is injected). Ensure `originalAssignmentId` (if provided) exists. Handle `sequenceNumber` uniqueness within the pipeline.
-   - `GET /api/hiring-pipelines/[pipelineId]/interview-steps`: Get all Interview Steps for a pipeline, ordered by `sequenceNumber`.
-   - `GET /api/hiring-pipelines/[pipelineId]/interview-steps/[stepId]`: Get a specific Interview Step.
-   - `PUT /api/hiring-pipelines/[pipelineId]/interview-steps/[stepId]`: Update an Interview Step. Validate with `updateInterviewStepSchema`. Handle `sequenceNumber` changes carefully (may require reordering other steps).
-   - `DELETE /api/hiring-pipelines/[pipelineId]/interview-steps/[stepId]`: Delete an Interview Step.
+1. Create Next.js API route handlers for `InterviewStep` CRUD operations. These should ideally be nested under positions, e.g., `src/app/api/positions/[positionId]/interview-steps/`:
+   - `POST /api/positions/[positionId]/interview-steps`: Create an Interview Step for the given `positionId`. Validate with `createInterviewStepSchema` (ensure `positionId` from path matches body or is injected). Ensure `originalAssignmentId` (if provided) exists. Handle `sequenceNumber` uniqueness within the position.
+   - `GET /api/positions/[positionId]/interview-steps`: Get all Interview Steps for a position, ordered by `sequenceNumber`.
+   - `GET /api/positions/[positionId]/interview-steps/[stepId]`: Get a specific Interview Step.
+   - `PUT /api/positions/[positionId]/interview-steps/[stepId]`: Update an Interview Step. Validate with `updateInterviewStepSchema`. Handle `sequenceNumber` changes carefully (may require reordering other steps).
+   - `DELETE /api/positions/[positionId]/interview-steps/[stepId]`: Delete an Interview Step.
 2. Implement using Drizzle, with error handling and status codes.
-3. Write integration tests in `src/app/api/hiring-pipelines/interviewSteps.test.ts` (or a similarly named file that reflects the nested structure if your testing setup allows).
+3. Write integration tests in `src/app/api/positions/interviewSteps.test.ts` (or a similarly named file that reflects the nested structure if your testing setup allows).
 
 ### Prompt 5.4: Candidate CRUD API Endpoints
 
 1. Create Next.js API route handlers for `Candidate` CRUD operations under `src/app/api/candidates/`:
-   - `POST /api/candidates`: Create. Validate with `createCandidateSchema`. Set default status. Ensure `hiringPipelineId` exists.
-   - `GET /api/candidates`: Get all. Allow filtering by `hiringPipelineId`, `currentStatus`.
-   - `GET /api/candidates/[id]`: Get by ID. Optionally include `HiringPipeline` info, `CurrentInterviewStep` info, and `Evaluation`s/`Transcription`s related to history.
+   - `POST /api/candidates`: Create. Validate with `createCandidateSchema`. Set default status. Ensure `positionId` exists.
+   - `GET /api/candidates`: Get all. Allow filtering by `positionId`, `currentStatus`.
+   - `GET /api/candidates/[id]`: Get by ID. Optionally include `Position` info, `CurrentInterviewStep` info, and `Evaluation`s/`Transcription`s related to history.
    - `PUT /api/candidates/[id]`: Update. Validate with `updateCandidateSchema`. This will be crucial for status updates.
    - `DELETE /api/candidates/[id]`: Delete (or archive).
 2. Implement using Drizzle, with error handling and status codes.
@@ -392,7 +392,7 @@ This phase starts building the frontend for Account Managers to manage the core 
     - Protect relevant API routes and pages using this mock authentication.
 2. Create a basic layout for the AM section of the application in `src/app/(am)/layout.tsx`. This layout should include:
     - A simple sidebar navigation (using shadcn/ui `Sheet` for mobile and a fixed sidebar for desktop if desired, or just simple links).
-    - Links to: Dashboard (to be created), Clients, Hiring Pipelines, Candidates, Interviewers, Assignment Library.
+    - Links to: Dashboard (to be created), Clients, Positions, Candidates, Interviewers, Assignment Library.
     - A main content area.
 3. Use shadcn/ui components for styling.
 
@@ -408,29 +408,29 @@ This phase starts building the frontend for Account Managers to manage the core 
 4. Ensure proper state management for the form, dialogs, and list updates.
 5. Write basic component tests with Vitest if possible (e.g., for form validation logic or component rendering).
 
-### Prompt 6.3: AM UI - Hiring Pipeline Management Page
+### Prompt 6.3: AM UI - Position Management Page
 
-1. Create a new page at `src/app/(am)/pipelines/page.tsx`.
+1. Create a new page at `src/app/(am)/positions/page.tsx`.
 2. This page should allow AMs to:
-    - List all Hiring Pipelines in a shadcn/ui `Table`. Columns: Job Title, Client Name, AM Name, Status (derived or simple).
-    - Filter pipelines by Client (using a `Select` populated with clients).
-    - "Create New Pipeline" button (Dialog + Form).
+    - List all Positions in a shadcn/ui `Table`. Columns: Job Title, Client Name, AM Name, Status (derived or simple).
+    - Filter positions by Client (using a `Select` populated with clients).
+    - "Create New Position" button (Dialog + Form).
         - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. AM is pre-filled or selectable.
-    - Actions per pipeline: Edit, Delete, View Details (navigates to a pipeline detail page - to be created next).
-3. Implement client-side data fetching for pipelines and clients.
+    - Actions per position: Edit, Delete, View Details (navigates to a position detail page - to be created next).
+3. Implement client-side data fetching for positions and clients.
 4. Use shadcn/ui components and `react-hook-form` with Zod.
 
-### Prompt 6.4: AM UI - Hiring Pipeline Detail Page & Interview Step Management
+### Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
 
-1. Create a dynamic route page at `src/app/(am)/pipelines/[pipelineId]/page.tsx`.
-2. This page should display details of a specific Hiring Pipeline (fetched using `pipelineId`).
-3. Below the pipeline details, display a section for managing its `InterviewStep`s:
+1. Create a dynamic route page at `src/app/(am)/positions/[positionId]/page.tsx`.
+2. This page should display details of a specific Position (fetched using `positionId`).
+3. Below the position details, display a section for managing its `InterviewStep`s:
     - List existing steps in a table (Sequence, Name, Type, Assignment Name).
     - Allow reordering of steps (drag-and-drop if feasible for MVP, otherwise manual sequence number editing).
     - "Add Interview Step" button (Dialog + Form).
         - Form fields: Sequence Number, Name, Type (Select: Live Coding, System Design etc.), Original Assignment (Select populated from `OriginalAssignment` library), Scheduling Link (text input), Email Template (textarea).
     - Actions per step: Edit, Delete.
-4. Implement client-side data fetching for pipeline details, its steps, and the original assignment library (for the select dropdown).
+4. Implement client-side data fetching for position details, its steps, and the original assignment library (for the select dropdown).
 5. Use shadcn/ui components.
 
 ### Prompt 6.5: AM UI - Original Assignment Library Page
@@ -448,10 +448,10 @@ This phase starts building the frontend for Account Managers to manage the core 
 
 1. Create a new page at `src/app/(am)/candidates/page.tsx`.
 2. This page should allow AMs to:
-    - List all `Candidate`s in a shadcn/ui `Table`. Columns: Name, Email, Hiring Pipeline (Job Title), Current Status, Current Step Name (if applicable).
-    - Filter candidates by Hiring Pipeline and/or Status.
+    - List all `Candidate`s in a shadcn/ui `Table`. Columns: Name, Email, Position (Job Title), Current Status, Current Step Name (if applicable).
+    - Filter candidates by Position and/or Status.
     - "Import Candidate" (Create New) button (Dialog + Form).
-        - Form fields: Select Hiring Pipeline, Name, Email, Resume Info (textarea or link). Status defaults to 'New'.
+        - Form fields: Select Position, Name, Email, Resume Info (textarea or link). Status defaults to 'New'.
     - Actions per candidate: View Details (navigates to candidate detail page - to be created), Edit basic info, Delete.
 3. Implement client-side data fetching.
 4. Use shadcn/ui components.
@@ -477,8 +477,8 @@ This phase focuses on the AM's primary interface for managing the candidate flow
 2. The dashboard should display candidates requiring AM action. A Kanban board (using a library like `react-beautiful-dnd` or simpler columns if dnd is too complex for MVP) or a task-oriented list is suitable.
    - Columns/Sections could represent key statuses or action buckets (e.g., "New Resumes", "Pending Invite", "Review Evaluations").
    - Each candidate card should display: Name, Pipeline (Job Title), Current Step (if applicable), current status.
-3. Implement filters for the dashboard: by Hiring Pipeline.
-4. Fetch candidate data, potentially with their associated pipeline and current step details.
+3. Implement filters for the dashboard: by Position.
+4. Fetch candidate data, potentially with their associated position and current step details.
 5. Use shadcn/ui components for cards and layout.
 
 ### Prompt 7.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
@@ -486,7 +486,7 @@ This phase focuses on the AM's primary interface for managing the candidate flow
 1. On the AM Dashboard candidate cards (or a candidate detail view linked from the dashboard):
     - Implement API endpoints and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
         - For a 'New' candidate: "Review Resume" (moves to 'PendingAmReview').
-        - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their pipeline), "Reject Resume" (moves to 'ResumeRejected').
+        - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their position), "Reject Resume" (moves to 'ResumeRejected').
         - For 'ResumeApproved' (for a specific step): Display `schedulingLink` and `emailTemplate` from the `InterviewStep`. Add "Mark Invite Sent" button (moves to 'InviteSent' for that `currentInterviewStepId`).
         - (Other transitions like 'EvaluationRejected', 'PipelineCompleted' will be added after evaluation/transcription parts).
 2. The API endpoints (likely `PUT /api/candidates/[id]`) should handle the logic for updating `currentStatus` and `currentInterviewStepId` and potentially adding to `interviewHistory`.
@@ -676,22 +676,22 @@ This phase completes the AM's ability to manage the candidate lifecycle and poli
      - Display a summary of/link to the `Transcription.transcriptionData`.
    - Add AM action buttons:
      - "Reject based on Evaluation/Transcription" -> updates `Candidate.currentStatus` to "EvaluationRejected".
-     - "Approve for Next Step" (if current step is not the last one in the pipeline) ->
+     - "Approve for Next Step" (if current step is not the last one in the position) ->
        - Finds the next `InterviewStep` by `sequenceNumber`.
        - Updates `Candidate.currentInterviewStepId` to the next step's ID.
        - Updates `Candidate.currentStatus` to "ResumeApproved" (for the new step, effectively restarting the sub-flow for the next step).
        - Add an event to `interviewHistory`.
-     - "Mark Pipeline Completed" (if current step was the last, or AM decides to complete early) -> updates `Candidate.currentStatus` to "PipelineCompleted".
+     - "Mark Position Completed" (if current step was the last, or AM decides to complete early) -> updates `Candidate.currentStatus` to "PipelineCompleted".
 2. Implement the necessary API endpoint updates (likely on `PUT /api/candidates/[id]`) to handle these complex status transitions and logic.
 3. Write integration tests for these API transition logics.
 
 ### Prompt 12.2: UI Polish and Navigation
 
-1. Review all AM-facing pages (`Clients`, `Pipelines`, `Assignments`, `Candidates`, `Interviewers`, `Dashboard`).
+1. Review all AM-facing pages (`Clients`, `Positions`, `Assignments`, `Candidates`, `Interviewers`, `Dashboard`).
 2. Ensure consistent use of shadcn/ui components for layout, tables, forms, dialogs, buttons, and notifications/toasts (e.g., using shadcn/ui `toast` for success/error messages after API calls).
 3. Improve navigation:
     - Ensure the sidebar layout (Prompt 6.1) is functional and links are correct.
-    - Add breadcrumbs if helpful for nested views (e.g., Client > Pipeline > Step).
+    - Add breadcrumbs if helpful for nested views (e.g., Client > Position > Step).
     - Make tables sortable and potentially add pagination if lists become long.
 4. Test responsiveness of the AM interface.
 
@@ -719,7 +719,7 @@ If sticking to Gemini API, investigate its capabilities for long-form audio tran
 ### Prompt 13.2: Comprehensive End-to-End Testing
 
 1. Manually test the full AM workflow:
-    - Create Client, Pipeline, Original Assignment, Interview Steps.
+    - Create Client, Position, Original Assignment, Interview Steps.
     - Import Candidate.
     - Move Candidate through statuses: Resume Review, Send Invite (manual step).
     - (Simulate Candidate scheduling).
@@ -727,6 +727,6 @@ If sticking to Gemini API, investigate its capabilities for long-form audio tran
     - As an Interviewer (using the generated link): View assignment, submit evaluation with a (test) recording link.
     - Verify AM sees evaluation submitted.
     - Verify (mock or real) transcription process is triggered and completes/fails.
-    - AM reviews results and makes a final decision (Reject, Next Step, Complete Pipeline).
+    - AM reviews results and makes a final decision (Reject, Next Step, Complete Position).
 2. Write automated end-to-end tests if a framework is in place (e.g., Playwright, Cypress). Focus on a few critical paths. For MVP, extensive manual E2E testing might be the primary focus.
 3. Review error handling and logging throughout the application. Ensure user-facing errors are clear and actionable, and internal logs capture sufficient detail for debugging.

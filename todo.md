@@ -40,11 +40,11 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_clients_table)
 - [x] Apply migration
 
-### [ ] Prompt 2.3: HiringPipeline Schema and Zod Validation
-- [ ] Define HiringPipeline Drizzle schema (hiringPipelines table with FKs to clients, accountManagers)
-- [ ] Create HiringPipeline Zod schemas (createHiringPipelineSchema, updateHiringPipelineSchema) in src/lib/validators/hiringPipeline.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/hiringPipeline.test.ts
-- [ ] Generate database migration (create_hiring_pipelines_table)
+### [ ] Prompt 2.3: Position Schema and Zod Validation
+- [ ] Define Position Drizzle schema (positions table with FKs to clients, accountManagers)
+- [ ] Create Position Zod schemas (createPositionSchema, updatePositionSchema) in src/lib/validators/position.ts
+- [ ] Write unit tests for Zod schemas in src/lib/validators/position.test.ts
+- [ ] Generate database migration (create_positions_table)
 - [ ] Apply migration
 
 ### [ ] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
@@ -68,7 +68,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 3.2: InterviewStep Schema and Zod Validation
 - [ ] Define interviewStepTypeEnum in src/db/schema.ts
-- [ ] Define InterviewStep Drizzle schema (interviewSteps table with FKs to hiringPipelines, originalAssignments, unique constraint on hiringPipelineId + sequenceNumber)
+- [ ] Define InterviewStep Drizzle schema (interviewSteps table with FKs to positions, originalAssignments, unique constraint on positionId + sequenceNumber)
 - [ ] Create InterviewStep Zod schemas (createInterviewStepSchema, updateInterviewStepSchema) in src/lib/validators/interviewStep.ts
 - [ ] Write unit tests for Zod schemas in src/lib/validators/interviewStep.test.ts
 - [ ] Generate database migration (create_interview_steps_table)
@@ -78,7 +78,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 4.1: Candidate Schema and Zod Validation
 - [ ] Define candidateStatusEnum in src/db/schema.ts
-- [ ] Define Candidate Drizzle schema (candidates table with FKs to hiringPipelines, interviewSteps)
+- [ ] Define Candidate Drizzle schema (candidates table with FKs to positions, interviewSteps)
 - [ ] Create Candidate Zod schemas (createCandidateSchema, updateCandidateSchema, addInterviewHistoryEventSchema) in src/lib/validators/candidate.ts
 - [ ] Write unit tests for Zod schemas in src/lib/validators/candidate.test.ts
 - [ ] Generate database migration (create_candidates_table)
@@ -115,20 +115,20 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 5: API Endpoints for Core Interview Workflow Entities
 
-### [ ] Prompt 5.1: HiringPipeline CRUD API Endpoints
-- [ ] Create HiringPipeline CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/hiring-pipelines/
+### [ ] Prompt 5.1: Position CRUD API Endpoints
+- [ ] Create Position CRUD API route handlers (POST, GET /, GET /:id, PUT /:id, DELETE /:id) under src/app/api/positions/
 - [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/hiring-pipelines/hiringPipelines.test.ts
+- [ ] Write integration tests in src/app/api/positions/positions.test.ts
 
 ### [ ] Prompt 5.2: OriginalAssignment CRUD API Endpoints
 - [ ] Create OriginalAssignment CRUD API route handlers under src/app/api/original-assignments/
 - [ ] Implement with Drizzle, Zod validation, error handling, status codes
 - [ ] Write integration tests in src/app/api/original-assignments/originalAssignments.test.ts
 
-### [ ] Prompt 5.3: InterviewStep CRUD API Endpoints (within a Hiring Pipeline context)
-- [ ] Create nested InterviewStep CRUD API route handlers under src/app/api/hiring-pipelines/[pipelineId]/interview-steps/
+### [ ] Prompt 5.3: InterviewStep CRUD API Endpoints (within a Position context)
+- [ ] Create nested InterviewStep CRUD API route handlers under src/app/api/positions/[positionId]/interview-steps/
 - [ ] Implement with Drizzle, Zod validation, error handling, status codes
-- [ ] Write integration tests in src/app/api/hiring-pipelines/interviewSteps.test.ts
+- [ ] Write integration tests in src/app/api/positions/interviewSteps.test.ts
 
 ### [ ] Prompt 5.4: Candidate CRUD API Endpoints
 - [ ] Create Candidate CRUD API route handlers under src/app/api/candidates/
@@ -158,26 +158,26 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] State management for form, dialogs, list updates
 - [ ] Basic component tests (Vitest)
 
-### [ ] Prompt 6.3: AM UI - Hiring Pipeline Management Page
-- [ ] Create page src/app/(am)/pipelines/page.tsx
-- [ ] List Hiring Pipelines (shadcn/ui Table)
-- [ ] Filter pipelines by Client
-- [ ] "Create New Pipeline" button (Dialog + Form)
+### [ ] Prompt 6.3: AM UI - Position Management Page
+- [ ] Create page src/app/(am)/positions/page.tsx
+- [ ] List Positions (shadcn/ui Table)
+- [ ] Filter positions by Client
+- [ ] "Create New Position" button (Dialog + Form)
 - [ ] Form fields: Select Client, Job Title, Details, Tech Stacks, Comp Range, Culture Notes
 - [ ] Table actions: Edit, Delete, View Details (link)
 - [ ] Client-side data fetching
 - [ ] Use shadcn/ui, react-hook-form, Zod
 
-### [ ] Prompt 6.4: AM UI - Hiring Pipeline Detail Page & Interview Step Management
-- [ ] Create dynamic route src/app/(am)/pipelines/[pipelineId]/page.tsx
-- [ ] Display Hiring Pipeline details
+### [ ] Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
+- [ ] Create dynamic route src/app/(am)/positions/[positionId]/page.tsx
+- [ ] Display Position details
 - [ ] Section for InterviewSteps management:
   - [ ] List steps (Table: Sequence, Name, Type, Assignment)
   - [ ] Allow reordering (manual sequence edit or dnd)
   - [ ] "Add Interview Step" button (Dialog + Form)
   - [ ] Form fields: Sequence, Name, Type, Original Assignment (Select), Scheduling Link, Email Template
   - [ ] Step actions: Edit, Delete
-- [ ] Client-side data fetching (pipeline, steps, original assignments)
+- [ ] Client-side data fetching (position, steps, original assignments)
 - [ ] Use shadcn/ui
 
 ### [ ] Prompt 6.5: AM UI - Original Assignment Library Page
@@ -191,10 +191,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
 - [ ] Create page src/app/(am)/candidates/page.tsx
-- [ ] List Candidates (Table: Name, Email, Pipeline, Status, Current Step)
-- [ ] Filter by Pipeline, Status
+- [ ] List Candidates (Table: Name, Email, Position, Status, Current Step)
+- [ ] Filter by Position, Status
 - [ ] "Import Candidate" button (Dialog + Form)
-- [ ] Form fields: Select Pipeline, Name, Email, Resume Info
+- [ ] Form fields: Select Position, Name, Email, Resume Info
 - [ ] Table actions: View Details (link), Edit, Delete
 - [ ] Client-side data fetching
 - [ ] Use shadcn/ui
@@ -214,8 +214,8 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Create AM Dashboard page src/app/(am)/dashboard/page.tsx
 - [ ] Display candidates requiring action (Kanban or task list)
 - [ ] Columns/Sections for statuses/action buckets
-- [ ] Candidate card details: Name, Pipeline, Current Step, Status
-- [ ] Implement dashboard filters (by Hiring Pipeline)
+- [ ] Candidate card details: Name, Position, Current Step, Status
+- [ ] Implement dashboard filters (by Position)
 - [ ] Fetch candidate data with associations
 - [ ] Use shadcn/ui for cards and layout
 
@@ -347,7 +347,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
   - [ ] Add AM action buttons:
     - [ ] "Reject based on Evaluation/Transcription" -> Candidate.currentStatus = "EvaluationRejected"
     - [ ] "Approve for Next Step" -> find next step, update Candidate.currentInterviewStepId, Candidate.currentStatus = "ResumeApproved" (for new step), add to interviewHistory
-    - [ ] "Mark Pipeline Completed" -> Candidate.currentStatus = "PipelineCompleted"
+    - [ ] "Mark Position Completed" -> Candidate.currentStatus = "PositionCompleted"
 - [ ] API endpoint updates (PUT /api/candidates/[id]) for these transitions
 - [ ] Integration tests for API transition logic
 
@@ -373,7 +373,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 13.2: Comprehensive End-to-End Testing
 - [ ] Manually test full AM workflow (Client setup -> Candidate journey -> Final decision):
-  - [ ] Create Client, Pipeline, Original Assignment, Interview Steps
+  - [ ] Create Client, Position, Original Assignment, Interview Steps
   - [ ] Import Candidate
   - [ ] Move Candidate through statuses
   - [ ] Trigger assignment generation
