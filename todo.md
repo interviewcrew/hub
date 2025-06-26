@@ -47,10 +47,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_positions_table)
 - [x] Apply migration
 
-### [ ] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
-- [ ] Create AccountManager CRUD Server Actions (createAccountManager, getAccountManagers, getAccountManager, updateAccountManager, deleteAccountManager) in src/lib/actions/accountManagers.ts
-- [ ] Implement Server Actions with Drizzle, Zod validation, error handling
-- [ ] Write unit tests for Server Actions in src/lib/actions/accountManagers.test.ts
+### [x] Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
+- [x] Create AccountManager CRUD Server Actions (createAccountManager, getAccountManagers, getAccountManager, updateAccountManager, deleteAccountManager) in src/lib/actions/accountManagers.ts
+- [x] Implement Server Actions with Drizzle, Zod validation, error handling
+- [x] Write unit tests for Server Actions in src/lib/actions/accountManagers.test.ts
 
 ### [ ] Prompt 2.5: Client CRUD Endpoints
 - [ ] Create Client CRUD Server Actions (createClient, getClients, getClient, updateClient, deleteClient) in src/lib/actions/clients.ts

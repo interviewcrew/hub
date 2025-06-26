@@ -20,4 +20,20 @@
 //     query: {},
 //     asPath: '/',
 //   }),
-// })); 
+// }));
+
+import { vi } from 'vitest';
+
+// Mock dependencies
+vi.mock('@/lib/db', () => ({
+  db: {
+    insert: vi.fn(),
+    select: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+})); 
