@@ -20,4 +20,14 @@ export const accountManagers = pgTable('account_managers', {
   email: text('email').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+});
+
+export const clients = pgTable('clients', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  contactInfo: text('contact_info'),
+  logo: text('logo'),
+  accountManagerId: uuid('account_manager_id').notNull().references(() => accountManagers.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
 }); 

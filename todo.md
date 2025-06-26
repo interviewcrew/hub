@@ -33,12 +33,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_account_managers_table)
 - [x] Apply migration
 
-### [ ] Prompt 2.2: Client Schema and Zod Validation
-- [ ] Define Client Drizzle schema (clients table with FK to accountManagers)
-- [ ] Create Client Zod schemas (createClientSchema, updateClientSchema) in src/lib/validators/client.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/client.test.ts
-- [ ] Generate database migration (create_clients_table)
-- [ ] Apply migration
+### [x] Prompt 2.2: Client Schema and Zod Validation
+- [x] Define Client Drizzle schema (clients table with FK to accountManagers)
+- [x] Create Client Zod schemas (createClientSchema, updateClientSchema) in src/lib/validators/client.ts
+- [x] Write unit tests for Zod schemas in src/lib/validators/client.test.ts
+- [x] Generate database migration (create_clients_table)
+- [x] Apply migration
 
 ### [ ] Prompt 2.3: HiringPipeline Schema and Zod Validation
 - [ ] Define HiringPipeline Drizzle schema (hiringPipelines table with FKs to clients, accountManagers)
