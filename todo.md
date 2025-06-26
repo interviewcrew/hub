@@ -26,12 +26,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 2: Core Entity Schemas & Basic CRUD APIs (Account Management Focus)
 
-### [ ] Prompt 2.1: AccountManager Schema and Zod Validation
-- [ ] Define AccountManager Drizzle schema (accountManagers table)
-- [ ] Create AccountManager Zod schemas (createAccountManagerSchema, updateAccountManagerSchema) in src/lib/validators/accountManager.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/accountManager.test.ts
-- [ ] Generate database migration (create_account_managers_table)
-- [ ] Apply migration
+### [x] Prompt 2.1: AccountManager Schema and Zod Validation
+- [x] Define AccountManager Drizzle schema (accountManagers table)
+- [x] Create AccountManager Zod schemas (createAccountManagerSchema, updateAccountManagerSchema) in src/lib/validators/accountManager.ts
+- [x] Write unit tests for Zod schemas in src/lib/validators/accountManager.test.ts
+- [x] Generate database migration (create_account_managers_table)
+- [x] Apply migration
 
 ### [ ] Prompt 2.2: Client Schema and Zod Validation
 - [ ] Define Client Drizzle schema (clients table with FK to accountManagers)

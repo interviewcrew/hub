@@ -1,1 +1,13 @@
-{"version":"7","dialect":"postgresql","entries":[]}
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1750931821800,
+      "tag": "0000_create_account_managers_table",
+      "breakpoints": true
+    }
+  ]
+}
