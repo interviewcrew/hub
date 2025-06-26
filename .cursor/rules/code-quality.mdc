@@ -1,0 +1,29 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Code Quality Standards
+
+## TypeScript & Next.js
+- Use TypeScript strict mode
+- Follow Next.js 14+ App Router patterns
+- Use Server Actions instead of API routes
+- Implement proper error handling with Zod validation
+
+## Database Patterns
+- Use Drizzle ORM for all database operations
+- Implement proper foreign key relationships
+- Use Zod schemas for validation
+- Handle database errors gracefully
+- Revalidate appropriate paths after mutations
+
+## Testing
+- Write comprehensive unit tests for all business logic
+- Use Vitest for testing framework
+- Follow established testing patterns for Server Actions
+
+## Git & Documentation
+- Use Conventional Commits for all commits
+- Keep commits focused and descriptive
+- Document complex business logic

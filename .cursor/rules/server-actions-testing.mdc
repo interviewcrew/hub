@@ -1,0 +1,48 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Server Actions Testing Standards
+
+When creating or modifying Server Action tests, follow these established patterns:
+
+## Required Imports
+Always import from the shared utilities:
+```typescript
+import { 
+  mockDb, 
+  resetDbMocks, 
+  mockInsertChain, 
+  mockSelectChain, 
+  mockSelectWithWhereChain, 
+  mockUpdateChain, 
+  mockDeleteChain,
+  mockInsertError,
+  mockSelectError,
+  mockSelectWithWhereError,
+  mockUpdateError,
+  mockDeleteError
+} from '@/tests/utils/drizzleMocks';
+```
+
+## Test Structure
+- Use `resetDbMocks()` in `beforeEach`
+- Test all CRUD operations: create, read (single & list), update, delete
+- Test validation errors with invalid data
+- Test database errors using error mock helpers
+- Test not found scenarios (empty results)
+- Mock `revalidatePath` for cache invalidation testing
+
+## Mock Usage Patterns
+- **Success cases**: Use `mockInsertChain()`, `mockSelectChain()`, etc.
+- **Error cases**: Use `mockInsertError()`, `mockSelectError()`, etc.
+- **Not found**: Use success helpers with empty arrays `[]`
+
+## Reference Implementation
+Follow the exact patterns established in `src/lib/actions/accountManagers.test.ts`
+
+## Never Create Manual Mocks
+- Don't manually create `vi.fn()` mocks for Drizzle operations
+- Don't manually chain `.mockReturnValue()` for database operations
+- Always use the shared utilities from `drizzleMocks.ts`
