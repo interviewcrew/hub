@@ -66,12 +66,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_original_assignments_table)
 - [x] Apply migration
 
-### [ ] Prompt 3.2: InterviewStep Schema and Zod Validation
-- [ ] Define interviewStepTypeEnum in src/db/schema.ts
-- [ ] Define InterviewStep Drizzle schema (interviewSteps table with FKs to positions, originalAssignments, unique constraint on positionId + sequenceNumber)
-- [ ] Create InterviewStep Zod schemas (createInterviewStepSchema, updateInterviewStepSchema) in src/lib/validators/interviewStep.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/interviewStep.test.ts
-- [ ] Generate database migration (create_interview_steps_table)
+### [ ] Prompt 3.2: InterviewStepType & InterviewStep Schemas and Zod Validation
+- [ ] Define InterviewStepType Drizzle schema (interviewStepTypes table with clientId FK)
+- [ ] Define InterviewStep Drizzle schema (interviewSteps table with FK to interviewStepTypes)
+- [ ] Create InterviewStep Zod schemas (createInterviewStepSchema, updateInterviewStepSchema)
+- [ ] Write unit tests for Zod schemas
+- [ ] Generate database migration
 - [ ] Apply migration
 
 ## Phase 4: Schemas for Participants (Candidate, Interviewer) & Interview Artifacts

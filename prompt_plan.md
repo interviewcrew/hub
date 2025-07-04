@@ -71,7 +71,7 @@ In `src/db/schema.ts`:
    - `createAccountManagerSchema`: requires `name` and `email`.
    - `updateAccountManagerSchema`: allows optional `name` and `email`.
 3. Write unit tests for these Zod schemas using Vitest in a new file `src/lib/validators/accountManager.test.ts`. Test valid and invalid inputs.
-4. Generate the database migration: `npm run db:generate --name="create_account_managers_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_account_managers_table"`.
 5. Apply the migration: `npm run db:migrate`.
 
 ### Prompt 2.2: Client Schema and Zod Validation
@@ -84,7 +84,7 @@ In `src/db/schema.ts`:
    - `createClientSchema`: requires `name` and `accountManagerId`. `contactInfo` is optional.
    - `updateClientSchema`: allows optional `name` and `contactInfo`. `accountManagerId` should not be updatable through this schema directly (or handle with care if allowed).
 3. Write unit tests for these Zod schemas in `src/lib/validators/client.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_clients_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_clients_table"`.
 5. Apply the migration.
 
 ### Prompt 2.3: Position Schema and Zod Validation
@@ -108,7 +108,7 @@ In `src/db/schema.ts`:
    - `createPositionSchema`: requires `clientId`, `jobTitle`, `accountManagerId`. Other fields optional. `techStacks` should be an array of strings.
    - `updatePositionSchema`: all fields optional.
 3. Write unit tests for these Zod schemas in `src/lib/validators/position.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_positions_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_positions_table"`.
 5. Apply the migration.
 
 ### Prompt 2.4: Basic API Setup & AccountManager CRUD Endpoints
@@ -166,21 +166,24 @@ In `src/db/schema.ts`:
    - `createOriginalAssignmentSchema`: requires `name`, `googleDocFileId`. `driveFolderPath` is optional.
    - `updateOriginalAssignmentSchema`: all fields optional.
 3. Write unit tests for these Zod schemas in `src/lib/validators/originalAssignment.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_original_assignments_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_original_assignments_table"`.
 5. Apply the migration.
 
-### Prompt 3.2: InterviewStep Schema and Zod Validation
+### Prompt 3.2: InterviewStepType & InterviewStep Schemas and Zod Validation
 
 In `src/db/schema.ts`:
 
-1. Define an enum for `InterviewStepType` directly in Drizzle schema: `export const interviewStepTypeEnum = pgEnum('interview_step_type', ['Live Coding', 'System Design', 'Behavioral', 'Take-Home Review']);`
-2. Define the Drizzle schema for `InterviewStep` (`interviewSteps` table).
+1. Define the Drizzle schema for `InterviewStepType` in a new `interviewStepTypes` table.
+   - Fields: `id` (UUID, primary key, auto-generated), `name` (text, not null), `clientId` (UUID, FK to `clients.id`, not null), `createdAt` (timestamp, default now), `updatedAt` (timestamp, default now, auto-update on change).
+   - Add a unique constraint on (`clientId`, `name`).
+2. The concept of seeding will be handled by a separate process later, such as seeding default types whenever a new Client is created.
+3. Define the Drizzle schema for `InterviewStep` (`interviewSteps` table).
    - Fields:
      - `id` (UUID, primary key, auto-generated)
      - `positionId` (UUID, foreign key referencing `positions.id`, not null)
      - `sequenceNumber` (integer, not null) // Order of the step in the pipeline
      - `name` (text, not null) // e.g., "Python Live Coding Round 1"
-     - `type` (`interviewStepTypeEnum`, not null)
+     - `typeId` (UUID, foreign key referencing `interviewStepTypes.id`, not null)
      - `originalAssignmentId` (UUID, foreign key referencing `originalAssignments.id`, nullable, as not all steps might have a pre-defined assignment)
      - `schedulingLink` (text) // Manually entered URL for MVP
      - `emailTemplate` (text) // Manually entered email template text for MVP
@@ -188,10 +191,10 @@ In `src/db/schema.ts`:
      - `updatedAt` (timestamp, default now, auto-update on change)
    - Add a unique constraint on (`positionId`, `sequenceNumber`).
 3. Create corresponding Zod schemas in `src/lib/validators/interviewStep.ts`:
-   - `createInterviewStepSchema`: requires `positionId`, `sequenceNumber`, `name`, `type`. Other fields optional.
+   - `createInterviewStepSchema`: requires `positionId`, `sequenceNumber`, `name`, `typeId`. Other fields optional.
    - `updateInterviewStepSchema`: all fields optional, but `sequenceNumber` might need special handling if reordering is complex.
 4. Write unit tests for these Zod schemas in `src/lib/validators/interviewStep.test.ts`.
-5. Generate the database migration: `npm run db:generate --name="create_interview_steps_table"`.
+5. Generate the database migration: `npm run db:generate -- --name="create_interview_step_types_and_steps_tables"`.
 6. Apply the migration.
 
 ## Phase 4: Schemas for Participants (Candidate, Interviewer) & Interview Artifacts
@@ -224,7 +227,7 @@ In `src/db/schema.ts`:
    - `updateCandidateSchema`: allows updates to `name`, `email`, `resumeInfo`, `currentStatus`, `currentInterviewStepId`.
    - `addInterviewHistoryEventSchema`: for validating entries into `interviewHistory`.
 4. Write unit tests for these Zod schemas in `src/lib/validators/candidate.test.ts`.
-5. Generate the database migration: `npm run db:generate --name="create_candidates_table"`.
+5. Generate the database migration: `npm run db:generate -- --name="create_candidates_table"`.
 6. Apply the migration.
 
 ### Prompt 4.2: Interviewer Schema and Zod Validation
@@ -247,7 +250,7 @@ In `src/db/schema.ts`:
    - `updateInterviewerSchema`: all fields optional.
    - `adjustInterviewerCreditsSchema`: requires `amount` (number).
 3. Write unit tests for these Zod schemas in `src/lib/validators/interviewer.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_interviewers_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_interviewers_table"`.
 5. Apply the migration.
 
 ### Prompt 4.3: CopiedAssignment Schema and Zod Validation
@@ -270,7 +273,7 @@ In `src/db/schema.ts`:
 2. Create corresponding Zod schemas in `src/lib/validators/copiedAssignment.ts`:
    - `createCopiedAssignmentSchema`: requires `originalAssignmentId`, `candidateId`, `interviewStepId`, `copiedGoogleDocFileId`, `webViewLink`.
 3. Write unit tests for these Zod schemas in `src/lib/validators/copiedAssignment.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_copied_assignments_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_copied_assignments_table"`.
 5. Apply the migration.
 
 ### Prompt 4.4: Evaluation Schema and Zod Validation
@@ -293,7 +296,7 @@ In `src/db/schema.ts`:
 2. Create corresponding Zod schemas in `src/lib/validators/evaluation.ts`:
    - `submitEvaluationSchema`: requires `candidateId`, `interviewStepId`, `interviewerId`, `structuredFormResponses`, `googleMeetRecordingLink`.
 3. Write unit tests for these Zod schemas in `src/lib/validators/evaluation.test.ts`.
-4. Generate the database migration: `npm run db:generate --name="create_evaluations_table"`.
+4. Generate the database migration: `npm run db:generate -- --name="create_evaluations_table"`.
 5. Apply the migration.
 
 ### Prompt 4.5: Transcription Schema and Zod Validation
@@ -317,7 +320,7 @@ In `src/db/schema.ts`:
    - `createTranscriptionSchema`: requires `evaluationId`, `candidateId`, `interviewStepId`.
    - `updateTranscriptionStatusSchema`: requires `status`, allows optional `transcriptionData` or `errorMessage`.
 4. Write unit tests for these Zod schemas in `src/lib/validators/transcription.test.ts`.
-5. Generate the database migration: `npm run db:generate --name="create_transcriptions_table"`.
+5. Generate the database migration: `npm run db:generate -- --name="create_transcriptions_table"`.
 6. Apply the migration.
 
 ## Phase 5: Server Actions for Core Interview Workflow Entities
@@ -704,29 +707,4 @@ This phase replaces the placeholder transcription with a real service and focuse
 This is a larger step, choose one service (e.g., AssemblyAI, Google Speech-to-Text via Gemini if suitable for long audio).
 Example for AssemblyAI:
 1. Sign up for AssemblyAI and get an API key. Store it securely as an environment variable.
-2. In `src/services/transcriptionService.ts`, replace the placeholder `transcribeAudioFromLink` with a real implementation:
-   - Function to download the audio file from `googleMeetRecordingLink` (ensure Google Drive link allows download, may need Drive API to download if not public). FFmpeg might be needed if audio extraction/conversion is required from video.
-   - Function to upload the audio file to AssemblyAI (e.g., to their S3 bucket, get a URL).
-   - Function to submit the audio URL to AssemblyAI's transcription endpoint.
-   - Handle asynchronous nature: AssemblyAI will provide a transcript ID. Poll for completion or set up webhooks (polling is simpler for MVP).
-   - Once complete, fetch the transcript.
-   - Parse the result into the desired JSON structure (full text, timestamps, speaker labels if available).
-   - Handle API errors, rate limits, etc.
-   - Delete temporary audio files.
-3. Update unit/integration tests for `transcriptionService.ts` to mock the AssemblyAI client.
-If sticking to Gemini API, investigate its capabilities for long-form audio transcription and diarization. The process would be similar: send audio, poll/webhook, parse.
-
-### Prompt 13.2: Comprehensive End-to-End Testing
-
-1. Manually test the full AM workflow:
-    - Create Client, Position, Original Assignment, Interview Steps.
-    - Import Candidate.
-    - Move Candidate through statuses: Resume Review, Send Invite (manual step).
-    - (Simulate Candidate scheduling).
-    - Manually trigger assignment generation for the candidate/step.
-    - As an Interviewer (using the generated link): View assignment, submit evaluation with a (test) recording link.
-    - Verify AM sees evaluation submitted.
-    - Verify (mock or real) transcription process is triggered and completes/fails.
-    - AM reviews results and makes a final decision (Reject, Next Step, Complete Position).
-2. Write automated end-to-end tests if a framework is in place (e.g., Playwright, Cypress). Focus on a few critical paths. For MVP, extensive manual E2E testing might be the primary focus.
-3. Review error handling and logging throughout the application. Ensure user-facing errors are clear and actionable, and internal logs capture sufficient detail for debugging.
+2. In `src/services/transcriptionService.ts`, replace the placeholder `
