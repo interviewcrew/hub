@@ -30,38 +30,61 @@ export function mockInsertError(error: any) {
   return { returning, values };
 }
 
+// A flexible mock that can handle various chaining.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createChainableMock(finalValue: any, error: any = null) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const then = (onFulfilled: any, onRejected: any) => {
+    if (error) {
+      return Promise.reject(error).catch(onRejected);
+    }
+    return Promise.resolve(finalValue).then(onFulfilled);
+  };
+
+  const chain = {
+    where: vi.fn().mockReturnThis(),
+    from: vi.fn().mockReturnThis(),
+    orderBy: vi.fn().mockReturnThis(),
+    then,
+  };
+
+  return chain;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectChain(fromValue: any) {
-  const from = vi.fn().mockResolvedValue(fromValue);
+  const mock = createChainableMock(fromValue);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mockDb.select.mockReturnValue({ from } as any);
-  return { from };
+  mockDb.select.mockReturnValueOnce(mock as any);
+  return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectError(error: any) {
-  const from = vi.fn().mockRejectedValue(error);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mockDb.select.mockReturnValue({ from } as any);
-  return { from };
+  const mock = createChainableMock(null, error);
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mockDb.select.mockReturnValueOnce(mock as any);
+  return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectWithWhereChain(whereValue: any) {
-  const where = vi.fn().mockResolvedValue(whereValue);
-  const from = vi.fn().mockReturnValue({ where });
+  const mock = createChainableMock(whereValue);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mockDb.select.mockReturnValue({ from } as any);
-  return { from, where };
+  mockDb.select.mockReturnValueOnce(mock as any);
+  return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectWithWhereError(error: any) {
-  const where = vi.fn().mockRejectedValue(error);
-  const from = vi.fn().mockReturnValue({ where });
+  const mock = createChainableMock(null, error);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mockDb.select.mockReturnValue({ from } as any);
-  return { from, where };
+  mockDb.select.mockReturnValueOnce(mock as any);
+  return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

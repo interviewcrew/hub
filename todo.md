@@ -52,10 +52,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Implement Server Actions with Drizzle, Zod validation, error handling
 - [x] Write unit tests for Server Actions in src/lib/actions/accountManagers.test.ts
 
-### [ ] Prompt 2.5: Client CRUD Endpoints
-- [ ] Create Client CRUD Server Actions (createClient, getClients, getClient, updateClient, deleteClient) in src/lib/actions/clients.ts
-- [ ] Implement Server Actions with Drizzle, Zod validation, error handling (ensure accountManagerId exists on create)
-- [ ] Write unit tests for Server Actions in src/lib/actions/clients.test.ts
+### [x] Prompt 2.5: Client CRUD Endpoints
+- [x] Create Client CRUD Server Actions (createClient, getClients, getClient, updateClient, deleteClient) in src/lib/actions/clients.ts
+- [x] Implement Server Actions with Drizzle, Zod validation, error handling (ensure accountManagerId exists on create)
+- [x] Write unit tests for Server Actions in src/lib/actions/clients.test.ts
 
 ## Phase 3: Schemas for Interview Structure & Management
 
