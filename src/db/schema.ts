@@ -4,6 +4,7 @@ import {
   timestamp,
   uuid,
   integer,
+  unique,
 } from 'drizzle-orm/pg-core';
 
 // This is your Drizzle schema file.
@@ -76,4 +77,49 @@ export const originalAssignments = pgTable('original_assignments', {
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
-}); 
+});
+
+export const interviewStepTypes = pgTable(
+  'interview_step_types',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    clientId: uuid('client_id')
+      .notNull()
+      .references(() => clients.id),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [unique('client_name_unq').on(table.clientId, table.name)],
+);
+
+export const interviewSteps = pgTable(
+  'interview_steps',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    positionId: uuid('position_id')
+      .notNull()
+      .references(() => positions.id),
+    sequenceNumber: integer('sequence_number').notNull(),
+    name: text('name').notNull(),
+    typeId: uuid('type_id')
+      .notNull()
+      .references(() => interviewStepTypes.id),
+    originalAssignmentId: uuid('original_assignment_id').references(
+      () => originalAssignments.id,
+    ),
+    schedulingLink: text('scheduling_link'),
+    emailTemplate: text('email_template'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    unique('position_sequence_unq').on(table.positionId, table.sequenceNumber),
+  ],
+);
