@@ -1,4 +1,10 @@
-import { pgTable, text, timestamp, uuid, integer } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  integer,
+} from 'drizzle-orm/pg-core';
 
 // This is your Drizzle schema file.
 // You will define your database tables and relations here.
@@ -58,4 +64,16 @@ export const positionTechStacks = pgTable('position_tech_stacks', {
   positionId: uuid('position_id').notNull().references(() => positions.id),
   techStackId: uuid('tech_stack_id').notNull().references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const originalAssignments = pgTable('original_assignments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  googleDocFileId: text('google_doc_file_id').notNull().unique(),
+  driveFolderPath: text('drive_folder_path'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 }); 

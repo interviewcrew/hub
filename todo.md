@@ -59,12 +59,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 3: Schemas for Interview Structure & Management
 
-### [ ] Prompt 3.1: OriginalAssignment Schema and Zod Validation
-- [ ] Define OriginalAssignment Drizzle schema (originalAssignments table)
-- [ ] Create OriginalAssignment Zod schemas (createOriginalAssignmentSchema, updateOriginalAssignmentSchema) in src/lib/validators/originalAssignment.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/originalAssignment.test.ts
-- [ ] Generate database migration (create_original_assignments_table)
-- [ ] Apply migration
+### [x] Prompt 3.1: OriginalAssignment Schema and Zod Validation
+- [x] Define OriginalAssignment Drizzle schema (originalAssignments table)
+- [x] Create OriginalAssignment Zod schemas (createOriginalAssignmentSchema, updateOriginalAssignmentSchema) in src/lib/validators/originalAssignment.ts
+- [x] Write unit tests for Zod schemas in src/lib/validators/originalAssignment.test.ts
+- [x] Generate database migration (create_original_assignments_table)
+- [x] Apply migration
 
 ### [ ] Prompt 3.2: InterviewStep Schema and Zod Validation
 - [ ] Define interviewStepTypeEnum in src/db/schema.ts
