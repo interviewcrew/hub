@@ -228,24 +228,14 @@ In `src/db/schema.ts`:
 
 In `src/db/schema.ts`:
 
-1. Define the Drizzle schema for `Interviewer` (`interviewers` table).
-   - Fields:
-     - `id` (UUID, primary key, auto-generated)
-     - `name` (text, not null)
-     - `email` (text, not null, unique)
-     - `schedulingToolIdentifier` (text, nullable) // e.g., Calendly user ID, for future automation
-     - `accruedCredits` (integer, not null, default 0)
-     - `skills` (jsonb, store as string[]; provide a Drizzle `.$type<string[]>()` hint, nullable) // For future use
-     - `isActive` (boolean, not null, default true)
-     - `createdAt` (timestamp, default now)
-     - `updatedAt` (timestamp, default now, auto-update on change)
-2. Create corresponding Zod schemas in `src/lib/validators/interviewer.ts`:
-   - `createInterviewerSchema`: requires `name`, `email`. Others optional or have defaults.
-   - `updateInterviewerSchema`: all fields optional.
-   - `adjustInterviewerCreditsSchema`: requires `amount` (number).
-3. Write unit tests for these Zod schemas in `src/lib/validators/interviewer.test.ts`.
-4. Generate the database migration: `npm run db:generate -- --name="create_interviewers_table"`.
-5. Apply the migration.
+1.  Define the Drizzle schema for `Interviewer` (`interviewers` table).
+    -   Fields: `id`, `name`, `email` (unique), `schedulingToolIdentifier`, `isActive`, timestamps.
+    -   `accruedCredits` will be calculated, not stored.
+2.  Define the `interviewer_tech_stacks` join table to create a many-to-many relationship between `interviewers` and `tech_stacks`.
+3.  Create corresponding Zod schemas in `src/lib/validators/interviewer.ts`. The schemas will not include `skills`, as that relationship will be managed in the server action.
+4.  Write unit tests for these Zod schemas.
+5.  Generate the database migration.
+6.  Apply the migration.
 
 ### Prompt 4.3: CopiedAssignment Schema and Zod Validation
 
@@ -367,15 +357,10 @@ This phase focuses on creating Server Actions for managing entities central to t
 
 ### Prompt 5.5: Interviewer CRUD Server Actions
 
-1. Create Next.js Server Actions for `Interviewer` CRUD operations in `src/lib/actions/interviewers.ts`:
-   - `createInterviewer`: Create. Validate with `createInterviewerSchema`.
-   - `getInterviewers`: Get all. Allow filtering by `isActive`.
-   - `getInterviewer`: Get by ID.
-   - `updateInterviewer`: Update. Validate with `updateInterviewerSchema`.
-   - `adjustInterviewerCredits`: Adjust credits. Validate with `adjustInterviewerCreditsSchema`.
-   - `deleteInterviewer`: Delete (or set `isActive` to false).
-2. Implement using Drizzle, with error handling.
-3. Write unit tests in `src/lib/actions/interviewers.test.ts`.
+1.  Create `Interviewer` CRUD Server Actions under `src/lib/actions/interviewers.ts`.
+2.  The `createInterviewer` and `updateInterviewer` actions must accept an array of `techStackId`s and manage the corresponding records in the `interviewer_tech_stacks` join table.
+3.  Create a separate function `getInterviewerWithCredits(interviewerId)` that dynamically calculates credits.
+4.  Write unit tests for these server actions.
 
 ## Phase 6: Account Manager (AM) UI - Basic Management Pages
 

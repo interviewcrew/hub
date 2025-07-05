@@ -7,6 +7,7 @@ import {
   unique,
   pgEnum,
   jsonb,
+  boolean,
 } from 'drizzle-orm/pg-core';
 
 // This is your Drizzle schema file.
@@ -188,5 +189,29 @@ export const interviewEvents = pgTable('interview_events', {
   eventName: text('event_name').notNull(),
   // Can add more specific FKs later, e.g., to evaluations, steps, etc.
   details: jsonb('details'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const interviewers = pgTable('interviewers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  schedulingToolIdentifier: text('scheduling_tool_identifier'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  interviewerId: uuid('interviewer_id')
+    .notNull()
+    .references(() => interviewers.id),
+  techStackId: uuid('tech_stack_id')
+    .notNull()
+    .references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

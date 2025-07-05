@@ -43,6 +43,13 @@
       "when": 1751711622169,
       "tag": "0005_create_candidate_related_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1751712924611,
+      "tag": "0006_create_interviewers_table",
+      "breakpoints": true
     }
   ]
 }

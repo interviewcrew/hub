@@ -86,12 +86,13 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration.
 - [x] Apply migration.
 
-### [ ] Prompt 4.2: Interviewer Schema and Zod Validation
-- [ ] Define Interviewer Drizzle schema (interviewers table)
-- [ ] Create Interviewer Zod schemas (createInterviewerSchema, updateInterviewerSchema, adjustInterviewerCreditsSchema) in src/lib/validators/interviewer.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/interviewer.test.ts
-- [ ] Generate database migration (create_interviewers_table)
-- [ ] Apply migration
+### [x] Prompt 4.2: Interviewer Schema and Zod Validation
+- [x] Define Interviewer Drizzle schema (interviewers table).
+- [x] Create `interviewer_tech_stacks` join table for a M2M relationship with `tech_stacks`.
+- [x] Create Interviewer Zod schemas (create, update) in `src/lib/validators/interviewer.ts`.
+- [x] Write unit tests for Zod schemas in `src/lib/validators/interviewer.test.ts`.
+- [x] Generate database migration (create_interviewers_table).
+- [x] Apply migration.
 
 ### [ ] Prompt 4.3: CopiedAssignment Schema and Zod Validation
 - [ ] Define CopiedAssignment Drizzle schema (copiedAssignments table with FKs to originalAssignments, candidates, interviewSteps, unique constraint on candidateId + interviewStepId)
@@ -140,9 +141,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Write unit tests for these Server Actions.
 
 ### [ ] Prompt 5.5: Interviewer CRUD Server Actions
-- [ ] Create Interviewer CRUD Server Actions (including adjustInterviewerCredits) under src/lib/actions/interviewers.ts
-- [ ] Implement with Drizzle, Zod validation, error handling
-- [ ] Write unit tests in src/lib/actions/interviewers.test.ts
+- [ ] Create Interviewer CRUD Server Actions under `src/lib/actions/interviewers.ts`.
+- [ ] The create/update actions must also handle linking/unlinking skills in the `interviewer_tech_stacks` join table.
+- [ ] Write unit tests for these server actions.
 
 ## Phase 6: Account Manager (AM) UI - Basic Management Pages
 
@@ -293,6 +294,8 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
   - [ ] Validate input
   - [ ] Create Evaluation DB record
   - [ ] Update Candidate.currentStatus to "EvaluationSubmitted"
+  - [ ] Create an "Evaluation Submitted" event in the `interview_events` table.
+  - [ ] Note: Interviewer credits will be calculated from the number of completed evaluations, not stored.
   - [ ] Update Candidate.currentInterviewStepId
   - [ ] Increment Interviewer.accruedCredits
   - [ ] Return success response
