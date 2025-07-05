@@ -94,12 +94,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_interviewers_table).
 - [x] Apply migration.
 
-### [ ] Prompt 4.3: CopiedAssignment Schema and Zod Validation
-- [ ] Define CopiedAssignment Drizzle schema (copiedAssignments table with FKs to originalAssignments, candidates, interviewSteps, unique constraint on candidateId + interviewStepId)
-- [ ] Create CopiedAssignment Zod schemas (createCopiedAssignmentSchema) in src/lib/validators/copiedAssignment.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/copiedAssignment.test.ts
-- [ ] Generate database migration (create_copied_assignments_table)
-- [ ] Apply migration
+### [x] Prompt 4.3: InterviewAssignment Schema and Zod Validation
+- [x] Define InterviewAssignment Drizzle schema (`interview_assignments` table, with `resourceDeletedAt` and no unique constraint).
+- [x] Create Zod schemas for InterviewAssignments in `src/lib/validators/interviewAssignment.ts`.
+- [x] Write unit tests for the Zod schema in `src/lib/validators/interviewAssignment.test.ts`.
+- [x] Generate database migration.
+- [x] Apply migration.
 
 ### [ ] Prompt 4.4: Evaluation Schema and Zod Validation
 - [ ] Define Evaluation Drizzle schema (evaluations table with FKs to candidates, interviewSteps, interviewers, copiedAssignments, unique constraint on candidateId + interviewStepId)

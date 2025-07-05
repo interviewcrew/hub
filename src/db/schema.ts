@@ -215,3 +215,22 @@ export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
     .references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const interviewAssignments = pgTable("interview_assignments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  candidateApplicationId: uuid("candidate_application_id")
+    .notNull()
+    .references(() => candidateApplications.id),
+  interviewStepId: uuid("interview_step_id")
+    .notNull()
+    .references(() => interviewSteps.id),
+  interviewerId: uuid("interviewer_id").references(() => interviewers.id),
+  resourceUrl: text("resource_url"),
+  resourceIdentifier: text("resource_identifier"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+  resourceDeletedAt: timestamp("resource_deleted_at"),
+});

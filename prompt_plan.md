@@ -237,28 +237,17 @@ In `src/db/schema.ts`:
 5.  Generate the database migration.
 6.  Apply the migration.
 
-### Prompt 4.3: CopiedAssignment Schema and Zod Validation
+### Prompt 4.3: InterviewAssignment Schema and Zod Validation
 
 In `src/db/schema.ts`:
 
-1. Define the Drizzle schema for `CopiedAssignment` (`copiedAssignments` table). This table links an original assignment to a specific candidate for a specific interview step instance.
-   - Fields:
-     - `id` (UUID, primary key, auto-generated)
-     - `originalAssignmentId` (UUID, foreign key referencing `originalAssignments.id`, not null)
-     - `candidateId` (UUID, foreign key referencing `candidates.id`, not null)
-     - `interviewStepId` (UUID, foreign key referencing `interviewSteps.id`, not null) // The specific step this copy is for
-     - `copiedGoogleDocFileId` (text, not null, unique) // ID of the *copied* Google Doc
-     - `webViewLink` (text, not null) // Shareable link to the copied Google Doc
-     - `accessExpiresAt` (timestamp, nullable) // If temporary access is granted
-     - `isDeletedFromDrive` (boolean, not null, default false)
-     - `createdAt` (timestamp, default now)
-     - `updatedAt` (timestamp, default now, auto-update on change)
-   - Add a unique constraint on (`candidateId`, `interviewStepId`) to ensure only one copied assignment per candidate per step.
-2. Create corresponding Zod schemas in `src/lib/validators/copiedAssignment.ts`:
-   - `createCopiedAssignmentSchema`: requires `originalAssignmentId`, `candidateId`, `interviewStepId`, `copiedGoogleDocFileId`, `webViewLink`.
-3. Write unit tests for these Zod schemas in `src/lib/validators/copiedAssignment.test.ts`.
-4. Generate the database migration: `npm run db:generate -- --name="create_copied_assignments_table"`.
-5. Apply the migration.
+1.  Define the Drizzle schema for `InterviewAssignment` (`interview_assignments` table).
+    -   Fields: `id`, `candidateApplicationId` (FK), `interviewStepId` (FK), `interviewerId` (FK, nullable), `assignmentUrl` (nullable), `resourceDeletedAt` (timestamp, nullable), timestamps.
+    -   `originalAssignmentId` will be inferred from the `interviewStepId`, it is not stored here.
+2.  Create a corresponding Zod schema in a new file `src/lib/validators/interviewAssignment.ts`.
+3.  Write unit tests for the Zod schema.
+4.  Generate the database migration.
+5.  Apply the migration.
 
 ### Prompt 4.4: Evaluation Schema and Zod Validation
 
@@ -270,7 +259,7 @@ In `src/db/schema.ts`:
      - `candidateId` (UUID, foreign key referencing `candidates.id`, not null)
      - `interviewStepId` (UUID, foreign key referencing `interviewSteps.id`, not null)
      - `interviewerId` (UUID, foreign key referencing `interviewers.id`, not null)
-     - `copiedAssignmentId` (UUID, foreign key referencing `copiedAssignments.id`, nullable) // Link to the specific doc used
+     - `copiedAssignmentId` (UUID, foreign key referencing `interviewAssignments.id`, nullable) // Link to the specific doc used
      - `structuredFormResponses` (jsonb, not null) // Store the evaluation form data as JSON
      - `googleMeetRecordingLink` (text, nullable) // Link to the Google Meet recording
      - `submittedAt` (timestamp, default now) // When the interviewer submitted this
@@ -526,8 +515,8 @@ In `src/services/googleDriveService.ts`:
    - Call `googleDriveService.copyDocument()`.
    - Call `googleDriveService.personalizeDocument()` with the candidate's name.
    - Call `googleDriveService.setDocumentPermissionsAnyoneReader()`.
-   - Create a `CopiedAssignment` record in the database with the `copiedGoogleDocFileId`, `webViewLink`, and links to `candidateId`, `interviewStepId`, `originalAssignmentId`.
-   - Return the `CopiedAssignment` record or at least the `webViewLink`.
+   - Create a `InterviewAssignment` record in the database with the `copiedGoogleDocFileId`, `webViewLink`, and links to `candidateId`, `interviewStepId`, `originalAssignmentId`.
+   - Return the `InterviewAssignment` record or at least the `webViewLink`.
    - Implement robust error handling and transactionality if multiple DB operations are involved.
 3. Add a button on the AM dashboard (e.g., next to a candidate scheduled for a step that needs an assignment) to trigger this API endpoint.
 4. Write integration tests for this API endpoint, mocking the Google Drive service functions to avoid actual API calls during tests, but testing the overall flow and database interactions.
@@ -539,12 +528,12 @@ This phase builds the minimal interface for interviewers.
 ### Prompt 9.1: Basic Interviewer View Page
 
 1. Create a public-facing (or minimally protected) Next.js page, e.g., `src/app/interview/[interviewSessionId]/page.tsx`.
-   - The `interviewSessionId` could be the ID of a `CopiedAssignment` record, or a pre-generated unique ID that maps to `candidateId` and `interviewStepId`. For MVP, let's assume it's the `copiedAssignmentId`.
+   - The `interviewSessionId` could be the ID of a `InterviewAssignment` record, or a pre-generated unique ID that maps to `candidateId` and `interviewStepId`. For MVP, let's assume it's the `interviewAssignmentId`.
 2. On this page:
-   - Fetch the `CopiedAssignment` details using `interviewSessionId`.
+   - Fetch the `InterviewAssignment` details using `interviewSessionId`.
    - Fetch related `Candidate` and `InterviewStep` information.
    - Display Candidate Name, Job Title, Interview Step Name/Type.
-   - Prominently display an iframe or a link to the `CopiedAssignment.webViewLink` for the interviewer to view the assignment.
+   - Prominently display an iframe or a link to the `InterviewAssignment.webViewLink` for the interviewer to view the assignment.
 3. Use basic styling (shadcn/ui if easily applicable, but focus on functionality).
 
 ### Prompt 9.2: Evaluation Form and Submission API
@@ -556,7 +545,7 @@ This phase builds the minimal interface for interviewers.
      - "Google Meet Recording Link" (input, text, mandatory).
    - "Submit Evaluation" button.
 2. Create a Next.js API route `POST /api/evaluations`.
-   - Request body: `copiedAssignmentId` (or `candidateId`, `interviewStepId`), `interviewerId` (for MVP, this might be hardcoded or passed if interviewers are known), `structuredFormResponses` (JSON), `googleMeetRecordingLink` (string).
+   - Request body: `interviewAssignmentId` (or `candidateId`, `interviewStepId`), `interviewerId` (for MVP, this might be hardcoded or passed if interviewers are known), `structuredFormResponses` (JSON), `googleMeetRecordingLink` (string).
    - This endpoint should:
      - Validate the input.
      - Create an `Evaluation` record in the database.
@@ -639,9 +628,9 @@ For this prompt, choose one approach. Let's assume Vercel Cron Jobs with a DB ta
 1. Implement the logic for the assignment cleanup background job:
    - Service function in `googleDriveService.ts`: `deleteFile(fileId: string): Promise<void>`.
    - The worker function (triggered by a 'cleanupAssignments' job type from `PendingJobs` or a dedicated cron):
-     - Finds `CopiedAssignment` records where `Evaluation` is submitted (or interview date passed + buffer) more than X hours/days ago (configurable, e.g., 72 hours) and `isDeletedFromDrive` is false.
+     - Finds `InterviewAssignment` records where `Evaluation` is submitted (or interview date passed + buffer) more than X hours/days ago (configurable, e.g., 72 hours) and `resourceDeletedAt` is false.
      - For each, calls `googleDriveService.deleteFile(copiedGoogleDocFileId)`.
-     - If successful, updates `CopiedAssignment.isDeletedFromDrive` to true (or deletes the record).
+     - If successful, updates `InterviewAssignment.resourceDeletedAt` to true (or deletes the record).
      - Handles errors during deletion.
 2. Add a mechanism to periodically queue a 'cleanupAssignments' job (e.g., a daily Vercel Cron Job that adds this job type to `PendingJobs`, or directly calls a cleanup API endpoint).
 3. Write integration tests for the cleanup logic (mocking Drive API calls).
