@@ -36,6 +36,13 @@
       "when": 1751635543457,
       "tag": "0004_create_interview_step_types_and_steps_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1751711622169,
+      "tag": "0005_create_candidate_related_tables",
+      "breakpoints": true
     }
   ]
 }

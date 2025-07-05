@@ -5,6 +5,8 @@ import {
   uuid,
   integer,
   unique,
+  pgEnum,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 
 // This is your Drizzle schema file.
@@ -123,3 +125,68 @@ export const interviewSteps = pgTable(
     unique('position_sequence_unq').on(table.positionId, table.sequenceNumber),
   ],
 );
+
+export const candidates = pgTable('candidates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  resume_link: text('resume_link'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const candidateStatusEnum = pgEnum('candidate_status', [
+  'Initial state',
+  'Invitation Sent',
+  'Interview Scheduled',
+  'Waiting for evaluation',
+  'Needs additional review',
+  'Needs final report',
+  'Final report sent',
+  'Passed',
+  'Needs to be re-interviewed',
+  'Hold',
+  'Rejected',
+  'Archived',
+]);
+
+export const candidateApplications = pgTable(
+  'candidate_applications',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    candidateId: uuid('candidate_id')
+      .notNull()
+      .references(() => candidates.id),
+    positionId: uuid('position_id')
+      .notNull()
+      .references(() => positions.id),
+    status: candidateStatusEnum('status').default('Initial state').notNull(),
+    status_updated_at: timestamp('status_updated_at').defaultNow().notNull(),
+    client_notified_at: timestamp('client_notified_at'),
+    currentInterviewStepId: uuid('current_interview_step_id').references(
+      () => interviewSteps.id,
+    ),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    unique('candidate_position_unq').on(table.candidateId, table.positionId),
+  ],
+);
+
+export const interviewEvents = pgTable('interview_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  candidateApplicationId: uuid('candidate_application_id')
+    .notNull()
+    .references(() => candidateApplications.id),
+  eventName: text('event_name').notNull(),
+  // Can add more specific FKs later, e.g., to evaluations, steps, etc.
+  details: jsonb('details'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

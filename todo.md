@@ -76,13 +76,15 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 4: Schemas for Participants (Candidate, Interviewer) & Interview Artifacts
 
-### [ ] Prompt 4.1: Candidate Schema and Zod Validation
-- [ ] Define candidateStatusEnum in src/db/schema.ts
-- [ ] Define Candidate Drizzle schema (candidates table with FKs to positions, interviewSteps)
-- [ ] Create Candidate Zod schemas (createCandidateSchema, updateCandidateSchema, addInterviewHistoryEventSchema) in src/lib/validators/candidate.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/candidate.test.ts
-- [ ] Generate database migration (create_candidates_table)
-- [ ] Apply migration
+### [x] Prompt 4.1: Candidate & Candidate Application Schemas and Zod Validation
+- [x] Define `candidates` table for unique people (name, email, etc.).
+- [x] Define `candidate_applications` table to link a candidate to a position, containing status and notification timestamps.
+- [x] Define `interview_events` table, with each row representing a single event in an application's lifecycle (FK to `candidate_applications`).
+- [x] Create Zod schemas for `candidates` and `candidate_applications` in `validators/candidate.ts`.
+- [x] Create a dedicated Zod schema for `interview_events` in `validators/interviewEvent.ts`.
+- [x] Write unit tests for all new Zod schemas in their respective test files.
+- [x] Generate database migration.
+- [x] Apply migration.
 
 ### [ ] Prompt 4.2: Interviewer Schema and Zod Validation
 - [ ] Define Interviewer Drizzle schema (interviewers table)
@@ -130,10 +132,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement with Drizzle, Zod validation, error handling
 - [ ] Write unit tests in src/lib/actions/interviewSteps.test.ts
 
-### [ ] Prompt 5.4: Candidate CRUD Server Actions
-- [ ] Create Candidate CRUD Server Actions under src/lib/actions/candidates.ts
-- [ ] Implement with Drizzle, Zod validation, error handling
-- [ ] Write unit tests in src/lib/actions/candidates.test.ts
+### [ ] Prompt 5.4: Candidate Application CRUD Server Actions
+- [ ] Create Server Actions to manage `candidate_applications` (create, update, get, etc.).
+- [ ] The `updateCandidateApplication` action must set `status_updated_at` whenever the `status` changes.
+- [ ] The `updateCandidateApplication` action will handle setting the `client_notified_at` timestamp.
+- [ ] All actions that change application status or create an application must also create a corresponding record in the `interview_events` table.
+- [ ] Write unit tests for these Server Actions.
 
 ### [ ] Prompt 5.5: Interviewer CRUD Server Actions
 - [ ] Create Interviewer CRUD Server Actions (including adjustInterviewerCredits) under src/lib/actions/interviewers.ts

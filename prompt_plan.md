@@ -201,34 +201,28 @@ In `src/db/schema.ts`:
 
 This phase defines schemas for candidates, interviewers, and the artifacts generated during an interview, like copied assignments, evaluations, and transcriptions.
 
-### Prompt 4.1: Candidate Schema and Zod Validation
+### Prompt 4.1: Candidate & Candidate Applications Schemas and Zod Validation
 
 In `src/db/schema.ts`:
 
-1. Define an enum for `CandidateStatus` based on Section 4 of the provided spec:
-   `export const candidateStatusEnum = pgEnum('candidate_status', ['New', 'Pending AM Review', 'Resume Rejected', 'Resume Approved', 'Invite Sent (Step X)', 'Scheduled (Step X)', 'Evaluation Pending (Step X)', 'Evaluation Submitted (Step X)', 'Transcription Pending (Step X)', 'Transcription Failed (Step X)', 'Transcription Complete (Step X)', 'Evaluation Rejected', 'Pipeline Completed']);`
-   (Note: "(Step X)" in status names will need to be handled dynamically or by having more granular statuses if X is important at DB level, or managed in application logic. For schema, use generic names like 'Invite Sent', 'Scheduled', etc. and store current step ID separately).
-   Let's refine `candidateStatusEnum` for DB storage:
-   `export const candidateStatusEnum = pgEnum('candidate_status', ['New', 'PendingAmReview', 'ResumeRejected', 'ResumeApproved', 'InviteSent', 'Scheduled', 'EvaluationPending', 'EvaluationSubmitted', 'TranscriptionPending', 'TranscriptionFailed', 'TranscriptionComplete', 'EvaluationRejected', 'PipelineCompleted', 'OnHold']);`
-2. Define the Drizzle schema for `Candidate` (`candidates` table).
-   - Fields:
-     - `id` (UUID, primary key, auto-generated)
-     - `positionId` (UUID, foreign key referencing `positions.id`, not null)
-     - `name` (text, not null)
-     - `email` (text, not null, unique within a pipeline or globally - decide based on re-application rules, for now unique globally)
-     - `resumeInfo` (text) // Could be a URL or pasted text
-     - `currentStatus` (`candidateStatusEnum`, not null, default 'New')
-     - `currentInterviewStepId` (UUID, foreign key referencing `interviewSteps.id`, nullable) // Tracks which step the '... (Step X)' statuses refer to
-     - `interviewHistory` (jsonb, nullable) // Store an array of objects like `{ stepId: UUID, evaluationId: UUID, transcriptId: UUID, status: string, date: timestamp }`
-     - `createdAt` (timestamp, default now)
-     - `updatedAt` (timestamp, default now, auto-update on change)
-3. Create corresponding Zod schemas in `src/lib/validators/candidate.ts`:
-   - `createCandidateSchema`: requires `positionId`, `name`, `email`. `resumeInfo` optional. `currentStatus` defaults in DB.
-   - `updateCandidateSchema`: allows updates to `name`, `email`, `resumeInfo`, `currentStatus`, `currentInterviewStepId`.
-   - `addInterviewHistoryEventSchema`: for validating entries into `interviewHistory`.
-4. Write unit tests for these Zod schemas in `src/lib/validators/candidate.test.ts`.
-5. Generate the database migration: `npm run db:generate -- --name="create_candidates_table"`.
-6. Apply the migration.
+1.  **Redefine `candidates` table:** This table will now store unique information about a person.
+    -   Fields: `id`, `name` (not null), `email` (not null, unique), `resume_link` (nullable), timestamps.
+2.  **Define new `candidate_applications` table:** This table links a candidate to a specific position.
+    -   Fields: `id`, `candidateId` (FK to `candidates`), `positionId` (FK to `positions`).
+    -   **Status Management:**
+        -   `status` (using the `candidateStatusEnum`).
+        -   `status_updated_at` (timestamp, not null, updates when status changes).
+        -   `client_notified_at` (timestamp, nullable, set when client is notified).
+    -   Other application-specific fields: `currentInterviewStepId`, timestamps.
+    -   Add a unique constraint on (`candidateId`, `positionId`).
+3.  **Define new `interview_events` table:** This table will provide a structured audit log for each application.
+    - Fields: `id`, `candidateApplicationId` (FK to `candidate_applications`), `eventName` (text), `details` (jsonb), `createdAt`.
+4.  Create corresponding Zod schemas:
+    -   In `src/lib/validators/candidate.ts`: `createCandidateSchema`, `updateCandidateSchema`, `createCandidateApplicationSchema`, `updateCandidateApplicationSchema`.
+    -   In a new file, `src/lib/validators/interviewEvent.ts`: `createInterviewEventSchema`.
+5.  Write comprehensive unit tests for these Zod schemas in their respective test files.
+6.  Generate the database migration.
+7.  Apply the migration.
 
 ### Prompt 4.2: Interviewer Schema and Zod Validation
 
@@ -360,16 +354,16 @@ This phase focuses on creating Server Actions for managing entities central to t
 2. Implement using Drizzle, with error handling.
 3. Write unit tests in `src/lib/actions/interviewSteps.test.ts`.
 
-### Prompt 5.4: Candidate CRUD Server Actions
+### Prompt 5.4: Candidate Candidate Application CRUD Server Actions
 
-1. Create Next.js Server Actions for `Candidate` CRUD operations in `src/lib/actions/candidates.ts`:
-   - `createCandidate`: Create. Validate with `createCandidateSchema`. Set default status. Ensure `positionId` exists.
-   - `getCandidates`: Get all. Allow filtering by `positionId`, `currentStatus`.
-   - `getCandidate`: Get by ID. Optionally include `Position` info, `CurrentInterviewStep` info, and `Evaluation`s/`Transcription`s related to history.
-   - `updateCandidate`: Update. Validate with `updateCandidateSchema`. This will be crucial for status updates.
-   - `deleteCandidate`: Delete (or archive).
-2. Implement using Drizzle, with error handling.
-3. Write unit tests in `src/lib/actions/candidates.test.ts`.
+1.  Create Server Actions to manage `candidate_applications` under a new file `src/lib/actions/applications.ts`.
+2.  Implement actions like `createCandidateApplication`, `getApplicationById`, and `updateApplicationStatus`.
+    -   When `createCandidateApplication` is called, it should also create an initial "Application Created" event in the `interview_events` table.
+3.  The `updateApplicationStatus` action is critical:
+    -   It must update both the `status` and the `status_updated_at` fields simultaneously.
+    -   It must also log a new "Status Changed" event to the `interview_events` table, recording the new status.
+4.  Implement a separate `notifyClientForApplication` action that sets the `client_notified_at` timestamp.
+5.  Write unit tests for these server actions.
 
 ### Prompt 5.5: Interviewer CRUD Server Actions
 
