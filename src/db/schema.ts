@@ -234,3 +234,37 @@ export const interviewAssignments = pgTable("interview_assignments", {
     .$onUpdate(() => new Date()),
   resourceDeletedAt: timestamp("resource_deleted_at"),
 });
+
+export const evaluationOutcomeEnum = pgEnum("evaluation_outcome", [
+  "Strong Hire",
+  "Hire",
+  "Fail",
+  "Hold",
+]);
+
+export const evaluationFormatEnum = pgEnum("evaluation_format", [
+  "structured_json",
+  "drive_doc",
+]);
+
+export const evaluations = pgTable("evaluations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  interviewAssignmentId: uuid("interview_assignment_id")
+    .notNull()
+    .references(() => interviewAssignments.id)
+    .unique(),
+  evaluatorId: uuid("evaluator_id")
+    .notNull()
+    .references(() => interviewers.id),
+  outcome: evaluationOutcomeEnum("outcome").notNull(),
+  format: evaluationFormatEnum("format").notNull(),
+  structuredData: jsonb("structured_data"),
+  driveDocUrl: text("drive_doc_url"),
+  recordingUrl: text("recording_url"),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});

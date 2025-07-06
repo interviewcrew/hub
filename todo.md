@@ -101,12 +101,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration.
 - [x] Apply migration.
 
-### [ ] Prompt 4.4: Evaluation Schema and Zod Validation
-- [ ] Define Evaluation Drizzle schema (evaluations table with FKs to candidates, interviewSteps, interviewers, copiedAssignments, unique constraint on candidateId + interviewStepId)
-- [ ] Create Evaluation Zod schemas (submitEvaluationSchema) in src/lib/validators/evaluation.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/evaluation.test.ts
-- [ ] Generate database migration (create_evaluations_table)
-- [ ] Apply migration
+### [x] Prompt 4.4: Evaluation Schema and Zod Validation
+- [x] Define Evaluation Drizzle schema (`evaluations` table with specific enums for outcome and format).
+- [x] Create Evaluation Zod schemas with cross-field validation in `src/lib/validators/evaluation.ts`.
+- [x] Write unit tests for Zod schemas in `src/lib/validators/evaluation.test.ts`.
+- [x] Generate database migration.
+- [x] Apply migration.
 
 ### [ ] Prompt 4.5: Transcription Schema and Zod Validation
 - [ ] Define transcriptionProcessingStatusEnum in src/db/schema.ts
