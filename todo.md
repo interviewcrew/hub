@@ -94,15 +94,16 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration (create_interviewers_table).
 - [x] Apply migration.
 
-### [x] Prompt 4.3: InterviewAssignment Schema and Zod Validation
-- [x] Define InterviewAssignment Drizzle schema (`interview_assignments` table, with `resourceDeletedAt` and no unique constraint).
-- [x] Create Zod schemas for InterviewAssignments in `src/lib/validators/interviewAssignment.ts`.
-- [x] Write unit tests for the Zod schema in `src/lib/validators/interviewAssignment.test.ts`.
+### [x] Prompt 4.3: Interview and InterviewAssignment Schemas and Zod Validation
+- [x] Define `interviews` table as the new central entity.
+- [x] Refine `interview_assignments` table to link to `interviews` and hold resource-specific info.
+- [x] Create Zod schemas in `validators/interview.ts` and `validators/interviewAssignment.ts`.
+- [x] Write unit tests for all new Zod schemas.
 - [x] Generate database migration.
 - [x] Apply migration.
 
 ### [x] Prompt 4.4: Evaluation Schema and Zod Validation
-- [x] Define Evaluation Drizzle schema (`evaluations` table with specific enums for outcome and format).
+- [x] Define Evaluation Drizzle schema (`evaluations` table with FK to `interviews`).
 - [x] Create Evaluation Zod schemas with cross-field validation in `src/lib/validators/evaluation.ts`.
 - [x] Write unit tests for Zod schemas in `src/lib/validators/evaluation.test.ts`.
 - [x] Generate database migration.
@@ -110,10 +111,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 4.5: Transcription Schema and Zod Validation
 - [ ] Define transcriptionProcessingStatusEnum in src/db/schema.ts
-- [ ] Define Transcription Drizzle schema (transcriptions table with FKs to evaluations, candidates, interviewSteps, unique constraint on evaluationId)
-- [ ] Create Transcription Zod schemas (createTranscriptionSchema, updateTranscriptionStatusSchema) in src/lib/validators/transcription.ts
-- [ ] Write unit tests for Zod schemas in src/lib/validators/transcription.test.ts
-- [ ] Generate database migration (create_transcriptions_table)
+- [ ] Define Transcription Drizzle schema (`transcriptions` table with unique FK to `interviews`).
+- [ ] Create Transcription Zod schemas in `src/lib/validators/transcription.ts`.
+- [ ] Write unit tests for Zod schemas in `src/lib/validators/transcription.test.ts`.
+- [ ] Generate database migration (create_interview_centric_schemas_table)
 - [ ] Apply migration
 
 ## Phase 5: Server Actions for Core Interview Workflow Entities
@@ -263,130 +264,113 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Unit tests for these functions (mock API calls)
 
 ### [ ] Prompt 8.4: API Endpoint for Assignment Generation
-- [ ] Create API route POST /api/interviews/generate-assignment (req body: candidateId, interviewStepId)
+- [ ] Create API route POST /api/interviews/generate-assignment (req body: candidateApplicationId, interviewStepId, interviewerId).
 - [ ] Endpoint logic:
-  - [ ] Fetch Candidate, InterviewStep, OriginalAssignment
-  - [ ] Construct new file name
-  - [ ] Call googleDriveService.copyDocument()
-  - [ ] Call googleDriveService.personalizeDocument()
-  - [ ] Call googleDriveService.setDocumentPermissionsAnyoneReader()
-  - [ ] Create CopiedAssignment DB record
-  - [ ] Return CopiedAssignment or webViewLink
-- [ ] Error handling, transactionality
-- [ ] Add button on AM dashboard to trigger this API
-- [ ] Integration tests (mock Google Drive service)
+  - [ ] Create `Interview` record first.
+  - [ ] Fetch related data (`OriginalAssignment`, `Candidate`).
+  - [ ] Call Google Drive service to copy and personalize document.
+  - [ ] Create `InterviewAssignment` DB record, linking it to the new `Interview`.
+  - [ ] Return the new assignment details.
+- [ ] Error handling, transactionality.
+- [ ] Add button on AM dashboard to trigger this API.
+- [ ] Integration tests (mock Google Drive service).
 
 ## Phase 9: Interviewer View & Evaluation Submission
 
 ### [ ] Prompt 9.1: Basic Interviewer View Page
-- [ ] Create page src/app/interview/[interviewSessionId]/page.tsx (use copiedAssignmentId as interviewSessionId)
-- [ ] Fetch CopiedAssignment, Candidate, InterviewStep info
-- [ ] Display Candidate Name, Job Title, Step Name/Type
-- [ ] Display iframe or link to CopiedAssignment.webViewLink
-- [ ] Basic styling
+- [ ] Create page src/app/interview/[interviewId]/page.tsx.
+- [ ] Fetch `Interview`, `InterviewAssignment` (if exists), `CandidateApplication`, and `InterviewStep` info.
+- [ ] Display interview details.
+- [ ] Display iframe or link to `InterviewAssignment.resourceUrl`.
+- [ ] Basic styling.
 
 ### [ ] Prompt 9.2: Evaluation Form and Submission API
-- [ ] On Interviewer View page: add evaluation form (shadcn/ui Form, Textarea, Input)
-- [ ] Fields: "Overall Feedback / Notes", "Google Meet Recording Link" (mandatory)
-- [ ] "Submit Evaluation" button
-- [ ] Create API route POST /api/evaluations (req body: copiedAssignmentId/candidateId+stepId, interviewerId, structuredFormResponses, googleMeetRecordingLink)
+- [ ] On Interviewer View page: add evaluation form.
+- [ ] Fields: `format` selector, `outcome` selector, `structuredData`/`driveDocUrl`, `evaluatorId`.
+- [ ] "Submit Evaluation" button.
+- [ ] Create API route POST /api/evaluations (req body matching `createEvaluationSchema`).
 - [ ] Endpoint logic:
-  - [ ] Validate input
-  - [ ] Create Evaluation DB record
-  - [ ] Update Candidate.currentStatus to "EvaluationSubmitted"
-  - [ ] Create an "Evaluation Submitted" event in the `interview_events` table.
-  - [ ] Note: Interviewer credits will be calculated from the number of completed evaluations, not stored.
-  - [ ] Update Candidate.currentInterviewStepId
-  - [ ] Increment Interviewer.accruedCredits
-  - [ ] Return success response
-- [ ] Client-side form submission logic
-- [ ] Integration tests for /api/evaluations
+  - [ ] Validate input.
+  - [ ] Create `Evaluation` DB record, linking it to the `interviewId`.
+  - [ ] Update `CandidateApplication.status` to "Waiting for evaluation review".
+- [ ] Client-side form submission logic.
+- [ ] Integration tests for /api/evaluations.
 
 ## Phase 10: Transcription Service Integration (Placeholder & Basic Flow)
 
 ### [ ] Prompt 10.1: Transcription Service Module & Placeholder
 - [ ] Create src/services/transcriptionService.ts
-- [ ] Implement placeholder transcribeAudioFromLink(recordingLink, evaluationId):
-  - [ ] Simulate download, extraction, API call, result (mock JSON)
-  - [ ] Simulate failure
+- [ ] Implement placeholder `transcribeAudioFromLink(recordingLink, interviewId)`.
+- [ ] Simulate success and failure.
 
 ### [ ] Prompt 10.2: API/Job to Trigger Transcription
 - [ ] Modify POST /api/evaluations:
-  - [ ] After saving Evaluation, create Transcription record (status: 'Pending')
-  - [ ] Trigger background job/service call for transcription
-- [ ] Create API endpoint POST /api/transcriptions/process-pending (or background job function)
-- [ ] Find Transcription records with status: 'Pending'
-- [ ] Fetch Evaluation.googleMeetRecordingLink
-- [ ] Call transcriptionService.transcribeAudioFromLink()
-- [ ] On success: update Transcription (status: 'Complete', transcriptionData), update Candidate.currentStatus ("TranscriptionComplete")
-- [ ] On failure: update Transcription (status: 'Failed', errorMessage), update Candidate.currentStatus ("TranscriptionFailed")
-- [ ] Integration tests for transcription triggering/processing (mock transcribeAudioFromLink)
+  - [ ] Check for `recordingUrl` on the parent `Interview` record.
+  - [ ] If present, create `Transcription` record (status: 'Pending') linked to `interviewId`.
+  - [ ] Trigger background job for transcription.
+- [ ] Create API endpoint or job function `POST /api/transcriptions/process-pending`.
+- [ ] Find 'Pending' `Transcription` records.
+- [ ] Fetch associated `Interview.recordingUrl`.
+- [ ] Call `transcriptionService.transcribeAudioFromLink()`.
+- [ ] On success: update `Transcription` status to 'Complete', update `CandidateApplication` status.
+- [ ] On failure: update `Transcription` status to 'Failed', update `CandidateApplication` status.
+- [ ] Integration tests for transcription triggering/processing.
 
 ## Phase 11: Background Job System & Integrating Long-Running Tasks
 
 ### [ ] Prompt 11.1: Setup Background Job System (Vercel Cron Jobs + DB Table)
-- [ ] Create Drizzle schema for PendingJob (pendingJobs table: id, jobType enum, payload, status enum, attempts, createdAt, updatedAt)
-- [ ] Refactor POST /api/interviews/generate-assignment to add 'generateAssignment' job to PendingJobs
-- [ ] Refactor POST /api/evaluations to add 'transcribe' job to PendingJobs
-- [ ] Create API route POST /api/worker (protected):
-  - [ ] Fetches batch of 'pending' jobs
-  - [ ] Marks 'processing'
-  - [ ] Calls appropriate service function based on jobType
-  - [ ] Updates job status ('complete'/'failed', error message, retry logic)
-- [ ] Configure Vercel Cron Job in vercel.json to call /api/worker
+- [ ] Create Drizzle schema for `PendingJob`.
+- [ ] Refactor `POST /api/interviews/generate-assignment` to add a 'generateAssignment' job.
+- [ ] Refactor `POST /api/evaluations` to add a 'transcribe' job.
+- [ ] Create API route `POST /api/worker` (protected) to be triggered by cron.
+- [ ] Worker logic to fetch and process jobs from the `PendingJobs` table.
+- [ ] Configure Vercel Cron Job in `vercel.json`.
 
 ### [ ] Prompt 11.2: Background Job - Assignment Cleanup
-- [ ] Implement deleteFile(fileId) in googleDriveService.ts
+- [ ] Implement `deleteFile(fileId)` in googleDriveService.ts.
 - [ ] Worker function for 'cleanupAssignments' job type:
-  - [ ] Find old CopiedAssignment records
-  - [ ] Call googleDriveService.deleteFile()
-  - [ ] Update CopiedAssignment.isDeletedFromDrive or delete record
-  - [ ] Handle errors
-- [ ] Mechanism to queue 'cleanupAssignments' job periodically (Vercel Cron)
-- [ ] Integration tests for cleanup logic (mock Drive API)
+  - [ ] Find `InterviewAssignment` records where parent `Interview.completedAt` is past a threshold.
+  - [ ] Call `googleDriveService.deleteFile()` for each.
+  - [ ] Update `InterviewAssignment.resourceDeletedAt`.
+- [ ] Mechanism to queue 'cleanupAssignments' job periodically (Vercel Cron).
+- [ ] Integration tests for cleanup logic.
 
 ## Phase 12: Finalizing AM Workflow & UI Polish
 
 ### [ ] Prompt 12.1: AM Dashboard - Reviewing Results & Final Decisions
-- [ ] On AM Dashboard/Candidate Detail for "TranscriptionComplete" candidates:
-  - [ ] Display Evaluation summary/link
-  - [ ] Display Transcription summary/link
-  - [ ] Add AM action buttons:
-    - [ ] "Reject based on Evaluation/Transcription" -> Candidate.currentStatus = "EvaluationRejected"
-    - [ ] "Approve for Next Step" -> find next step, update Candidate.currentInterviewStepId, Candidate.currentStatus = "ResumeApproved" (for new step), add to interviewHistory
-    - [ ] "Mark Position Completed" -> Candidate.currentStatus = "PositionCompleted"
-- [ ] API endpoint updates (PUT /api/candidates/[id]) for these transitions
-- [ ] Integration tests for API transition logic
+- [ ] On AM Dashboard/Candidate Detail for "Waiting for evaluation review" candidates:
+  - [ ] Display all `Evaluation` outcomes for the interview.
+  - [ ] Display `Evaluation` data/links.
+  - [ ] Link to `Interview.recordingUrl`.
+  - [ ] Link to `Transcription` data if available.
+  - [ ] Add AM action buttons ("Approve for Next Step", "Reject Candidate", "Put on Hold").
+- [ ] API endpoint updates for these complex status transitions.
+- [ ] Integration tests for API transition logic.
 
 ### [ ] Prompt 12.2: UI Polish and Navigation
-- [ ] Review all AM-facing pages
-- [ ] Consistent shadcn/ui components (layout, tables, forms, dialogs, buttons, toasts)
-- [ ] Improve navigation (sidebar, breadcrumbs)
-- [ ] Make tables sortable, consider pagination
-- [ ] Test AM interface responsiveness
+- [ ] Review all AM-facing pages.
+- [ ] Consistent shadcn/ui components.
+- [ ] Improve navigation (sidebar, breadcrumbs).
+- [ ] Make tables sortable, consider pagination.
+- [ ] Test AM interface responsiveness.
 
 ## Phase 13: Real Transcription Service & End-to-End Testing
 
 ### [ ] Prompt 13.1: (Optional) Integrate Real Transcription Service
-- [ ] Choose service, get API key (store securely)
-- [ ] Replace placeholder transcribeAudioFromLink in src/services/transcriptionService.ts:
-  - [ ] Download/access audio from googleMeetRecordingLink (handle Drive permissions, FFmpeg if needed)
-  - [ ] Upload audio to service / submit URL
-  - [ ] Handle async processing (polling/webhooks)
-  - [ ] Fetch and parse transcript
-  - [ ] Handle API errors, rate limits
-  - [ ] Delete temporary files
-- [ ] Update tests for transcriptionService.ts (mock real service client)
+- [ ] Choose service, get API key (store securely).
+- [ ] Replace placeholder `transcribeAudioFromLink` in `src/services/transcriptionService.ts` with real implementation.
+- [ ] Handle async processing (polling/webhooks).
+- [ ] Update tests for `transcriptionService.ts`.
 
 ### [ ] Prompt 13.2: Comprehensive End-to-End Testing
-- [ ] Manually test full AM workflow (Client setup -> Candidate journey -> Final decision):
-  - [ ] Create Client, Position, Original Assignment, Interview Steps
-  - [ ] Import Candidate
-  - [ ] Move Candidate through statuses
-  - [ ] Trigger assignment generation
-  - [ ] Interviewer views assignment, submits evaluation
-  - [ ] Verify AM sees evaluation
-  - [ ] Verify transcription process
-  - [ ] AM reviews results, makes final decision
-- [ ] Write automated E2E tests (Playwright/Cypress) for critical paths (if feasible)
-- [ ] Review error handling and logging
+- [ ] Manually test full AM workflow:
+  - [ ] Create Client, Position, Original Assignment, Interview Steps.
+  - [ ] Import Candidate and create a Candidate Application.
+  - [ ] Move Candidate through statuses.
+  - [ ] Trigger assignment generation (verifies creation of `Interview` and `InterviewAssignment` records).
+  - [ ] As an interviewer, view the assignment and submit an `Evaluation` for the `Interview`.
+  - [ ] Verify that the AM sees the `Evaluation` results.
+  - [ ] Verify that the `Transcription` process kicks off for the `Interview` if a recording link is present.
+  - [ ] AM reviews all artifacts and makes a final decision on the application.
+- [ ] Write automated E2E tests (Playwright/Cypress) for critical paths (if feasible).
+- [ ] Review error handling and logging.

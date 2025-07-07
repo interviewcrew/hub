@@ -241,25 +241,29 @@ In `src/db/schema.ts`:
 
 In `src/db/schema.ts`:
 
-1.  Define the Drizzle schema for `InterviewAssignment` (`interview_assignments` table).
-    -   Fields: `id`, `candidateApplicationId` (FK), `interviewStepId` (FK), `interviewerId` (FK, nullable), `resourceUrl` (nullable), `resourceIdentifier` (nullable), `resourceDeletedAt` (timestamp, nullable), timestamps.
-    -   `originalAssignmentId` will be inferred from the `interviewStepId`, it is not stored here.
-2.  Create a corresponding Zod schema in a new file `src/lib/validators/interviewAssignment.ts`.
-3.  Write unit tests for the Zod schema.
-4.  Generate the database migration.
-5.  Apply the migration.
+1.  **Define the `interviews` table:** This is the new central table for any given interview event.
+    -   Fields: `id`, `candidateApplicationId` (FK), `interviewStepId` (FK), `interviewerId` (FK, nullable), `scheduledAt` (timestamp, nullable), `completedAt` (timestamp, nullable), `recordingUrl` (text, nullable), timestamps.
+2.  **Refine the `interview_assignments` table:** This table now links a specific resource (like a Google Doc) to an interview.
+    -   It no longer contains participant information.
+    -   Fields: `id`, `interviewId` (FK to `interviews`, unique), `originalAssignmentId` (FK, to trace back to the template), `resourceUrl` (the link to the live document), `resourceIdentifier` (e.g., the Google Doc file ID), `resourceDeletedAt` (for auditing soft deletes), timestamps.
+3.  Create corresponding Zod schemas:
+    -   In a new file `src/lib/validators/interview.ts` for the `interviews` table.
+    -   In `src/lib/validators/interviewAssignment.ts` for the `interview_assignments` table.
+4.  Write comprehensive unit tests for these Zod schemas in their respective test files.
+5.  Generate the database migration.
+6.  Apply the migration.
 
 ### Prompt 4.4: Evaluation Schema and Zod Validation
 
 In `src/db/schema.ts`:
 
 1.  Define enums for `evaluationOutcome` ('Strong Hire', 'Hire', 'Fail', 'Hold') and `evaluationFormat` ('structured_json', 'drive_doc').
-2.  Define the Drizzle schema for `Evaluation` (`evaluations` table).
-    -   Fields: `id`, `interviewAssignmentId` (unique FK), `evaluatorId` (FK), `outcome` (enum), `format` (enum), `structuredData` (jsonb, optional), `driveDocUrl` (text, optional), `recordingUrl` (optional), `submittedAt`, timestamps.
+2.  Define the Drizzle schema for `Evaluation` (`evaluations` table). An interview can have multiple evaluations (e.g., from a panel).
+    -   Fields: `id`, `interviewId` (FK to `interviews`), `evaluatorId` (FK to `interviewers`), `outcome` (enum), `format` (enum), `structuredData` (jsonb, optional), `driveDocUrl` (text, optional), `submittedAt`, timestamps.
 3.  Create corresponding Zod schemas in `src/lib/validators/evaluation.ts`.
     -   Implement a `.refine()` rule to ensure `structuredData` is present if format is `structured_json`, and `driveDocUrl` is present if format is `drive_doc`.
 4.  Write comprehensive unit tests for these Zod schemas in `src/lib/validators/evaluation.test.ts`, including tests for the `.refine()` logic.
-5.  Generate the database migration: `npm run db:generate -- --name="create_evaluations_table"`.
+5.  Generate the database migration.
 6.  Apply the migration.
 
 ### Prompt 4.5: Transcription Schema and Zod Validation
@@ -267,12 +271,10 @@ In `src/db/schema.ts`:
 In `src/db/schema.ts`:
 
 1. Define an enum for `TranscriptionStatus`: `export const transcriptionProcessingStatusEnum = pgEnum('transcription_status', ['Pending', 'Processing', 'Complete', 'Failed']);`
-2. Define the Drizzle schema for `Transcription` (`transcriptions` table).
+2. Define the Drizzle schema for `Transcription` (`transcriptions` table). Each interview has one transcription.
    - Fields:
      - `id` (UUID, primary key, auto-generated)
-     - `evaluationId` (UUID, foreign key referencing `evaluations.id`, not null, unique) // Each evaluation gets one transcription attempt
-     - `candidateApplicationId` (UUID, foreign key referencing `candidate_applications.id`, not null) // Denormalized for easier querying
-     - `interviewStepId` (UUID, foreign key referencing `interviewSteps.id`, not null) // Denormalized
+     - `interviewId` (UUID, foreign key referencing `interviews.id`, not null, unique)
      - `status` (`transcriptionProcessingStatusEnum`, not null, default 'Pending')
      - `transcriptionData` (jsonb, nullable) // Stores structured transcription (full text, timestamps, speaker labels)
      - `errorMessage` (text, nullable) // If transcription failed
@@ -280,10 +282,10 @@ In `src/db/schema.ts`:
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
 3. Create corresponding Zod schemas in `src/lib/validators/transcription.ts`:
-   - `createTranscriptionSchema`: requires `evaluationId`, `candidateApplicationId`, `interviewStepId`.
-   - `updateTranscriptionStatusSchema`: requires `status`, allows optional `transcriptionData` or `errorMessage`.
-4. Write unit tests for these Zod schemas in `src/lib/validators/transcription.test.ts`.
-5. Generate the database migration: `npm run db:generate -- --name="create_transcriptions_table"`.
+   - `createTranscriptionSchema`: requires `interviewId`.
+   - `updateTranscriptionSchema`: allows optional `status`, `transcriptionData` or `errorMessage`.
+4. Write unit tests for these Zod schemas in `src/lib/validators/transcription.ts`.
+5. Generate the database migration.
 6. Apply the migration.
 
 ## Phase 5: Server Actions for Core Interview Workflow Entities
@@ -497,17 +499,18 @@ In `src/services/googleDriveService.ts`:
 ### Prompt 8.4: API Endpoint for Assignment Generation
 
 1. Create a Next.js API route `POST /api/interviews/generate-assignment`.
-   - Request body: `candidateId: string`, `interviewStepId: string`.
+   - Request body: `candidateApplicationId: string`, `interviewStepId: string`, `interviewerId: string` (nullable).
 2. This endpoint should:
-   - Fetch `Candidate` and `InterviewStep` details.
+   - Create an `Interview` record in the database, linking the `candidateApplicationId`, `interviewStepId`, and `interviewerId`.
    - Fetch the `OriginalAssignment` linked to the `InterviewStep`.
+   - Fetch the `Candidate` details for their name.
    - Construct a new file name (e.g., using candidate name, assignment title, date).
    - Call `googleDriveService.copyDocument()`.
    - Call `googleDriveService.personalizeDocument()` with the candidate's name.
    - Call `googleDriveService.setDocumentPermissionsAnyoneReader()`.
-   - Create an `InterviewAssignment` record in the database with the `resourceIdentifier`, `resourceUrl`, and links to `candidateApplicationId`, and `interviewStepId`.
+   - Create an `InterviewAssignment` record in the database, linking it to the newly created `interviewId` and storing the `resourceIdentifier` and `resourceUrl`.
    - Return the `InterviewAssignment` record or at least the `resourceUrl`.
-   - Implement robust error handling and transactionality if multiple DB operations are involved.
+   - Implement robust error handling and transactionality.
 3. Add a button on the AM dashboard (e.g., next to a candidate scheduled for a step that needs an assignment) to trigger this API endpoint.
 4. Write integration tests for this API endpoint, mocking the Google Drive service functions to avoid actual API calls during tests, but testing the overall flow and database interactions.
 
@@ -517,27 +520,28 @@ This phase builds the minimal interface for interviewers.
 
 ### Prompt 9.1: Basic Interviewer View Page
 
-1. Create a public-facing (or minimally protected) Next.js page, e.g., `src/app/interview/[interviewSessionId]/page.tsx`.
-   - The `interviewSessionId` could be the ID of an `InterviewAssignment` record. For MVP, let's assume it's the `interviewAssignmentId`.
+1. Create a public-facing (or minimally protected) Next.js page, e.g., `src/app/interview/[interviewId]/page.tsx`.
+   - The `interviewId` is the ID of an `interviews` record.
 2. On this page:
-   - Fetch the `InterviewAssignment` details using `interviewSessionId`.
-   - Fetch related `Candidate` and `InterviewStep` information.
+   - Fetch the `Interview` details using `interviewId`.
+   - If an assignment exists for this interview, fetch the `InterviewAssignment` details.
+   - Fetch related `CandidateApplication` and `InterviewStep` information.
    - Display Candidate Name, Job Title, Interview Step Name/Type.
-   - Prominently display an iframe or a link to the `InterviewAssignment.resourceUrl` for the interviewer to view the assignment.
+   - Prominently display an iframe or a link to the `InterviewAssignment.resourceUrl` if it exists.
 3. Use basic styling (shadcn/ui if easily applicable, but focus on functionality).
 
 ### Prompt 9.2: Evaluation Form and Submission API
 
-1. On the Interviewer View page (`src/app/interview/[interviewSessionId]/page.tsx`):
+1. On the Interviewer View page (`src/app/interview/[interviewId]/page.tsx`):
    - Add an evaluation form (using shadcn/ui `Form`, `Textarea`, `Input`).
    - The form should allow the interviewer to select the format (`structured_json` or `drive_doc`).
    - Fields:
      - Based on format selection, show either a "structured data" input (e.g., textarea) or a "Drive Doc URL" input.
      - "Outcome" (Select: 'Strong Hire', 'Hire', 'Fail', 'Hold').
-     - "Recording URL" (input, text, optional).
+     - A field for `evaluatorId` (for MVP, could be a hidden input or simple text input; in future, it would come from interviewer auth).
    - "Submit Evaluation" button.
 2. Create a Next.js API route `POST /api/evaluations`.
-   - Request body should match the `createEvaluationSchema`.
+   - Request body should match the `createEvaluationSchema` (e.g., `interviewId`, `evaluatorId`, `outcome`, etc.).
    - This endpoint should:
      - Validate the input using `createEvaluationSchema`.
      - Create an `Evaluation` record in the database.
@@ -567,15 +571,16 @@ This phase sets up the transcription process. Initially with a placeholder, then
 ### Prompt 10.2: API/Job to Trigger Transcription
 
 1. Modify the `POST /api/evaluations` endpoint (from Prompt 9.2):
-   - After successfully saving the `Evaluation`, it should create a `Transcription` record with `status: 'Pending'`, linking it to the `evaluationId`, `candidateId`, and `interviewStepId`.
+   - After successfully saving the `Evaluation`, it should check if a `recordingUrl` was included in the parent `Interview` record.
+   - If it was, it should create a `Transcription` record with `status: 'Pending'`, linking it to the `interviewId`.
    - Then, it should trigger a background job (or directly call a service function for now if background jobs aren't fully set up) to process this transcription.
 2. Create a new API endpoint `POST /api/transcriptions/process-pending` (or a function to be run by a background job system).
    - This job/endpoint should:
      - Find `Transcription` records with `status: 'Pending'`.
-     - For each, fetch the associated `Evaluation.googleMeetRecordingLink`.
+     - For each, fetch the associated `Interview.recordingUrl`.
      - Call `transcriptionService.transcribeAudioFromLink()`.
-     - If successful: update `Transcription` record with `status: 'Complete'`, store `transcriptionData`. Update `Candidate.currentStatus` to "TranscriptionComplete (Step X)".
-     - If failed: update `Transcription` record with `status: 'Failed'`, store `errorMessage`. Update `Candidate.currentStatus` to "TranscriptionFailed (Step X)".
+     - If successful: update `Transcription` record with `status: 'Complete'`, store `transcriptionData`. Update `CandidateApplication.status` to "TranscriptionComplete".
+     - If failed: update `Transcription` record with `status: 'Failed'`, store `errorMessage`. Update `CandidateApplication.status` to "TranscriptionFailed".
 3. Write integration tests for the transcription triggering and processing logic (mocking the actual `transcribeAudioFromLink` call).
 
 ## Phase 11: Background Job System & Integrating Long-Running Tasks
@@ -618,7 +623,7 @@ For this prompt, choose one approach. Let's assume Vercel Cron Jobs with a DB ta
 1. Implement the logic for the assignment cleanup background job:
    - Service function in `googleDriveService.ts`: `deleteFile(fileId: string): Promise<void>`.
    - The worker function (triggered by a 'cleanupAssignments' job type from `PendingJobs` or a dedicated cron):
-     - Finds `InterviewAssignment` records where `Evaluation` is submitted (or interview date passed + buffer) more than X hours/days ago (configurable, e.g., 72 hours) and `resourceDeletedAt` is null.
+     - Finds `InterviewAssignment` records where the parent `Interview.completedAt` is more than X hours/days ago (configurable, e.g., 72 hours) and `resourceDeletedAt` is null.
      - For each, calls `googleDriveService.deleteFile(resourceIdentifier)`.
      - If successful, updates `InterviewAssignment.resourceDeletedAt` with the current timestamp.
      - Handles errors during deletion.
@@ -633,10 +638,10 @@ This phase completes the AM's ability to manage the candidate lifecycle and poli
 
 1. On the AM Dashboard (or Candidate Detail Page):
    - For candidates with status "Waiting for evaluation review":
-     - Display the `Evaluation.outcome`.
+     - Display the `Evaluation.outcome` for each evaluation linked to the interview.
      - Display a summary of/link to the `Evaluation.structuredData` or `Evaluation.driveDocUrl` based on the `format`.
-     - Display a link to the `Evaluation.recordingUrl`.
-     - If a transcription is available (Phase 10), display a summary of/link to the `Transcription.transcriptionData`.
+     - Display a link to the `Interview.recordingUrl`.
+     - If a transcription is available, display a summary of/link to the `Transcription.transcriptionData`.
    - Add AM action buttons:
      - "Approve for Next Step", "Reject Candidate", "Put on Hold".
 2. Implement the necessary API endpoint updates (likely on `PUT /api/applications/[id]`) to handle these complex status transitions and logic.
