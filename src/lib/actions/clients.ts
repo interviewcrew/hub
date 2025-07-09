@@ -5,10 +5,11 @@ import { clients, accountManagers } from '@/db/schema';
 import { createClientSchema, updateClientSchema } from '@/lib/validators/client';
 import { eq, asc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
-export async function createClient(data: unknown) {
+export async function createClient(input: z.infer<typeof createClientSchema>) {
   try {
-    const validatedData = createClientSchema.parse(data);
+    const validatedData = createClientSchema.parse(input);
 
     // Verify that the accountManagerId exists
     const [accountManager] = await db
@@ -73,9 +74,12 @@ export async function getClient(id: string) {
   }
 }
 
-export async function updateClient(id: string, data: unknown) {
+export async function updateClient(
+  id: string,
+  input: z.infer<typeof updateClientSchema>,
+) {
   try {
-    const validatedData = updateClientSchema.parse(data);
+    const validatedData = updateClientSchema.parse(input);
     
     const [client] = await db
       .update(clients)
