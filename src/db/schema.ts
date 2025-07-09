@@ -279,3 +279,29 @@ export const evaluations = pgTable("evaluations", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export const transcriptionTypeEnum = pgEnum("transcription_type", [
+  "live",
+  "processed",
+]);
+
+export const transcriptionProcessingStatusEnum = pgEnum(
+  "transcription_processing_status",
+  ["processing", "completed", "failed"],
+);
+
+export const transcriptions = pgTable("transcriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  interviewId: uuid("interview_id")
+    .notNull()
+    .references(() => interviews.id),
+  type: transcriptionTypeEnum("type").notNull(),
+  status: transcriptionProcessingStatusEnum("status").notNull(),
+  content: jsonb("content"),
+  provider: text("provider"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});

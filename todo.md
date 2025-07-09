@@ -109,13 +109,13 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Generate database migration.
 - [x] Apply migration.
 
-### [ ] Prompt 4.5: Transcription Schema and Zod Validation
-- [ ] Define transcriptionProcessingStatusEnum in src/db/schema.ts
-- [ ] Define Transcription Drizzle schema (`transcriptions` table with unique FK to `interviews`).
-- [ ] Create Transcription Zod schemas in `src/lib/validators/transcription.ts`.
-- [ ] Write unit tests for Zod schemas in `src/lib/validators/transcription.test.ts`.
-- [ ] Generate database migration (create_interview_centric_schemas_table)
-- [ ] Apply migration
+### [x] Prompt 4.5: Transcription Schema and Zod Validation
+- [x] Define `transcriptionProcessingStatusEnum` in `src/db/schema.ts`.
+- [x] Define Transcription Drizzle schema (`transcriptions` table with a foreign key to `interviews`).
+- [x] Create Transcription Zod schemas in `src/lib/validators/transcription.ts`.
+- [x] Write unit tests for Zod schemas in `src/lib/validators/transcription.test.ts`.
+- [x] Generate database migration (`create_transcriptions_table`).
+- [x] Apply migration.
 
 ## Phase 5: Server Actions for Core Interview Workflow Entities
 

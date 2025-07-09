@@ -71,6 +71,13 @@
       "when": 1752043643002,
       "tag": "0009_create_interview_table",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1752046776482,
+      "tag": "0010_create_transcriptions_table",
+      "breakpoints": true
     }
   ]
 }
