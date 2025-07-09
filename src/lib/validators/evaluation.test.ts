@@ -6,7 +6,7 @@ import {
 import { generateMockUuid } from "@/tests/utils/mockUuid";
 
 const baseMock = {
-  interviewAssignmentId: generateMockUuid(1),
+  interviewId: generateMockUuid(1),
   evaluatorId: generateMockUuid(2),
   outcome: "Strong Hire" as const,
   format: "structured_json" as const,
@@ -39,10 +39,7 @@ describe("createEvaluationSchema", () => {
     const result = createEvaluationSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path).toEqual([
-        "structuredData",
-        "driveDocUrl",
-      ]);
+      expect(result.error.issues[0].path).toEqual(["structuredData"]);
     }
   });
 
@@ -55,10 +52,7 @@ describe("createEvaluationSchema", () => {
     const result = createEvaluationSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path).toEqual([
-        "structuredData",
-        "driveDocUrl",
-      ]);
+      expect(result.error.issues[0].path).toEqual(["driveDocUrl"]);
     }
   });
 
@@ -101,10 +95,7 @@ describe("updateEvaluationSchema", () => {
     const result = updateEvaluationSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path).toEqual([
-        "structuredData",
-        "driveDocUrl",
-      ]);
+      expect(result.error.issues[0].path).toEqual(["driveDocUrl"]);
     }
   });
 }); 

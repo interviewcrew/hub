@@ -216,7 +216,7 @@ export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-export const interviewAssignments = pgTable("interview_assignments", {
+export const interviews = pgTable("interviews", {
   id: uuid("id").defaultRandom().primaryKey(),
   candidateApplicationId: uuid("candidate_application_id")
     .notNull()
@@ -225,20 +225,33 @@ export const interviewAssignments = pgTable("interview_assignments", {
     .notNull()
     .references(() => interviewSteps.id),
   interviewerId: uuid("interviewer_id").references(() => interviewers.id),
-  resourceUrl: text("resource_url"),
-  resourceIdentifier: text("resource_identifier"),
+  recordingUrl: text("recording_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
+});
+
+export const interviewAssignments = pgTable("interview_assignments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  interviewId: uuid("interview_id")
+    .notNull()
+    .references(() => interviews.id),
+  resourceUrl: text("resource_url"),
+  resourceIdentifier: text("resource_identifier"),
   resourceDeletedAt: timestamp("resource_deleted_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export const evaluationOutcomeEnum = pgEnum("evaluation_outcome", [
   "Strong Hire",
   "Hire",
-  "Fail",
+  "No Hire",
   "Hold",
 ]);
 
@@ -249,10 +262,9 @@ export const evaluationFormatEnum = pgEnum("evaluation_format", [
 
 export const evaluations = pgTable("evaluations", {
   id: uuid("id").defaultRandom().primaryKey(),
-  interviewAssignmentId: uuid("interview_assignment_id")
+  interviewId: uuid("interview_id")
     .notNull()
-    .references(() => interviewAssignments.id)
-    .unique(),
+    .references(() => interviews.id),
   evaluatorId: uuid("evaluator_id")
     .notNull()
     .references(() => interviewers.id),
@@ -260,7 +272,6 @@ export const evaluations = pgTable("evaluations", {
   format: evaluationFormatEnum("format").notNull(),
   structuredData: jsonb("structured_data"),
   driveDocUrl: text("drive_doc_url"),
-  recordingUrl: text("recording_url"),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

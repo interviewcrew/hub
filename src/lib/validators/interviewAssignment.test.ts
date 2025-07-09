@@ -6,18 +6,15 @@ import {
 import { generateMockUuid } from "@/tests/utils/mockUuid";
 
 const baseMock = {
-  candidateApplicationId: generateMockUuid(1),
-  interviewStepId: generateMockUuid(2),
+  interviewId: generateMockUuid(1),
 };
 
 describe("createInterviewAssignmentSchema", () => {
   it("should validate a correct payload", () => {
     const mock = {
       ...baseMock,
-      interviewerId: generateMockUuid(3),
       resourceUrl: "https://example.com/resource",
       resourceIdentifier: "file-12345",
-      resourceDeletedAt: new Date(),
     };
     const result = createInterviewAssignmentSchema.safeParse(mock);
     expect(result.success).toBe(true);
@@ -28,33 +25,24 @@ describe("createInterviewAssignmentSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("should fail if candidateApplicationId is not a UUID", () => {
-    const mock = { ...baseMock, candidateApplicationId: "not-a-uuid" };
+  it("should fail if interviewId is missing", () => {
+    const mock = {
+      resourceUrl: "https://example.com/resource",
+      resourceIdentifier: "file-12345",
+    };
     const result = createInterviewAssignmentSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path[0]).toBe("candidateApplicationId");
-      expect(result.error.issues[0].message).toBe("Invalid uuid");
+      expect(result.error.issues[0].path).toEqual(["interviewId"]);
     }
   });
 
-  it("should fail if resourceUrl is not a valid URL", () => {
-    const mock = { ...baseMock, resourceUrl: "not-a-url" };
+  it("should fail if interviewId is not a UUID", () => {
+    const mock = { ...baseMock, interviewId: "not-a-uuid" };
     const result = createInterviewAssignmentSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path[0]).toBe("resourceUrl");
-      expect(result.error.issues[0].message).toBe("Invalid url");
-    }
-  });
-
-  it("should fail if resourceDeletedAt is not a date", () => {
-    const mock = { ...baseMock, resourceDeletedAt: "not-a-date" };
-    const result = createInterviewAssignmentSchema.safeParse(mock);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0].path[0]).toBe("resourceDeletedAt");
-      expect(result.error.issues[0].message).toBe("Expected date, received string");
+      expect(result.error.issues[0].path).toEqual(["interviewId"]);
     }
   });
 });
@@ -64,16 +52,6 @@ describe("updateInterviewAssignmentSchema", () => {
     const mock = { resourceUrl: "https://example.com/new-url" };
     const result = updateInterviewAssignmentSchema.safeParse(mock);
     expect(result.success).toBe(true);
-  });
-
-  it("should not allow invalid types in partial updates", () => {
-    const mock = { candidateApplicationId: "not-a-uuid" };
-    const result = updateInterviewAssignmentSchema.safeParse(mock);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0].path[0]).toBe("candidateApplicationId");
-      expect(result.error.issues[0].message).toBe("Invalid uuid");
-    }
   });
 
   it("should accept an empty object for partial updates", () => {

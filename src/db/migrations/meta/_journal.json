@@ -64,6 +64,13 @@
       "when": 1751833737012,
       "tag": "0008_create_evaluations_table",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1752043643002,
+      "tag": "0009_create_interview_table",
+      "breakpoints": true
     }
   ]
 }
