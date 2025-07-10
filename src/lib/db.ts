@@ -44,8 +44,6 @@ pool.connect((err, client, release) => {
   }
 });
 
-export const db = drizzle(pool);
 
-// If you have schemas with relations, you might export them like this for convenience:
-// import * as schema from '../db/schema';
-// export const db = drizzle(pool, { schema }); 
+import * as schema from '../db/schema';
+export const db = drizzle(pool, { schema }); 

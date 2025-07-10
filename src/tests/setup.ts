@@ -23,15 +23,11 @@
 // }));
 
 import { vi } from 'vitest';
+import { mockDb } from './utils/drizzleMocks';
 
 // Mock dependencies
 vi.mock('@/lib/db', () => ({
-  db: {
-    insert: vi.fn(),
-    select: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
+  db: mockDb,
 }));
 
 vi.mock('next/cache', () => ({
