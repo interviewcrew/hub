@@ -119,10 +119,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 5: Server Actions for Core Interview Workflow Entities
 
-### [ ] Prompt 5.1: Position CRUD Server Actions
-- [ ] Create Position CRUD Server Actions (createPosition, getPositions, getPosition, updatePosition, deletePosition) in src/lib/actions/positions.ts
-- [ ] Implement with Drizzle, Zod validation, error handling
-- [ ] Write unit tests in src/lib/actions/positions.test.ts
+### [x] Prompt 5.1: Position CRUD Server Actions
+- [x] Create Position CRUD Server Actions (createPosition, getPositions, getPosition, updatePosition, deletePosition) in src/lib/actions/positions.ts
+- [x] Implement with Drizzle, Zod validation, error handling
+- [x] Write unit tests in src/lib/actions/positions.test.ts
 
 ### [ ] Prompt 5.2: OriginalAssignment CRUD Server Actions
 - [ ] Create OriginalAssignment CRUD Server Actions under src/lib/actions/originalAssignments.ts

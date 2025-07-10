@@ -9,6 +9,7 @@ import {
   jsonb,
   boolean,
 } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 // This is your Drizzle schema file.
 // You will define your database tables and relations here.
@@ -69,6 +70,28 @@ export const positionTechStacks = pgTable('position_tech_stacks', {
   techStackId: uuid('tech_stack_id').notNull().references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const positionsRelations = relations(positions, ({ many }) => ({
+  positionTechStacks: many(positionTechStacks),
+}));
+
+export const techStacksRelations = relations(techStacks, ({ many }) => ({
+  positionTechStacks: many(positionTechStacks),
+}));
+
+export const positionTechStacksRelations = relations(
+  positionTechStacks,
+  ({ one }) => ({
+    position: one(positions, {
+      fields: [positionTechStacks.positionId],
+      references: [positions.id],
+    }),
+    techStack: one(techStacks, {
+      fields: [positionTechStacks.techStackId],
+      references: [techStacks.id],
+    }),
+  }),
+);
 
 export const originalAssignments = pgTable('original_assignments', {
   id: uuid('id').primaryKey().defaultRandom(),
