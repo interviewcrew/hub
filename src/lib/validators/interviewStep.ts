@@ -17,4 +17,7 @@ export const updateInterviewStepSchema = z.object({
   originalAssignmentId: z.string().uuid().optional().nullable(),
   schedulingLink: z.string().url().optional().nullable(),
   emailTemplate: z.string().optional().nullable(),
-}); 
+});
+
+export type CreateInterviewStepInput = z.infer<typeof createInterviewStepSchema>;
+export type UpdateInterviewStepInput = z.infer<typeof updateInterviewStepSchema>; 

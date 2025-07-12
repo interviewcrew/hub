@@ -129,10 +129,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Implement with Drizzle, Zod validation, error handling
 - [x] Write unit tests in src/lib/actions/originalAssignments.test.ts
 
-### [ ] Prompt 5.3: InterviewStep CRUD Server Actions (within a Position context)
-- [ ] Create nested InterviewStep CRUD Server Actions under src/lib/actions/interviewSteps.ts
-- [ ] Implement with Drizzle, Zod validation, error handling
-- [ ] Write unit tests in src/lib/actions/interviewSteps.test.ts
+### [x] Prompt 5.3: InterviewStep CRUD Server Actions (within a Position context)
+- [x] Create nested InterviewStep CRUD Server Actions under src/lib/actions/interviewSteps.ts
+- [x] Implement with Drizzle, Zod validation, error handling
+- [x] Write unit tests in src/lib/actions/interviewSteps.test.ts
 
 ### [ ] Prompt 5.4: Candidate Application CRUD Server Actions
 - [ ] Create Server Actions to manage `candidate_applications` (create, update, get, etc.).
