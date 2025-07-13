@@ -134,12 +134,12 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Implement with Drizzle, Zod validation, error handling
 - [x] Write unit tests in src/lib/actions/interviewSteps.test.ts
 
-### [ ] Prompt 5.4: Candidate Application CRUD Server Actions
-- [ ] Create Server Actions to manage `candidate_applications` (create, update, get, etc.).
-- [ ] The `updateCandidateApplication` action must set `status_updated_at` whenever the `status` changes.
-- [ ] The `updateCandidateApplication` action will handle setting the `client_notified_at` timestamp.
-- [ ] All actions that change application status or create an application must also create a corresponding record in the `interview_events` table.
-- [ ] Write unit tests for these Server Actions.
+### [ ] Prompt 5.4: Candidate Application and Candidate Management Server Actions
+- [ ] Refactor `createCandidateApplication` to find or create a `Candidate` before creating the application.
+- [ ] Ensure `createCandidateApplication` is a single transaction and prevents duplicate applications.
+- [ ] Ensure `updateCandidateApplication` correctly handles status changes, timestamps, and `interview_events`.
+- [ ] Update Zod validators for the new `createCandidateApplication` input.
+- [ ] Update unit tests to cover the new candidate creation/retrieval logic and duplicate application prevention.
 
 ### [ ] Prompt 5.5: Interviewer CRUD Server Actions
 - [ ] Create Interviewer CRUD Server Actions under `src/lib/actions/interviewers.ts`.

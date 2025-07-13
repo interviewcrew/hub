@@ -325,16 +325,23 @@ This phase focuses on creating Server Actions for managing entities central to t
 2. Implement using Drizzle, with error handling.
 3. Write unit tests in `src/lib/actions/interviewSteps.test.ts`.
 
-### Prompt 5.4: Candidate Candidate Application CRUD Server Actions
+### Prompt 5.4: Candidate Application and Candidate Management Server Actions
 
-1.  Create Server Actions to manage `candidate_applications` under a new file `src/lib/actions/applications.ts`.
-2.  Implement actions like `createCandidateApplication`, `getApplicationById`, and `updateApplicationStatus`.
-    -   When `createCandidateApplication` is called, it should also create an initial "Application Created" event in the `interview_events` table.
-3.  The `updateApplicationStatus` action is critical:
-    -   It must update both the `status` and the `status_updated_at` fields simultaneously.
-    -   It must also log a new "Status Changed" event to the `interview_events` table, recording the new status.
-4.  Implement a separate `notifyClientForApplication` action that sets the `client_notified_at` timestamp.
-5.  Write unit tests for these server actions.
+1.  Create Server Actions to manage `candidate_applications` and associated `candidates` in `src/lib/actions/candidateApplications.ts`.
+2.  Implement a `createCandidateApplication` action. This is a critical workflow that combines candidate creation/retrieval with application creation:
+    -   The action should accept `positionId` and candidate details (`name`, `email`).
+    -   It must first search for an existing candidate by email.
+    -   If the candidate does not exist, it must create a new record in the `candidates` table.
+    -   If the candidate exists, it will use their ID, but first check if they have already applied for the same position to prevent duplicates.
+    -   After securing a `candidateId`, it will create the new `candidate_applications` record.
+    -   Finally, it must create an initial "CANDIDATE_APPLIED" event in the `interview_events` table.
+    -   This entire process must be wrapped in a database transaction for data integrity.
+3.  Implement `getCandidateApplication` and other getter actions as needed.
+4.  Implement `updateCandidateApplication`. This action is critical for workflow progression:
+    -   It must handle status changes, updating both the `status` and the `status_updated_at` fields simultaneously.
+    -   When the status changes, it must also log a new "STATUS_CHANGED" event to the `interview_events` table, recording the old and new status.
+    -   It should also handle updating other fields like `client_notified_at`.
+5.  Write comprehensive unit tests for these server actions, covering the logic for finding or creating a candidate, preventing duplicate applications, creating the application, and handling status updates.
 
 ### Prompt 5.5: Interviewer CRUD Server Actions
 
