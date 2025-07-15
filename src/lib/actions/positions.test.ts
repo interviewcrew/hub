@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   mockDb,
   resetDbMocks,
-  mockSelectChain,
   mockUpdateChain,
   mockDeleteChain,
   mockInsertChain,
@@ -31,7 +30,7 @@ describe("Position Server Actions", () => {
 
   const baseTechStackMock = {
     id: techStackId,
-    name: "TypeScript",
+    name: "typescript",
   };
 
   const basePositionMock = {
@@ -57,9 +56,9 @@ describe("Position Server Actions", () => {
       // 1. Mock position creation
       mockInsertChain([basePositionMock]);
       // 2. Mock tech stack lookup (not found)
-      mockSelectChain([]);
+      mockDb.query.techStacks.findMany.mockResolvedValue([]);
       // 3. Mock tech stack creation
-      mockInsertChain([{ id: baseTechStackMock.id }]);
+      mockInsertChain([baseTechStackMock]);
       // 4. Mock linking table insertion (returns nothing)
       mockInsertChain([]);
 
@@ -80,7 +79,7 @@ describe("Position Server Actions", () => {
 
       // Verify the correct sequence of db calls
       expect(mockDb.insert).toHaveBeenCalledWith(positions);
-      expect(mockDb.select).toHaveBeenCalled();
+      expect(mockDb.query.techStacks.findMany).toHaveBeenCalled();
       expect(mockDb.insert).toHaveBeenCalledWith(techStacks);
       expect(mockDb.insert).toHaveBeenCalledWith(positionTechStacks);
       expect(revalidatePath).toHaveBeenCalledWith("/positions");
@@ -90,7 +89,7 @@ describe("Position Server Actions", () => {
       // 1. Mock position creation
       mockInsertChain([basePositionMock]);
       // 2. Mock tech stack lookup (found)
-      mockSelectChain([{ id: baseTechStackMock.id }]);
+      mockDb.query.techStacks.findMany.mockResolvedValue([baseTechStackMock]);
       // 3. Mock linking table insertion
       mockInsertChain([]);
 
@@ -110,10 +109,9 @@ describe("Position Server Actions", () => {
       expect(result.data).toEqual(positionWithTechStacksMock);
 
       // Verify that techStacks was NOT inserted into
-      expect(mockDb.insert).toHaveBeenCalledWith(positions);
-      expect(mockDb.select).toHaveBeenCalled();
-      expect(mockDb.insert).not.toHaveBeenCalledWith(techStacks);
-      expect(mockDb.insert).toHaveBeenCalledWith(positionTechStacks);
+      const insertCalls = mockDb.insert.mock.calls;
+      const techStackInsertCall = insertCalls.find(call => call[0] === techStacks);
+      expect(techStackInsertCall).toBeUndefined();
       expect(revalidatePath).toHaveBeenCalledWith("/positions");
     });
 
@@ -200,7 +198,7 @@ describe("Position Server Actions", () => {
       // 1. Mock transaction steps for update
       mockUpdateChain([]); // Updating the position itself
       mockDeleteChain([]); // Deleting old stacks
-      mockSelectChain([]); // Finding new stacks (not found)
+      mockDb.query.techStacks.findMany.mockResolvedValue([]); // Finding new stacks (not found)
       mockInsertChain([baseTechStackMock]); // Creating new stacks
       mockInsertChain([]); // Inserting into linking table
 
@@ -226,7 +224,7 @@ describe("Position Server Actions", () => {
       // 1. Mock transaction steps for update
       mockUpdateChain([]); // Updating the position itself
       mockDeleteChain([]); // Deleting old stacks
-      mockSelectChain([baseTechStackMock]); // Finding new stacks (found)
+      mockDb.query.techStacks.findMany.mockResolvedValue([baseTechStackMock]); // Finding new stacks (found)
       mockInsertChain([]); // Inserting into linking table
 
       // 2. Mock the final getPosition call
@@ -239,7 +237,9 @@ describe("Position Server Actions", () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(updatedMock);
-      expect(mockDb.insert).not.toHaveBeenCalledWith(techStacks);
+      const insertCalls = mockDb.insert.mock.calls;
+      const techStackInsertCall = insertCalls.find(call => call[0] === techStacks);
+      expect(techStackInsertCall).toBeUndefined();
       expect(revalidatePath).toHaveBeenCalledWith("/positions");
       expect(revalidatePath).toHaveBeenCalledWith(`/positions/${positionId}`);
     });
