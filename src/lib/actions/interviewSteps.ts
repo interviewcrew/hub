@@ -14,6 +14,7 @@ import {
 } from '@/lib/validators/interviewStep';
 import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
 export async function createInterviewStep(
   input: CreateInterviewStepInput,
@@ -54,6 +55,9 @@ export async function createInterviewStep(
 
     return { success: true, data: newStep };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -143,6 +147,9 @@ export async function updateInterviewStep(
 
     return { success: true, data: updatedStep };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

@@ -29,6 +29,9 @@ export async function createClient(input: z.infer<typeof createClientSchema>) {
     revalidatePath('/clients');
     return { success: true, data: client };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -95,6 +98,9 @@ export async function updateClient(
     revalidatePath(`/clients/${id}`);
     return { success: true, data: client };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

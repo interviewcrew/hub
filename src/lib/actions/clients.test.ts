@@ -17,6 +17,7 @@ import {
   mockDeleteError,
 } from '@/tests/utils/drizzleMocks';
 import { generateMockUuid } from '@/tests/utils/mockUuid';
+import { CreateClientInput, UpdateClientInput } from '@/lib/validators/client';
 
 vi.mock('next/cache');
 
@@ -63,10 +64,12 @@ describe('Client Server Actions', () => {
 
     it('should return error for invalid data', async () => {
       const invalidData = { name: '' }; // Missing accountManagerId
-      const result = await createClient(invalidData);
+      const result = await createClient(invalidData as CreateClientInput);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('accountManagerId');
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path[0]).toBe('name');
+      expect(error[1].path[0]).toBe('accountManagerId');
     });
 
     it('should handle database errors during creation', async () => {
@@ -165,9 +168,11 @@ describe('Client Server Actions', () => {
 
     it('should return error for invalid data', async () => {
         const invalidData = { name: 123 }; // name should be a string
-        const result = await updateClient(clientId, invalidData);
+        const result = await updateClient(clientId, invalidData as unknown as UpdateClientInput);
         expect(result.success).toBe(false);
-        expect(result.error).toContain('Expected string, received number');
+        const error = JSON.parse(result.error as string);
+        expect(error[0].path[0]).toBe('name');
+        expect(error[0].message).toBe('Expected string, received number');
     });
 
     it('should return error when client to update is not found', async () => {
@@ -216,4 +221,4 @@ describe('Client Server Actions', () => {
         expect(result.error).toBe('DB delete error');
     });
   });
-}); 
+});

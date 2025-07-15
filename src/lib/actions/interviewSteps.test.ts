@@ -77,7 +77,9 @@ describe('Interview Step Actions', () => {
         positionId: 'not-a-uuid',
       });
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid uuid');
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path).toEqual(['positionId']);
+      expect(error[0].message).toBe('Invalid uuid');
     });
 
     it('should fail if position does not exist', async () => {

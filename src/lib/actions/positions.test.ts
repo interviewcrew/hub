@@ -14,6 +14,7 @@ import { generateMockUuid } from '@/tests/utils/mockUuid';
 import { createPosition, getPosition, getPositions, updatePosition, deletePosition } from './positions';
 import { revalidatePath } from 'next/cache';
 import { positions, positionTechStacks, techStacks } from '@/db/schema';
+import { CreatePositionInput } from '@/lib/validators/position';
 
 vi.mock('next/cache');
 
@@ -121,10 +122,10 @@ describe("Position Server Actions", () => {
         clientId: "",
         accountManagerId,
         title: "Software Engineer",
-        techStacks: [],
-      });
+      } as CreatePositionInput);
       expect(result.success).toBe(false);
-      expect(result.error).toContain("Invalid client ID");
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path).toEqual(['clientId']);
     });
 
     it("should return an error if the database call fails", async () => {
@@ -246,7 +247,8 @@ describe("Position Server Actions", () => {
     it("should return an error if input validation fails", async () => {
       const result = await updatePosition(positionId, { title: "" });
       expect(result.success).toBe(false);
-      expect(result.error).toContain("Title is required");
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path).toEqual(['title']);
     });
 
     it("should return an error if the database call fails", async () => {

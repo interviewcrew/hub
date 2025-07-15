@@ -16,6 +16,7 @@ import {
   mockUpdateError,
   mockDeleteError
 } from '@/tests/utils/drizzleMocks';
+import { CreateAccountManagerInput, UpdateAccountManagerInput } from '@/lib/validators/accountManager';
 
 describe('AccountManager Server Actions', () => {
   beforeEach(() => {
@@ -43,11 +44,11 @@ describe('AccountManager Server Actions', () => {
 
     it('should return error for invalid data', async () => {
       const invalidData = { name: '', email: 'invalid-email' };
-
-      const result = await createAccountManager(invalidData);
-
+      const result = await createAccountManager(invalidData as CreateAccountManagerInput);
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Name is required');
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path[0]).toBe('name');
+      expect(error[1].path[0]).toBe('email');
     });
 
     it('should handle database errors', async () => {
@@ -144,11 +145,11 @@ describe('AccountManager Server Actions', () => {
 
     it('should return error for invalid data', async () => {
       const invalidData = { email: 'invalid-email' };
-
-      const result = await updateAccountManager('1', invalidData);
-
+      const result = await updateAccountManager('1', invalidData as UpdateAccountManagerInput);
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid email address');
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path[0]).toBe('email');
+      expect(error[0].message).toBe('Invalid email address');
     });
 
     it('should return error when account manager not found', async () => {

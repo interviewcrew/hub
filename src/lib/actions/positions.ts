@@ -57,6 +57,9 @@ export async function createPosition(
     revalidatePath("/positions");
     return getPosition(newPosition.id);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -164,6 +167,9 @@ export async function updatePosition(
 
     return getPosition(id);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: JSON.stringify(error.issues) };
+    }
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
