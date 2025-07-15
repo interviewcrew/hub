@@ -8,4 +8,7 @@ export const createInterviewerSchema = z.object({
 
 export const updateInterviewerSchema = createInterviewerSchema.partial().extend({
   isActive: z.boolean().optional(),
-}); 
+});
+
+export type CreateInterviewerInput = z.infer<typeof createInterviewerSchema>;
+export type UpdateInterviewerInput = z.infer<typeof updateInterviewerSchema>; 

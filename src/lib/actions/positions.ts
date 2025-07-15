@@ -2,7 +2,9 @@
 
 import { db } from "@/lib/db";
 import {
+  CreatePositionInput,
   createPositionSchema,
+  UpdatePositionInput,
   updatePositionSchema,
 } from "@/lib/validators/position";
 import { positions, positionTechStacks, techStacks } from "@/db/schema";
@@ -11,7 +13,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function createPosition(
-  input: z.infer<typeof createPositionSchema>,
+  input: CreatePositionInput,
 ) {
   try {
     const { techStacks: techStackNames, ...positionData } =
@@ -115,7 +117,7 @@ export async function getPositions() {
 
 export async function updatePosition(
   id: string,
-  input: z.infer<typeof updatePositionSchema>,
+  input: UpdatePositionInput,
 ) {
   try {
     const { techStacks: techStackNames, ...positionData } =

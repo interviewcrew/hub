@@ -11,3 +11,6 @@ export const updateOriginalAssignmentSchema = z.object({
   googleDocFileId: z.string().min(1, 'Google Doc File ID is required').optional(),
   driveFolderPath: z.string().optional(),
 }); 
+
+export type CreateOriginalAssignmentInput = z.infer<typeof createOriginalAssignmentSchema>;
+export type UpdateOriginalAssignmentInput = z.infer<typeof updateOriginalAssignmentSchema>; 

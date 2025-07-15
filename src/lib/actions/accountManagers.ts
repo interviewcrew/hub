@@ -3,7 +3,9 @@
 import { db } from '@/lib/db';
 import { accountManagers } from '@/db/schema';
 import {
+  CreateAccountManagerInput,
   createAccountManagerSchema,
+  UpdateAccountManagerInput,
   updateAccountManagerSchema,
 } from '@/lib/validators/accountManager';
 import { eq } from 'drizzle-orm';
@@ -11,7 +13,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export async function createAccountManager(
-  input: z.infer<typeof createAccountManagerSchema>,
+  input: CreateAccountManagerInput,
 ) {
   try {
     const validatedData = createAccountManagerSchema.parse(input);
@@ -68,7 +70,7 @@ export async function getAccountManager(id: string) {
 
 export async function updateAccountManager(
   id: string,
-  input: z.infer<typeof updateAccountManagerSchema>,
+  input: UpdateAccountManagerInput,
 ) {
   try {
     const validatedData = updateAccountManagerSchema.parse(input);

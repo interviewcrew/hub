@@ -6,3 +6,5 @@ export const createInterviewEventSchema = z.object({
   eventName: z.string().min(1, 'Event name is required'),
   details: z.record(z.unknown()).optional(),
 }); 
+
+export type CreateInterviewEventInput = z.infer<typeof createInterviewEventSchema>;

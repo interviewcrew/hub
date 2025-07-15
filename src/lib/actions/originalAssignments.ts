@@ -2,7 +2,9 @@
 
 import { db } from "@/lib/db";
 import {
+  CreateOriginalAssignmentInput,
   createOriginalAssignmentSchema,
+  UpdateOriginalAssignmentInput,
   updateOriginalAssignmentSchema,
 } from "@/lib/validators/originalAssignment";
 import { originalAssignments } from "@/db/schema";
@@ -11,7 +13,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function createOriginalAssignment(
-  input: z.infer<typeof createOriginalAssignmentSchema>,
+  input: CreateOriginalAssignmentInput,
 ) {
   try {
     const data = createOriginalAssignmentSchema.parse(input);
@@ -67,7 +69,7 @@ export async function getOriginalAssignments() {
 
 export async function updateOriginalAssignment(
   id: string,
-  input: z.infer<typeof updateOriginalAssignmentSchema>,
+  input: UpdateOriginalAssignmentInput,
 ) {
   try {
     const data = updateOriginalAssignmentSchema.parse(input);

@@ -2,12 +2,12 @@
 
 import { db } from '@/lib/db';
 import { clients, accountManagers } from '@/db/schema';
-import { createClientSchema, updateClientSchema } from '@/lib/validators/client';
+import { CreateClientInput, createClientSchema, UpdateClientInput, updateClientSchema } from '@/lib/validators/client';
 import { eq, asc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-export async function createClient(input: z.infer<typeof createClientSchema>) {
+export async function createClient(input: CreateClientInput) {
   try {
     const validatedData = createClientSchema.parse(input);
 
@@ -79,7 +79,7 @@ export async function getClient(id: string) {
 
 export async function updateClient(
   id: string,
-  input: z.infer<typeof updateClientSchema>,
+  input: UpdateClientInput,
 ) {
   try {
     const validatedData = updateClientSchema.parse(input);

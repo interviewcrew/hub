@@ -8,3 +8,6 @@ export const createInterviewSchema = z.object({
 });
 
 export const updateInterviewSchema = createInterviewSchema.partial(); 
+
+export type CreateInterviewInput = z.infer<typeof createInterviewSchema>;
+export type UpdateInterviewInput = z.infer<typeof updateInterviewSchema>; 

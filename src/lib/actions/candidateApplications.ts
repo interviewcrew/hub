@@ -8,6 +8,7 @@ import {
   CANDIDATE_STATUSES,
   INTERVIEW_EVENT_NAMES,
   type NewCandidateApplication,
+  Candidate,
 } from '@/db/schema';
 import {
   createCandidateApplicationSchema,
@@ -33,7 +34,7 @@ export async function createCandidateApplication(
     } = candidateData;
 
     const newApplication = await db.transaction(async transaction => {
-      let candidate: (typeof candidates.$inferSelect) | undefined;
+      let candidate: Candidate | undefined;
       const existingCandidates = await transaction
         .select()
         .from(candidates)
