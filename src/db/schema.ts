@@ -33,6 +33,9 @@ export const accountManagers = pgTable('account_managers', {
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
 });
 
+export type AccountManager = typeof accountManagers.$inferSelect;
+export type NewAccountManager = typeof accountManagers.$inferInsert;
+
 export const clients = pgTable('clients', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -43,12 +46,18 @@ export const clients = pgTable('clients', {
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
 });
 
+export type Client = typeof clients.$inferSelect;
+export type NewClient = typeof clients.$inferInsert;
+
 export const techStacks = pgTable('tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
 });
+
+export type TechStack = typeof techStacks.$inferSelect;
+export type NewTechStack = typeof techStacks.$inferInsert;
 
 export const positions = pgTable('positions', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -64,12 +73,18 @@ export const positions = pgTable('positions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
 });
 
+export type Position = typeof positions.$inferSelect;
+export type NewPosition = typeof positions.$inferInsert;
+
 export const positionTechStacks = pgTable('position_tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
   positionId: uuid('position_id').notNull().references(() => positions.id),
   techStackId: uuid('tech_stack_id').notNull().references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export type PositionTechStack = typeof positionTechStacks.$inferSelect;
+export type NewPositionTechStack = typeof positionTechStacks.$inferInsert;
 
 export const positionsRelations = relations(positions, ({ many }) => ({
   positionTechStacks: many(positionTechStacks),
@@ -105,6 +120,9 @@ export const originalAssignments = pgTable('original_assignments', {
     .$onUpdate(() => new Date()),
 });
 
+export type OriginalAssignment = typeof originalAssignments.$inferSelect;
+export type NewOriginalAssignment = typeof originalAssignments.$inferInsert;
+
 export const interviewStepTypes = pgTable(
   'interview_step_types',
   {
@@ -121,6 +139,9 @@ export const interviewStepTypes = pgTable(
   },
   (table) => [unique('client_name_unq').on(table.clientId, table.name)],
 );
+
+export type InterviewStepType = typeof interviewStepTypes.$inferSelect;
+export type NewInterviewStepType = typeof interviewStepTypes.$inferInsert;
 
 export const interviewSteps = pgTable(
   'interview_steps',
@@ -150,6 +171,9 @@ export const interviewSteps = pgTable(
   ],
 );
 
+export type InterviewStep = typeof interviewSteps.$inferSelect;
+export type NewInterviewStep = typeof interviewSteps.$inferInsert;
+
 export const candidates = pgTable('candidates', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -161,6 +185,9 @@ export const candidates = pgTable('candidates', {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export type Candidate = typeof candidates.$inferSelect;
+export type NewCandidate = typeof candidates.$inferInsert;
 
 export const CANDIDATE_STATUSES = {
   INITIAL_STATE: 'Initial state',
@@ -207,6 +234,9 @@ export const candidateApplications = pgTable(
   ],
 );
 
+export type CandidateApplication = typeof candidateApplications.$inferSelect;
+export type NewCandidateApplication = typeof candidateApplications.$inferInsert;
+
 export const interviewEvents = pgTable('interview_events', {
   id: uuid('id').primaryKey().defaultRandom(),
   candidateApplicationId: uuid('candidate_application_id')
@@ -217,6 +247,10 @@ export const interviewEvents = pgTable('interview_events', {
   details: jsonb('details'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export type InterviewEvent = typeof interviewEvents.$inferSelect;
+export type NewInterviewEvent = typeof interviewEvents.$inferInsert;
+
 
 export const interviewers = pgTable('interviewers', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -231,6 +265,9 @@ export const interviewers = pgTable('interviewers', {
     .$onUpdate(() => new Date()),
 });
 
+export type Interviewer = typeof interviewers.$inferSelect;
+export type NewInterviewer = typeof interviewers.$inferInsert;
+
 export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
   interviewerId: uuid('interviewer_id')
@@ -241,6 +278,10 @@ export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
     .references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export type InterviewerTechStack = typeof interviewerTechStacks.$inferSelect;
+export type NewInterviewerTechStack = typeof interviewerTechStacks.$inferInsert;
+
 
 export const interviews = pgTable("interviews", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -259,6 +300,9 @@ export const interviews = pgTable("interviews", {
     .$onUpdate(() => new Date()),
 });
 
+export type Interview = typeof interviews.$inferSelect;
+export type NewInterview = typeof interviews.$inferInsert;
+
 export const interviewAssignments = pgTable("interview_assignments", {
   id: uuid("id").defaultRandom().primaryKey(),
   interviewId: uuid("interview_id")
@@ -273,6 +317,9 @@ export const interviewAssignments = pgTable("interview_assignments", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export type InterviewAssignment = typeof interviewAssignments.$inferSelect;
+export type NewInterviewAssignment = typeof interviewAssignments.$inferInsert;
 
 export const EVALUATION_OUTCOMES = {
   STRONG_HIRE: 'Strong Hire',
@@ -310,6 +357,9 @@ export const evaluations = pgTable('evaluations', {
     .$onUpdate(() => new Date()),
 });
 
+export type Evaluation = typeof evaluations.$inferSelect;
+export type NewEvaluation = typeof evaluations.$inferInsert;
+
 export const TRANSCRIPTION_TYPES = {
   LIVE: 'live',
   PROCESSED: 'processed',
@@ -346,3 +396,6 @@ export const transcriptions = pgTable('transcriptions', {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export type Transcription = typeof transcriptions.$inferSelect;
+export type NewTranscription = typeof transcriptions.$inferInsert;
