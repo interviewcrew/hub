@@ -141,10 +141,10 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Update Zod validators for the new `createCandidateApplication` input.
 - [x] Update unit tests to cover the new candidate creation/retrieval logic and duplicate application prevention.
 
-### [ ] Prompt 5.5: Interviewer CRUD Server Actions
-- [ ] Create Interviewer CRUD Server Actions under `src/lib/actions/interviewers.ts`.
-- [ ] The create/update actions must also handle linking/unlinking skills in the `interviewer_tech_stacks` join table.
-- [ ] Write unit tests for these server actions.
+### [x] Prompt 5.5: Interviewer CRUD Server Actions
+- [x] Create Interviewer CRUD Server Actions under `src/lib/actions/interviewers.ts`.
+- [x] The create/update actions must also handle linking/unlinking skills in the `interviewer_tech_stacks` join table.
+- [x] Write unit tests for these server actions.
 
 ## Phase 6: Account Manager (AM) UI - Basic Management Pages
 

@@ -92,6 +92,7 @@ export const positionsRelations = relations(positions, ({ many }) => ({
 
 export const techStacksRelations = relations(techStacks, ({ many }) => ({
   positionTechStacks: many(positionTechStacks),
+  interviewerTechStacks: many(interviewerTechStacks),
 }));
 
 export const positionTechStacksRelations = relations(
@@ -302,6 +303,10 @@ export const interviewers = pgTable('interviewers', {
 export type Interviewer = typeof interviewers.$inferSelect;
 export type NewInterviewer = typeof interviewers.$inferInsert;
 
+export const interviewersRelations = relations(interviewers, ({ many }) => ({
+  techStacks: many(interviewerTechStacks),
+}));
+
 export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
   interviewerId: uuid('interviewer_id')
@@ -313,9 +318,22 @@ export const interviewerTechStacks = pgTable('interviewer_tech_stacks', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const interviewerTechStacksRelations = relations(
+  interviewerTechStacks,
+  ({ one }) => ({
+    interviewer: one(interviewers, {
+      fields: [interviewerTechStacks.interviewerId],
+      references: [interviewers.id],
+    }),
+    techStack: one(techStacks, {
+      fields: [interviewerTechStacks.techStackId],
+      references: [techStacks.id],
+    }),
+  }),
+);
+
 export type InterviewerTechStack = typeof interviewerTechStacks.$inferSelect;
 export type NewInterviewerTechStack = typeof interviewerTechStacks.$inferInsert;
-
 
 export const interviews = pgTable("interviews", {
   id: uuid("id").defaultRandom().primaryKey(),
