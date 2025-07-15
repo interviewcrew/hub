@@ -4,12 +4,13 @@ import {
   updateEvaluationSchema,
 } from "./evaluation";
 import { generateMockUuid } from "@/tests/utils/mockUuid";
+import { EVALUATION_FORMATS, EVALUATION_OUTCOMES } from "@/db/schema";
 
 const baseMock = {
   interviewId: generateMockUuid(1),
   evaluatorId: generateMockUuid(2),
-  outcome: "Strong Hire" as const,
-  format: "structured_json" as const,
+  outcome: EVALUATION_OUTCOMES.STRONG_HIRE,
+  format: EVALUATION_FORMATS.STRUCTURED_JSON,
   structuredData: { notes: "Great candidate" },
 };
 
@@ -23,7 +24,7 @@ describe("createEvaluationSchema", () => {
   it("should validate when format is drive_doc and driveDocUrl is provided", () => {
     const mock = {
       ...baseMock,
-      format: "drive_doc" as const,
+      format: EVALUATION_FORMATS.DRIVE_DOC,
       driveDocUrl: "https://example.com/doc",
       structuredData: undefined,
     };
@@ -46,7 +47,7 @@ describe("createEvaluationSchema", () => {
   it("should fail if format is drive_doc but driveDocUrl is missing", () => {
     const mock = {
       ...baseMock,
-      format: "drive_doc" as const,
+      format: EVALUATION_FORMATS.DRIVE_DOC,
       structuredData: undefined,
     };
     const result = createEvaluationSchema.safeParse(mock);
@@ -68,7 +69,7 @@ describe("createEvaluationSchema", () => {
   it("should fail if driveDocUrl is not a valid URL", () => {
     const mock = {
       ...baseMock,
-      format: "drive_doc" as const,
+      format: EVALUATION_FORMATS.DRIVE_DOC,
       driveDocUrl: "not-a-url",
       structuredData: undefined,
     };
@@ -82,14 +83,14 @@ describe("createEvaluationSchema", () => {
 
 describe("updateEvaluationSchema", () => {
   it("should allow partial updates", () => {
-    const mock = { outcome: "Hire" as const };
+    const mock = { outcome: EVALUATION_OUTCOMES.HIRE };
     const result = updateEvaluationSchema.safeParse(mock);
     expect(result.success).toBe(true);
   });
 
   it("should still enforce refine logic on partial updates", () => {
     const mock = {
-      format: "drive_doc",
+      format: EVALUATION_FORMATS.DRIVE_DOC,
       driveDocUrl: undefined,
     };
     const result = updateEvaluationSchema.safeParse(mock);

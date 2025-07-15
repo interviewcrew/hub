@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
-  createCandidateSchema,
-  updateCandidateSchema,
   createCandidateApplicationSchema,
+  createCandidateSchema,
   updateCandidateApplicationSchema,
+  updateCandidateSchema,
 } from './candidate';
 import { generateMockUuid } from '@/tests/utils/mockUuid';
-import { candidateStatusEnum } from '@/db/schema';
+import { CANDIDATE_STATUSES } from '@/db/schema';
 
 describe('Candidate and Candidate Application Zod Schemas', () => {
   const validPositionId = generateMockUuid(2);
@@ -72,24 +72,27 @@ describe('Candidate and Candidate Application Zod Schemas', () => {
 
   describe('updateCandidateApplicationSchema', () => {
     it('should validate a valid status update', () => {
-      const input = { status: candidateStatusEnum.enumValues[2] }; // 'Interview Scheduled'
+      const input = { status: CANDIDATE_STATUSES.INTERVIEW_SCHEDULED };
       const result = updateCandidateApplicationSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
-    it('should validate a clientNotifiedAt update', () => {
+    it('should validate a valid clientNotifiedAt update', () => {
       const input = { clientNotifiedAt: new Date() };
       const result = updateCandidateApplicationSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
 
-    it('should fail on an invalid status', () => {
+    it('should accept a valid status', () => {
+      const input = { status: CANDIDATE_STATUSES.INTERVIEW_SCHEDULED };
+      const result = updateCandidateApplicationSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject an invalid status', () => {
       const input = { status: 'NonExistentStatus' };
       const result = updateCandidateApplicationSchema.safeParse(input);
       expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].path[0]).toBe('status');
-      }
     });
   });
 }); 

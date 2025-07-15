@@ -4,11 +4,12 @@ import {
   updateTranscriptionSchema,
 } from "./transcription";
 import { generateMockUuid } from "@/tests/utils/mockUuid";
+import { TRANSCRIPTION_PROCESSING_STATUSES, TRANSCRIPTION_TYPES } from "@/db/schema";
 
 const baseMock = {
   interviewId: generateMockUuid(1),
-  type: "live" as const,
-  status: "completed" as const,
+  type: TRANSCRIPTION_TYPES.LIVE,
+  status: TRANSCRIPTION_PROCESSING_STATUSES.COMPLETED,
   content: { text: "This is a test transcription." },
   provider: "test-provider",
 };
@@ -31,8 +32,8 @@ describe("createTranscriptionSchema", () => {
 
   it("should fail if interviewId is missing", () => {
     const mock = {
-      type: "live" as const,
-      status: "completed" as const,
+      type: TRANSCRIPTION_TYPES.LIVE,
+      status: TRANSCRIPTION_PROCESSING_STATUSES.COMPLETED,
     };
     const result = createTranscriptionSchema.safeParse(mock);
     expect(result.success).toBe(false);
@@ -44,7 +45,7 @@ describe("createTranscriptionSchema", () => {
   it("should fail if status is missing", () => {
     const mock = {
       interviewId: generateMockUuid(1),
-      type: "live" as const,
+      type: TRANSCRIPTION_TYPES.LIVE,
     };
     const result = createTranscriptionSchema.safeParse(mock);
     expect(result.success).toBe(false);
@@ -56,7 +57,7 @@ describe("createTranscriptionSchema", () => {
   it("should fail if type is missing", () => {
     const mock = {
       interviewId: generateMockUuid(1),
-      status: "completed" as const,
+      status: TRANSCRIPTION_PROCESSING_STATUSES.COMPLETED,
     };
     const result = createTranscriptionSchema.safeParse(mock);
     expect(result.success).toBe(false);
@@ -66,7 +67,7 @@ describe("createTranscriptionSchema", () => {
   });
 
   it("should fail if status is not a valid enum value", () => {
-    const mock = { ...baseMock, status: "invalid-status" };
+    const mock = { ...baseMock, status: 'invalid-status' };
     const result = createTranscriptionSchema.safeParse(mock);
     expect(result.success).toBe(false);
     if (!result.success) {

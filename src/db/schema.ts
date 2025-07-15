@@ -162,20 +162,23 @@ export const candidates = pgTable('candidates', {
     .$onUpdate(() => new Date()),
 });
 
-export const candidateStatusEnum = pgEnum('candidate_status', [
-  'Initial state',
-  'Invitation Sent',
-  'Interview Scheduled',
-  'Waiting for evaluation',
-  'Needs additional review',
-  'Needs final report',
-  'Final report sent',
-  'Passed',
-  'Needs to be re-interviewed',
-  'Hold',
-  'Rejected',
-  'Archived',
-]);
+export const CANDIDATE_STATUSES = {
+  INITIAL_STATE: 'Initial state',
+  INVITATION_SENT: 'Invitation Sent',
+  INTERVIEW_SCHEDULED: 'Interview Scheduled',
+  WAITING_FOR_EVALUATION: 'Waiting for evaluation',
+  NEEDS_ADDITIONAL_REVIEW: 'Needs additional review',
+  NEEDS_FINAL_REPORT: 'Needs final report',
+  FINAL_REPORT_SENT: 'Final report sent',
+  PASSED: 'Passed',
+  NEEDS_TO_BE_RE_INTERVIEWED: 'Needs to be re-interviewed',
+  HOLD: 'Hold',
+  REJECTED: 'Rejected',
+  ARCHIVED: 'Archived',
+} as const;
+
+const statuses = Object.values(CANDIDATE_STATUSES) as [string, ...string[]];
+export const candidateStatusEnum = pgEnum('candidate_status', statuses);
 
 export const candidateApplications = pgTable(
   'candidate_applications',
@@ -187,7 +190,7 @@ export const candidateApplications = pgTable(
     positionId: uuid('position_id')
       .notNull()
       .references(() => positions.id),
-    status: candidateStatusEnum('status').default('Initial state').notNull(),
+    status: candidateStatusEnum('status').default(CANDIDATE_STATUSES.INITIAL_STATE).notNull(),
     status_updated_at: timestamp('status_updated_at').defaultNow().notNull(),
     client_notified_at: timestamp('client_notified_at'),
     currentInterviewStepId: uuid('current_interview_step_id').references(
@@ -271,24 +274,28 @@ export const interviewAssignments = pgTable("interview_assignments", {
     .$onUpdate(() => new Date()),
 });
 
-export const evaluationOutcomeEnum = pgEnum("evaluation_outcome", [
-  "Strong Hire",
-  "Hire",
-  "No Hire",
-  "Hold",
-]);
+export const EVALUATION_OUTCOMES = {
+  STRONG_HIRE: 'Strong Hire',
+  HIRE: 'Hire',
+  NO_HIRE: 'No Hire',
+  HOLD: 'Hold',
+} as const;
+const evaluationOutcomes = Object.values(EVALUATION_OUTCOMES) as [string, ...string[]];
+export const evaluationOutcomeEnum = pgEnum('evaluation_outcome', evaluationOutcomes);
 
-export const evaluationFormatEnum = pgEnum("evaluation_format", [
-  "structured_json",
-  "drive_doc",
-]);
+export const EVALUATION_FORMATS = {
+  STRUCTURED_JSON: 'structured_json',
+  DRIVE_DOC: 'drive_doc',
+} as const;
+const evaluationFormats = Object.values(EVALUATION_FORMATS) as [string, ...string[]];
+export const evaluationFormatEnum = pgEnum('evaluation_format', evaluationFormats);
 
-export const evaluations = pgTable("evaluations", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  interviewId: uuid("interview_id")
+export const evaluations = pgTable('evaluations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  interviewId: uuid('interview_id')
     .notNull()
     .references(() => interviews.id),
-  evaluatorId: uuid("evaluator_id")
+  evaluatorId: uuid('evaluator_id')
     .notNull()
     .references(() => interviewers.id),
   outcome: evaluationOutcomeEnum("outcome").notNull(),
@@ -303,19 +310,30 @@ export const evaluations = pgTable("evaluations", {
     .$onUpdate(() => new Date()),
 });
 
-export const transcriptionTypeEnum = pgEnum("transcription_type", [
-  "live",
-  "processed",
-]);
+export const TRANSCRIPTION_TYPES = {
+  LIVE: 'live',
+  PROCESSED: 'processed',
+} as const;
+const transcriptionTypes = Object.values(TRANSCRIPTION_TYPES) as [string, ...string[]];
+export const transcriptionTypeEnum = pgEnum('transcription_type', transcriptionTypes);
 
+export const TRANSCRIPTION_PROCESSING_STATUSES = {
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+const transcriptionProcessingStatuses = Object.values(TRANSCRIPTION_PROCESSING_STATUSES) as [
+  string,
+  ...string[],
+];
 export const transcriptionProcessingStatusEnum = pgEnum(
-  "transcription_processing_status",
-  ["processing", "completed", "failed"],
+  'transcription_processing_status',
+  transcriptionProcessingStatuses,
 );
 
-export const transcriptions = pgTable("transcriptions", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  interviewId: uuid("interview_id")
+export const transcriptions = pgTable('transcriptions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  interviewId: uuid('interview_id')
     .notNull()
     .references(() => interviews.id),
   type: transcriptionTypeEnum("type").notNull(),
