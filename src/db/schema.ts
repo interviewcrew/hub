@@ -237,6 +237,34 @@ export const candidateApplications = pgTable(
 export type CandidateApplication = typeof candidateApplications.$inferSelect;
 export type NewCandidateApplication = typeof candidateApplications.$inferInsert;
 
+export const candidateApplicationsRelations = relations(
+  candidateApplications,
+  ({ one, many }) => ({
+    candidate: one(candidates, {
+      fields: [candidateApplications.candidateId],
+      references: [candidates.id],
+    }),
+    position: one(positions, {
+      fields: [candidateApplications.positionId],
+      references: [positions.id],
+    }),
+    currentInterviewStep: one(interviewSteps, {
+      fields: [candidateApplications.currentInterviewStepId],
+      references: [interviewSteps.id],
+    }),
+    interviewEvents: many(interviewEvents),
+  }),
+);
+
+export const candidatesRelations = relations(candidates, ({ many }) => ({
+  applications: many(candidateApplications),
+}));
+
+export const INTERVIEW_EVENT_NAMES = {
+  CANDIDATE_APPLIED: 'CANDIDATE_APPLIED',
+  STATUS_CHANGED: 'STATUS_CHANGED',
+} as const;
+
 export const interviewEvents = pgTable('interview_events', {
   id: uuid('id').primaryKey().defaultRandom(),
   candidateApplicationId: uuid('candidate_application_id')
@@ -251,6 +279,12 @@ export const interviewEvents = pgTable('interview_events', {
 export type InterviewEvent = typeof interviewEvents.$inferSelect;
 export type NewInterviewEvent = typeof interviewEvents.$inferInsert;
 
+export const interviewEventsRelations = relations(interviewEvents, ({ one }) => ({
+  candidateApplication: one(candidateApplications, {
+    fields: [interviewEvents.candidateApplicationId],
+    references: [candidateApplications.id],
+  }),
+}));
 
 export const interviewers = pgTable('interviewers', {
   id: uuid('id').primaryKey().defaultRandom(),
