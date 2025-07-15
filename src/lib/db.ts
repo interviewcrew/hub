@@ -45,5 +45,5 @@ pool.connect((err, client, release) => {
 });
 
 
-import * as schema from '../db/schema';
+import * as schema from '@/db/schema';
 export const db = drizzle(pool, { schema }); 
