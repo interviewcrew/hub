@@ -30,7 +30,10 @@ export const accountManagers = pgTable('account_managers', {
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export type AccountManager = typeof accountManagers.$inferSelect;
@@ -41,9 +44,14 @@ export const clients = pgTable('clients', {
   name: text('name').notNull(),
   contactInfo: text('contact_info'),
   logo: text('logo'),
-  accountManagerId: uuid('account_manager_id').notNull().references(() => accountManagers.id),
+  accountManagerId: uuid('account_manager_id')
+    .notNull()
+    .references(() => accountManagers.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export type Client = typeof clients.$inferSelect;
@@ -53,7 +61,10 @@ export const techStacks = pgTable('tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export type TechStack = typeof techStacks.$inferSelect;
@@ -61,16 +72,23 @@ export type NewTechStack = typeof techStacks.$inferInsert;
 
 export const positions = pgTable('positions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  clientId: uuid('client_id').notNull().references(() => clients.id),
+  clientId: uuid('client_id')
+    .notNull()
+    .references(() => clients.id),
   title: text('title').notNull(),
   details: text('details'),
   jobAd: text('job_ad'),
   minSalary: integer('min_salary'),
   maxSalary: integer('max_salary'),
   culturalFitCriteria: text('cultural_fit_criteria'),
-  accountManagerId: uuid('account_manager_id').notNull().references(() => accountManagers.id),
+  accountManagerId: uuid('account_manager_id')
+    .notNull()
+    .references(() => accountManagers.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export type Position = typeof positions.$inferSelect;
@@ -78,8 +96,12 @@ export type NewPosition = typeof positions.$inferInsert;
 
 export const positionTechStacks = pgTable('position_tech_stacks', {
   id: uuid('id').primaryKey().defaultRandom(),
-  positionId: uuid('position_id').notNull().references(() => positions.id),
-  techStackId: uuid('tech_stack_id').notNull().references(() => techStacks.id),
+  positionId: uuid('position_id')
+    .notNull()
+    .references(() => positions.id),
+  techStackId: uuid('tech_stack_id')
+    .notNull()
+    .references(() => techStacks.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -218,7 +240,9 @@ export const candidateApplications = pgTable(
     positionId: uuid('position_id')
       .notNull()
       .references(() => positions.id),
-    status: candidateStatusEnum('status').default(CANDIDATE_STATUSES.INITIAL_STATE).notNull(),
+    status: candidateStatusEnum('status')
+      .default(CANDIDATE_STATUSES.INITIAL_STATE)
+      .notNull(),
     status_updated_at: timestamp('status_updated_at').defaultNow().notNull(),
     client_notified_at: timestamp('client_notified_at'),
     currentInterviewStepId: uuid('current_interview_step_id').references(
@@ -280,12 +304,15 @@ export const interviewEvents = pgTable('interview_events', {
 export type InterviewEvent = typeof interviewEvents.$inferSelect;
 export type NewInterviewEvent = typeof interviewEvents.$inferInsert;
 
-export const interviewEventsRelations = relations(interviewEvents, ({ one }) => ({
-  candidateApplication: one(candidateApplications, {
-    fields: [interviewEvents.candidateApplicationId],
-    references: [candidateApplications.id],
+export const interviewEventsRelations = relations(
+  interviewEvents,
+  ({ one }) => ({
+    candidateApplication: one(candidateApplications, {
+      fields: [interviewEvents.candidateApplicationId],
+      references: [candidateApplications.id],
+    }),
   }),
-}));
+);
 
 export const interviewers = pgTable('interviewers', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -335,18 +362,18 @@ export const interviewerTechStacksRelations = relations(
 export type InterviewerTechStack = typeof interviewerTechStacks.$inferSelect;
 export type NewInterviewerTechStack = typeof interviewerTechStacks.$inferInsert;
 
-export const interviews = pgTable("interviews", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  candidateApplicationId: uuid("candidate_application_id")
+export const interviews = pgTable('interviews', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  candidateApplicationId: uuid('candidate_application_id')
     .notNull()
     .references(() => candidateApplications.id),
-  interviewStepId: uuid("interview_step_id")
+  interviewStepId: uuid('interview_step_id')
     .notNull()
     .references(() => interviewSteps.id),
-  interviewerId: uuid("interviewer_id").references(() => interviewers.id),
-  recordingUrl: text("recording_url"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+  interviewerId: uuid('interviewer_id').references(() => interviewers.id),
+  recordingUrl: text('recording_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
@@ -355,16 +382,16 @@ export const interviews = pgTable("interviews", {
 export type Interview = typeof interviews.$inferSelect;
 export type NewInterview = typeof interviews.$inferInsert;
 
-export const interviewAssignments = pgTable("interview_assignments", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  interviewId: uuid("interview_id")
+export const interviewAssignments = pgTable('interview_assignments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  interviewId: uuid('interview_id')
     .notNull()
     .references(() => interviews.id),
-  resourceUrl: text("resource_url"),
-  resourceIdentifier: text("resource_identifier"),
-  resourceDeletedAt: timestamp("resource_deleted_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+  resourceUrl: text('resource_url'),
+  resourceIdentifier: text('resource_identifier'),
+  resourceDeletedAt: timestamp('resource_deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
@@ -379,15 +406,27 @@ export const EVALUATION_OUTCOMES = {
   NO_HIRE: 'No Hire',
   HOLD: 'Hold',
 } as const;
-const evaluationOutcomes = Object.values(EVALUATION_OUTCOMES) as [string, ...string[]];
-export const evaluationOutcomeEnum = pgEnum('evaluation_outcome', evaluationOutcomes);
+const evaluationOutcomes = Object.values(EVALUATION_OUTCOMES) as [
+  string,
+  ...string[],
+];
+export const evaluationOutcomeEnum = pgEnum(
+  'evaluation_outcome',
+  evaluationOutcomes,
+);
 
 export const EVALUATION_FORMATS = {
   STRUCTURED_JSON: 'structured_json',
   DRIVE_DOC: 'drive_doc',
 } as const;
-const evaluationFormats = Object.values(EVALUATION_FORMATS) as [string, ...string[]];
-export const evaluationFormatEnum = pgEnum('evaluation_format', evaluationFormats);
+const evaluationFormats = Object.values(EVALUATION_FORMATS) as [
+  string,
+  ...string[],
+];
+export const evaluationFormatEnum = pgEnum(
+  'evaluation_format',
+  evaluationFormats,
+);
 
 export const evaluations = pgTable('evaluations', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -397,13 +436,13 @@ export const evaluations = pgTable('evaluations', {
   evaluatorId: uuid('evaluator_id')
     .notNull()
     .references(() => interviewers.id),
-  outcome: evaluationOutcomeEnum("outcome").notNull(),
-  format: evaluationFormatEnum("format").notNull(),
-  structuredData: jsonb("structured_data"),
-  driveDocUrl: text("drive_doc_url"),
-  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+  outcome: evaluationOutcomeEnum('outcome').notNull(),
+  format: evaluationFormatEnum('format').notNull(),
+  structuredData: jsonb('structured_data'),
+  driveDocUrl: text('drive_doc_url'),
+  submittedAt: timestamp('submitted_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
@@ -416,18 +455,23 @@ export const TRANSCRIPTION_TYPES = {
   LIVE: 'live',
   PROCESSED: 'processed',
 } as const;
-const transcriptionTypes = Object.values(TRANSCRIPTION_TYPES) as [string, ...string[]];
-export const transcriptionTypeEnum = pgEnum('transcription_type', transcriptionTypes);
+const transcriptionTypes = Object.values(TRANSCRIPTION_TYPES) as [
+  string,
+  ...string[],
+];
+export const transcriptionTypeEnum = pgEnum(
+  'transcription_type',
+  transcriptionTypes,
+);
 
 export const TRANSCRIPTION_PROCESSING_STATUSES = {
   PROCESSING: 'processing',
   COMPLETED: 'completed',
   FAILED: 'failed',
 } as const;
-const transcriptionProcessingStatuses = Object.values(TRANSCRIPTION_PROCESSING_STATUSES) as [
-  string,
-  ...string[],
-];
+const transcriptionProcessingStatuses = Object.values(
+  TRANSCRIPTION_PROCESSING_STATUSES,
+) as [string, ...string[]];
 export const transcriptionProcessingStatusEnum = pgEnum(
   'transcription_processing_status',
   transcriptionProcessingStatuses,
@@ -438,12 +482,12 @@ export const transcriptions = pgTable('transcriptions', {
   interviewId: uuid('interview_id')
     .notNull()
     .references(() => interviews.id),
-  type: transcriptionTypeEnum("type").notNull(),
-  status: transcriptionProcessingStatusEnum("status").notNull(),
-  content: jsonb("content"),
-  provider: text("provider"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+  type: transcriptionTypeEnum('type').notNull(),
+  status: transcriptionProcessingStatusEnum('status').notNull(),
+  content: jsonb('content'),
+  provider: text('provider'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),

@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { createAccountManagerSchema, updateAccountManagerSchema } from './accountManager';
+import {
+  createAccountManagerSchema,
+  updateAccountManagerSchema,
+} from './accountManager';
 
 describe('AccountManager Validators', () => {
   describe('createAccountManagerSchema', () => {
@@ -122,4 +125,4 @@ describe('AccountManager Validators', () => {
       }
     });
   });
-}); 
+});

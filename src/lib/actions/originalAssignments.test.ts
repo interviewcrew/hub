@@ -60,7 +60,7 @@ describe('OriginalAssignment Server Actions', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain("Name is required");
+      expect(result.error).toContain('Name is required');
     });
 
     it('should return a database error', async () => {
@@ -125,7 +125,9 @@ describe('OriginalAssignment Server Actions', () => {
       expect(result.success).toBe(true);
       expect(result.data).toEqual(baseAssignmentMock);
       expect(revalidatePath).toHaveBeenCalledWith('/assignments');
-      expect(revalidatePath).toHaveBeenCalledWith(`/assignments/${assignmentId}`);
+      expect(revalidatePath).toHaveBeenCalledWith(
+        `/assignments/${assignmentId}`,
+      );
     });
 
     it('should return an error if not found', async () => {
@@ -170,4 +172,4 @@ describe('OriginalAssignment Server Actions', () => {
       expect(result.error).toBe('DB Error');
     });
   });
-}); 
+});

@@ -95,4 +95,4 @@ describe('Candidate and Candidate Application Zod Schemas', () => {
       expect(result.success).toBe(false);
     });
   });
-}); 
+});

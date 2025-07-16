@@ -53,7 +53,9 @@ describe('Client Validators', () => {
       const result = createClientSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Invalid account manager ID');
+        expect(result.error.issues[0].message).toBe(
+          'Invalid account manager ID',
+        );
       }
     });
 
@@ -173,7 +175,9 @@ describe('Client Validators', () => {
       const result = updateClientSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Invalid account manager ID');
+        expect(result.error.issues[0].message).toBe(
+          'Invalid account manager ID',
+        );
       }
     });
 
@@ -189,4 +193,4 @@ describe('Client Validators', () => {
       }
     });
   });
-}); 
+});

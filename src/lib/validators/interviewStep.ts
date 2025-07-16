@@ -19,5 +19,9 @@ export const updateInterviewStepSchema = z.object({
   emailTemplate: z.string().optional().nullable(),
 });
 
-export type CreateInterviewStepInput = z.infer<typeof createInterviewStepSchema>;
-export type UpdateInterviewStepInput = z.infer<typeof updateInterviewStepSchema>; 
+export type CreateInterviewStepInput = z.infer<
+  typeof createInterviewStepSchema
+>;
+export type UpdateInterviewStepInput = z.infer<
+  typeof updateInterviewStepSchema
+>;

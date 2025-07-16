@@ -75,7 +75,9 @@ describe('Position Validators', () => {
       const result = createPositionSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Invalid account manager ID');
+        expect(result.error.issues[0].message).toBe(
+          'Invalid account manager ID',
+        );
       }
     });
 
@@ -90,7 +92,11 @@ describe('Position Validators', () => {
       const result = createPositionSchema.safeParse(validInput);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.techStacks).toEqual(['React', 'TypeScript', 'Node.js']);
+        expect(result.data.techStacks).toEqual([
+          'React',
+          'TypeScript',
+          'Node.js',
+        ]);
       }
     });
 
@@ -134,7 +140,9 @@ describe('Position Validators', () => {
       const result = createPositionSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Minimum salary must be non-negative');
+        expect(result.error.issues[0].message).toBe(
+          'Minimum salary must be non-negative',
+        );
       }
     });
 
@@ -150,7 +158,9 @@ describe('Position Validators', () => {
       const result = createPositionSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Maximum salary must be greater than or equal to minimum salary');
+        expect(result.error.issues[0].message).toBe(
+          'Maximum salary must be greater than or equal to minimum salary',
+        );
       }
     });
 
@@ -178,14 +188,17 @@ describe('Position Validators', () => {
       const validInput = {
         clientId: '123e4567-e89b-12d3-a456-426614174000',
         title: 'Senior Software Engineer',
-        jobAd: 'We are seeking a talented Senior Software Engineer to join our growing team...',
+        jobAd:
+          'We are seeking a talented Senior Software Engineer to join our growing team...',
         accountManagerId: '456e7890-e89b-12d3-a456-426614174001',
       };
 
       const result = createPositionSchema.safeParse(validInput);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.jobAd).toBe('We are seeking a talented Senior Software Engineer to join our growing team...');
+        expect(result.data.jobAd).toBe(
+          'We are seeking a talented Senior Software Engineer to join our growing team...',
+        );
       }
     });
   });
@@ -290,7 +303,9 @@ describe('Position Validators', () => {
       const result = updatePositionSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Invalid account manager ID');
+        expect(result.error.issues[0].message).toBe(
+          'Invalid account manager ID',
+        );
       }
     });
 
@@ -303,8 +318,10 @@ describe('Position Validators', () => {
       const result = updatePositionSchema.safeParse(invalidInput);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Maximum salary must be greater than or equal to minimum salary');
+        expect(result.error.issues[0].message).toBe(
+          'Maximum salary must be greater than or equal to minimum salary',
+        );
       }
     });
   });
-}); 
+});

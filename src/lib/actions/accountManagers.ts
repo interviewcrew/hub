@@ -12,17 +12,15 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-export async function createAccountManager(
-  input: CreateAccountManagerInput,
-) {
+export async function createAccountManager(input: CreateAccountManagerInput) {
   try {
     const validatedData = createAccountManagerSchema.parse(input);
-    
+
     const [accountManager] = await db
       .insert(accountManagers)
       .values(validatedData)
       .returning();
-    
+
     revalidatePath('/account-managers');
     return { success: true, data: accountManager };
   } catch (error) {
@@ -54,11 +52,11 @@ export async function getAccountManager(id: string) {
       .select()
       .from(accountManagers)
       .where(eq(accountManagers.id, id));
-    
+
     if (!accountManager) {
       return { success: false, error: 'Account manager not found' };
     }
-    
+
     return { success: true, data: accountManager };
   } catch (error) {
     if (error instanceof Error) {
@@ -74,17 +72,17 @@ export async function updateAccountManager(
 ) {
   try {
     const validatedData = updateAccountManagerSchema.parse(input);
-    
+
     const [accountManager] = await db
       .update(accountManagers)
       .set(validatedData)
       .where(eq(accountManagers.id, id))
       .returning();
-    
+
     if (!accountManager) {
       return { success: false, error: 'Account manager not found' };
     }
-    
+
     revalidatePath('/account-managers');
     return { success: true, data: accountManager };
   } catch (error) {
@@ -104,11 +102,11 @@ export async function deleteAccountManager(id: string) {
       .delete(accountManagers)
       .where(eq(accountManagers.id, id))
       .returning();
-    
+
     if (!accountManager) {
       return { success: false, error: 'Account manager not found' };
     }
-    
+
     revalidatePath('/account-managers');
     return { success: true, data: accountManager };
   } catch (error) {
@@ -117,4 +115,4 @@ export async function deleteAccountManager(id: string) {
     }
     return { success: false, error: 'Failed to delete account manager' };
   }
-} 
+}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from 'vitest';
 
 /**
@@ -81,7 +82,6 @@ export function resetDbMocks() {
 }
 
 // Mock chain helpers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockInsertChain(returningValue: any) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
@@ -90,7 +90,6 @@ export function mockInsertChain(returningValue: any) {
   return { returning, values };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockInsertError(error: any) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
@@ -100,9 +99,7 @@ export function mockInsertError(error: any) {
 }
 
 // A flexible mock that can handle various chaining.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createChainableMock(finalValue: any, error: any = null) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const then = (onFulfilled: any, onRejected: any) => {
     if (error) {
       return Promise.reject(error).catch(onRejected);
@@ -120,43 +117,34 @@ function createChainableMock(finalValue: any, error: any = null) {
   return chain;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectChain(fromValue: any) {
   const mock = createChainableMock(fromValue);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mockDb.select.mockReturnValueOnce(mock as any);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectError(error: any) {
   const mock = createChainableMock(null, error);
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mockDb.select.mockReturnValueOnce(mock as any);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectWithWhereChain(whereValue: any) {
   const mock = createChainableMock(whereValue);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mockDb.select.mockReturnValueOnce(mock as any);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockSelectWithWhereError(error: any) {
   const mock = createChainableMock(null, error);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mockDb.select.mockReturnValueOnce(mock as any);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockUpdateChain(returningValue: any) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
@@ -166,7 +154,6 @@ export function mockUpdateChain(returningValue: any) {
   return { set, where, returning };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockUpdateError(error: any) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
@@ -176,7 +163,6 @@ export function mockUpdateError(error: any) {
   return { set, where, returning };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockDeleteChain(returningValue: any) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
@@ -185,11 +171,10 @@ export function mockDeleteChain(returningValue: any) {
   return { where, returning };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mockDeleteError(error: any) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
   const where = vi.fn().mockReturnValue({ ...chain, returning });
   mockDb.delete.mockReturnValueOnce({ where } as any);
   return { where, returning };
-} 
+}

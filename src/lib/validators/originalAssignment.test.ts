@@ -31,16 +31,18 @@ describe('OriginalAssignment Zod Schemas', () => {
       };
       const result = createOriginalAssignmentSchema.safeParse(input);
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe('Google Doc File ID is required');
+      expect(result.error?.issues[0].message).toBe(
+        'Google Doc File ID is required',
+      );
     });
 
     it('should pass if driveFolderPath is missing', () => {
-        const input = {
-            name: 'Test Assignment',
-            googleDocFileId: '12345abcdef',
-        };
-        const result = createOriginalAssignmentSchema.safeParse(input);
-        expect(result.success).toBe(true);
+      const input = {
+        name: 'Test Assignment',
+        googleDocFileId: '12345abcdef',
+      };
+      const result = createOriginalAssignmentSchema.safeParse(input);
+      expect(result.success).toBe(true);
     });
   });
 
@@ -70,12 +72,12 @@ describe('OriginalAssignment Zod Schemas', () => {
     });
 
     it('should fail if a field is provided but invalid', () => {
-        const input = {
-            name: '',
-        };
-        const result = updateOriginalAssignmentSchema.safeParse(input);
-        expect(result.success).toBe(false);
-        expect(result.error?.issues[0].message).toBe('Name is required');
+      const input = {
+        name: '',
+      };
+      const result = updateOriginalAssignmentSchema.safeParse(input);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Name is required');
     });
   });
-}); 
+});

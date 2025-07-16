@@ -2,11 +2,12 @@ import { defineConfig } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
 
 dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local',
+  path:
+    process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local',
 });
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is not set or is empty.");
+  throw new Error('DATABASE_URL environment variable is not set or is empty.');
 }
 
 export default defineConfig({
@@ -18,4 +19,4 @@ export default defineConfig({
   },
   verbose: true,
   strict: true,
-}); 
+});

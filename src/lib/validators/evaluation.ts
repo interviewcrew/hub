@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { evaluationOutcomeEnum, evaluationFormatEnum } from "@/db/schema";
+import { z } from 'zod';
+import { evaluationOutcomeEnum, evaluationFormatEnum } from '@/db/schema';
 
 const evaluationObjectSchema = z.object({
   interviewId: z.string().uuid(),
@@ -13,20 +13,20 @@ const evaluationObjectSchema = z.object({
 
 const evaluationRefinement = (
   data: Partial<z.infer<typeof evaluationObjectSchema>>,
-  refinementContext: z.RefinementCtx
+  refinementContext: z.RefinementCtx,
 ) => {
-  if (data.format === "structured_json" && !data.structuredData) {
+  if (data.format === 'structured_json' && !data.structuredData) {
     refinementContext.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "structuredData must be provided when format is structured_json",
-      path: ["structuredData"],
+      message: 'structuredData must be provided when format is structured_json',
+      path: ['structuredData'],
     });
   }
-  if (data.format === "drive_doc" && !data.driveDocUrl) {
+  if (data.format === 'drive_doc' && !data.driveDocUrl) {
     refinementContext.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "driveDocUrl must be provided when format is drive_doc",
-      path: ["driveDocUrl"],
+      message: 'driveDocUrl must be provided when format is drive_doc',
+      path: ['driveDocUrl'],
     });
   }
 };

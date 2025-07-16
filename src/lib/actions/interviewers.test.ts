@@ -179,7 +179,10 @@ describe('Interviewer Server Actions', () => {
   describe('updateInterviewer', () => {
     it('should update an interviewer and their tech stacks', async () => {
       const updateData = { name: 'Jane Doe' };
-      const updatedMock = { ...interviewerWithTechStacksMock, ...updateData };
+      const updatedMock = {
+        ...interviewerWithTechStacksMock,
+        ...updateData,
+      };
 
       // 1. Mock transaction steps for update
       mockUpdateChain([]); // Updating the interviewer
@@ -249,4 +252,4 @@ describe('Interviewer Server Actions', () => {
       expect(result.error).toBe('DB error');
     });
   });
-}); 
+});

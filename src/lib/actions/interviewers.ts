@@ -145,9 +145,7 @@ export async function updateInterviewer(
           const existingStacks = await transaction.query.techStacks.findMany({
             where: inArray(schema.techStacks.name, lowerCaseTechStacks),
           });
-          const existingStackNames = new Set(
-            existingStacks.map((s) => s.name),
-          );
+          const existingStackNames = new Set(existingStacks.map((s) => s.name));
           const newStackNames = lowerCaseTechStacks.filter(
             (name) => !existingStackNames.has(name),
           );
@@ -216,4 +214,4 @@ export async function deleteInterviewer(id: string) {
     }
     return { success: false, error: 'Failed to delete interviewer' };
   }
-} 
+}

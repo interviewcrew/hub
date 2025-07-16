@@ -221,4 +221,4 @@ export async function deletePosition(id: string) {
     }
     return { success: false, error: 'Failed to delete position' };
   }
-} 
+}

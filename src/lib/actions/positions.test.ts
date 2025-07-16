@@ -10,14 +10,20 @@ import {
   mockDeleteError,
 } from '@/tests/utils/drizzleMocks';
 import { generateMockUuid } from '@/tests/utils/mockUuid';
-import { createPosition, getPosition, getPositions, updatePosition, deletePosition } from './positions';
+import {
+  createPosition,
+  getPosition,
+  getPositions,
+  updatePosition,
+  deletePosition,
+} from './positions';
 import { revalidatePath } from 'next/cache';
 import { positions, positionTechStacks, techStacks } from '@/db/schema';
 import { CreatePositionInput } from '@/lib/validators/position';
 
 vi.mock('next/cache');
 
-describe("Position Server Actions", () => {
+describe('Position Server Actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetDbMocks();
@@ -30,14 +36,14 @@ describe("Position Server Actions", () => {
 
   const baseTechStackMock = {
     id: techStackId,
-    name: "typescript",
+    name: 'typescript',
   };
 
   const basePositionMock = {
     id: positionId,
     clientId,
     accountManagerId,
-    title: "Software Engineer",
+    title: 'Software Engineer',
   };
 
   const positionWithTechStacksMock = {
@@ -51,8 +57,8 @@ describe("Position Server Actions", () => {
     ],
   };
 
-  describe("createPosition", () => {
-    it("should create a position and CREATE a new tech stack when it does not exist", async () => {
+  describe('createPosition', () => {
+    it('should create a position and CREATE a new tech stack when it does not exist', async () => {
       // 1. Mock position creation
       mockInsertChain([basePositionMock]);
       // 2. Mock tech stack lookup (not found)
@@ -70,7 +76,7 @@ describe("Position Server Actions", () => {
       const result = await createPosition({
         clientId,
         accountManagerId,
-        title: "Software Engineer",
+        title: 'Software Engineer',
         techStacks: [baseTechStackMock.name],
       });
 
@@ -82,10 +88,10 @@ describe("Position Server Actions", () => {
       expect(mockDb.query.techStacks.findMany).toHaveBeenCalled();
       expect(mockDb.insert).toHaveBeenCalledWith(techStacks);
       expect(mockDb.insert).toHaveBeenCalledWith(positionTechStacks);
-      expect(revalidatePath).toHaveBeenCalledWith("/positions");
+      expect(revalidatePath).toHaveBeenCalledWith('/positions');
     });
 
-    it("should create a position and use an EXISTING tech stack", async () => {
+    it('should create a position and use an EXISTING tech stack', async () => {
       // 1. Mock position creation
       mockInsertChain([basePositionMock]);
       // 2. Mock tech stack lookup (found)
@@ -101,7 +107,7 @@ describe("Position Server Actions", () => {
       const result = await createPosition({
         clientId,
         accountManagerId,
-        title: "Software Engineer",
+        title: 'Software Engineer',
         techStacks: [baseTechStackMock.name],
       });
 
@@ -110,39 +116,41 @@ describe("Position Server Actions", () => {
 
       // Verify that techStacks was NOT inserted into
       const insertCalls = mockDb.insert.mock.calls;
-      const techStackInsertCall = insertCalls.find(call => call[0] === techStacks);
+      const techStackInsertCall = insertCalls.find(
+        (call) => call[0] === techStacks,
+      );
       expect(techStackInsertCall).toBeUndefined();
-      expect(revalidatePath).toHaveBeenCalledWith("/positions");
+      expect(revalidatePath).toHaveBeenCalledWith('/positions');
     });
 
-    it("should return an error if input validation fails", async () => {
+    it('should return an error if input validation fails', async () => {
       const result = await createPosition({
-        clientId: "",
+        clientId: '',
         accountManagerId,
-        title: "Software Engineer",
+        title: 'Software Engineer',
       } as CreatePositionInput);
       expect(result.success).toBe(false);
       const error = JSON.parse(result.error as string);
       expect(error[0].path).toEqual(['clientId']);
     });
 
-    it("should return an error if the database call fails", async () => {
-      mockInsertError(new Error("DB error"));
+    it('should return an error if the database call fails', async () => {
+      mockInsertError(new Error('DB error'));
 
       const result = await createPosition({
         clientId,
         accountManagerId,
-        title: "Software Engineer",
+        title: 'Software Engineer',
         techStacks: [baseTechStackMock.name],
       });
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe("DB error");
+      expect(result.error).toBe('DB error');
     });
   });
 
-  describe("getPositions", () => {
-    it("should fetch all positions with their tech stacks", async () => {
+  describe('getPositions', () => {
+    it('should fetch all positions with their tech stacks', async () => {
       mockDb.query.positions.findMany.mockResolvedValue([
         positionWithTechStacksMock,
       ]);
@@ -153,17 +161,17 @@ describe("Position Server Actions", () => {
       expect(mockDb.query.positions.findMany).toHaveBeenCalled();
     });
 
-    it("should return an error if the database call fails", async () => {
-      mockDb.query.positions.findMany.mockRejectedValue(new Error("DB error"));
+    it('should return an error if the database call fails', async () => {
+      mockDb.query.positions.findMany.mockRejectedValue(new Error('DB error'));
 
       const result = await getPositions();
       expect(result.success).toBe(false);
-      expect(result.error).toBe("DB error");
+      expect(result.error).toBe('DB error');
     });
   });
 
-  describe("getPosition", () => {
-    it("should fetch a single position with its tech stacks", async () => {
+  describe('getPosition', () => {
+    it('should fetch a single position with its tech stacks', async () => {
       mockDb.query.positions.findFirst.mockResolvedValue(
         positionWithTechStacksMock,
       );
@@ -173,27 +181,30 @@ describe("Position Server Actions", () => {
       expect(result.data).toEqual(positionWithTechStacksMock);
     });
 
-    it("should return an error if the position is not found", async () => {
+    it('should return an error if the position is not found', async () => {
       mockDb.query.positions.findFirst.mockResolvedValue(null);
 
-      const result = await getPosition("non-existent-id");
+      const result = await getPosition('non-existent-id');
       expect(result.success).toBe(false);
-      expect(result.error).toBe("Position not found");
+      expect(result.error).toBe('Position not found');
     });
 
-    it("should return an error if the database call fails", async () => {
-      mockDb.query.positions.findFirst.mockRejectedValue(new Error("DB error"));
+    it('should return an error if the database call fails', async () => {
+      mockDb.query.positions.findFirst.mockRejectedValue(new Error('DB error'));
 
       const result = await getPosition(positionId);
       expect(result.success).toBe(false);
-      expect(result.error).toBe("DB error");
+      expect(result.error).toBe('DB error');
     });
   });
 
-  describe("updatePosition", () => {
-    it("should update a position and create a NEW tech stack", async () => {
-      const updateData = { title: "Senior Software Engineer" };
-      const updatedMock = { ...positionWithTechStacksMock, ...updateData };
+  describe('updatePosition', () => {
+    it('should update a position and create a NEW tech stack', async () => {
+      const updateData = { title: 'Senior Software Engineer' };
+      const updatedMock = {
+        ...positionWithTechStacksMock,
+        ...updateData,
+      };
 
       // 1. Mock transaction steps for update
       mockUpdateChain([]); // Updating the position itself
@@ -213,13 +224,16 @@ describe("Position Server Actions", () => {
       expect(result.success).toBe(true);
       expect(result.data).toEqual(updatedMock);
       expect(mockDb.insert).toHaveBeenCalledWith(techStacks);
-      expect(revalidatePath).toHaveBeenCalledWith("/positions");
+      expect(revalidatePath).toHaveBeenCalledWith('/positions');
       expect(revalidatePath).toHaveBeenCalledWith(`/positions/${positionId}`);
     });
 
-    it("should update a position and use an EXISTING tech stack", async () => {
-      const updateData = { title: "Senior Software Engineer" };
-      const updatedMock = { ...positionWithTechStacksMock, ...updateData };
+    it('should update a position and use an EXISTING tech stack', async () => {
+      const updateData = { title: 'Senior Software Engineer' };
+      const updatedMock = {
+        ...positionWithTechStacksMock,
+        ...updateData,
+      };
 
       // 1. Mock transaction steps for update
       mockUpdateChain([]); // Updating the position itself
@@ -238,33 +252,35 @@ describe("Position Server Actions", () => {
       expect(result.success).toBe(true);
       expect(result.data).toEqual(updatedMock);
       const insertCalls = mockDb.insert.mock.calls;
-      const techStackInsertCall = insertCalls.find(call => call[0] === techStacks);
+      const techStackInsertCall = insertCalls.find(
+        (call) => call[0] === techStacks,
+      );
       expect(techStackInsertCall).toBeUndefined();
-      expect(revalidatePath).toHaveBeenCalledWith("/positions");
+      expect(revalidatePath).toHaveBeenCalledWith('/positions');
       expect(revalidatePath).toHaveBeenCalledWith(`/positions/${positionId}`);
     });
 
-    it("should return an error if input validation fails", async () => {
-      const result = await updatePosition(positionId, { title: "" });
+    it('should return an error if input validation fails', async () => {
+      const result = await updatePosition(positionId, { title: '' });
       expect(result.success).toBe(false);
       const error = JSON.parse(result.error as string);
       expect(error[0].path).toEqual(['title']);
     });
 
-    it("should return an error if the database call fails", async () => {
-      mockUpdateError(new Error("DB error"));
+    it('should return an error if the database call fails', async () => {
+      mockUpdateError(new Error('DB error'));
 
       const result = await updatePosition(positionId, {
-        title: "New Title",
+        title: 'New Title',
       });
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe("DB error");
+      expect(result.error).toBe('DB error');
     });
   });
 
-  describe("deletePosition", () => {
-    it("should delete a position successfully", async () => {
+  describe('deletePosition', () => {
+    it('should delete a position successfully', async () => {
       // 1. Mock the transaction steps
       mockDeleteChain([]); // Deleting from positionTechStacks
       mockDeleteChain([basePositionMock]); // Deleting from positions
@@ -273,24 +289,24 @@ describe("Position Server Actions", () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(basePositionMock);
-      expect(revalidatePath).toHaveBeenCalledWith("/positions");
+      expect(revalidatePath).toHaveBeenCalledWith('/positions');
     });
 
-    it("should return an error if the position to delete is not found", async () => {
+    it('should return an error if the position to delete is not found', async () => {
       mockDeleteChain([]); // for positionTechStacks
       mockDeleteChain([]); // for positions (returns empty array, meaning not found)
 
       const result = await deletePosition(positionId);
       expect(result.success).toBe(false);
-      expect(result.error).toBe("Position not found");
+      expect(result.error).toBe('Position not found');
     });
 
-    it("should return an error if the database call fails", async () => {
-      mockDeleteError(new Error("DB error"));
+    it('should return an error if the database call fails', async () => {
+      mockDeleteError(new Error('DB error'));
 
       const result = await deletePosition(positionId);
       expect(result.success).toBe(false);
-      expect(result.error).toBe("DB error");
+      expect(result.error).toBe('DB error');
     });
   });
-}); 
+});

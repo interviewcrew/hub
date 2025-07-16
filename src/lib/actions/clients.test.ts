@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createClient, getClients, getClient, updateClient, deleteClient } from './clients';
+import {
+  createClient,
+  getClients,
+  getClient,
+  updateClient,
+  deleteClient,
+} from './clients';
 import { clients } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
 import {
@@ -33,7 +39,13 @@ describe('Client Server Actions', () => {
   describe('createClient', () => {
     it('should create a client successfully if account manager exists', async () => {
       const mockClientData = { name: 'Test Client', accountManagerId };
-      const mockReturnedClient = { id: clientId, ...mockClientData, contactInfo: null, createdAt: new Date(), updatedAt: new Date() };
+      const mockReturnedClient = {
+        id: clientId,
+        ...mockClientData,
+        contactInfo: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       mockSelectWithWhereChain([{ id: accountManagerId }]);
       const { returning, values } = mockInsertChain([mockReturnedClient]);
@@ -73,55 +85,59 @@ describe('Client Server Actions', () => {
     });
 
     it('should handle database errors during creation', async () => {
-        const mockClientData = { name: 'Test Client', accountManagerId };
-        mockSelectWithWhereChain([{ id: accountManagerId }]);
-        mockInsertError(new Error('DB insert error'));
+      const mockClientData = { name: 'Test Client', accountManagerId };
+      mockSelectWithWhereChain([{ id: accountManagerId }]);
+      mockInsertError(new Error('DB insert error'));
 
-        const result = await createClient(mockClientData);
+      const result = await createClient(mockClientData);
 
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB insert error');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB insert error');
     });
   });
 
   describe('getClients', () => {
     it('should fetch all clients successfully', async () => {
-        const mockData = [{ id: clientId, name: 'Client 1', accountManagerId }];
-        const { from, orderBy } = mockSelectChain(mockData);
+      const mockData = [{ id: clientId, name: 'Client 1', accountManagerId }];
+      const { from, orderBy } = mockSelectChain(mockData);
 
-        const result = await getClients();
+      const result = await getClients();
 
-        expect(result.success).toBe(true);
-        expect(result.data).toEqual(mockData);
-        expect(from).toHaveBeenCalledWith(clients);
-        expect(orderBy).toHaveBeenCalled();
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockData);
+      expect(from).toHaveBeenCalledWith(clients);
+      expect(orderBy).toHaveBeenCalled();
     });
 
     it('should fetch clients by accountManagerId successfully', async () => {
-        const mockData = [{ id: clientId, name: 'Client 1', accountManagerId }];
-        const { from, where, orderBy } = mockSelectChain(mockData);
+      const mockData = [{ id: clientId, name: 'Client 1', accountManagerId }];
+      const { from, where, orderBy } = mockSelectChain(mockData);
 
-        const result = await getClients(accountManagerId);
+      const result = await getClients(accountManagerId);
 
-        expect(result.success).toBe(true);
-        expect(result.data).toEqual(mockData);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockData);
 
-        expect(from).toHaveBeenCalledWith(clients);
-        expect(where).toHaveBeenCalled();
-        expect(orderBy).toHaveBeenCalled();
+      expect(from).toHaveBeenCalledWith(clients);
+      expect(where).toHaveBeenCalled();
+      expect(orderBy).toHaveBeenCalled();
     });
 
     it('should handle database errors', async () => {
-        mockSelectError(new Error('DB fetch error'));
-        const result = await getClients();
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB fetch error');
+      mockSelectError(new Error('DB fetch error'));
+      const result = await getClients();
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB fetch error');
     });
   });
 
   describe('getClient', () => {
     it('should fetch a single client successfully', async () => {
-      const mockData = { id: clientId, name: 'Client 1', accountManagerId };
+      const mockData = {
+        id: clientId,
+        name: 'Client 1',
+        accountManagerId,
+      };
       const { where } = mockSelectWithWhereChain([mockData]);
 
       const result = await getClient(clientId);
@@ -140,17 +156,21 @@ describe('Client Server Actions', () => {
     });
 
     it('should handle database errors', async () => {
-        mockSelectWithWhereError(new Error('DB fetch error'));
-        const result = await getClient(clientId);
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB fetch error');
+      mockSelectWithWhereError(new Error('DB fetch error'));
+      const result = await getClient(clientId);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB fetch error');
     });
   });
 
   describe('updateClient', () => {
     it('should update a client successfully', async () => {
       const updateData = { name: 'Updated Name' };
-      const mockReturnedData = { id: clientId, name: 'Updated Name', accountManagerId };
+      const mockReturnedData = {
+        id: clientId,
+        name: 'Updated Name',
+        accountManagerId,
+      };
       const { set, where, returning } = mockUpdateChain([mockReturnedData]);
 
       const result = await updateClient(clientId, updateData);
@@ -167,26 +187,31 @@ describe('Client Server Actions', () => {
     });
 
     it('should return error for invalid data', async () => {
-        const invalidData = { name: 123 }; // name should be a string
-        const result = await updateClient(clientId, invalidData as unknown as UpdateClientInput);
-        expect(result.success).toBe(false);
-        const error = JSON.parse(result.error as string);
-        expect(error[0].path[0]).toBe('name');
-        expect(error[0].message).toBe('Expected string, received number');
+      const invalidData = { name: 123 }; // name should be a string
+      const result = await updateClient(
+        clientId,
+        invalidData as unknown as UpdateClientInput,
+      );
+      expect(result.success).toBe(false);
+      const error = JSON.parse(result.error as string);
+      expect(error[0].path[0]).toBe('name');
+      expect(error[0].message).toBe('Expected string, received number');
     });
 
     it('should return error when client to update is not found', async () => {
       mockUpdateChain([]);
-      const result = await updateClient('not-found-id', { name: 'New Name' });
+      const result = await updateClient('not-found-id', {
+        name: 'New Name',
+      });
       expect(result.success).toBe(false);
       expect(result.error).toBe('Client not found');
     });
 
     it('should handle database errors', async () => {
-        mockUpdateError(new Error('DB update error'));
-        const result = await updateClient(clientId, { name: 'New Name' });
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB update error');
+      mockUpdateError(new Error('DB update error'));
+      const result = await updateClient(clientId, { name: 'New Name' });
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB update error');
     });
   });
 
@@ -207,18 +232,18 @@ describe('Client Server Actions', () => {
     });
 
     it('should return error when client to delete is not found', async () => {
-        mockDeleteChain([]);
-        const result = await deleteClient('not-found-id');
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Client not found');
+      mockDeleteChain([]);
+      const result = await deleteClient('not-found-id');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Client not found');
     });
 
     it('should handle database errors', async () => {
-        mockDeleteError(new Error('DB delete error'));
-        const result = await deleteClient(clientId);
+      mockDeleteError(new Error('DB delete error'));
+      const result = await deleteClient(clientId);
 
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB delete error');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB delete error');
     });
   });
 });

@@ -1,22 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createAccountManager, getAccountManagers, getAccountManager, updateAccountManager, deleteAccountManager } from './accountManagers';
+import {
+  createAccountManager,
+  getAccountManagers,
+  getAccountManager,
+  updateAccountManager,
+  deleteAccountManager,
+} from './accountManagers';
 import { accountManagers } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
-import { 
-  mockDb, 
-  resetDbMocks, 
-  mockInsertChain, 
-  mockSelectChain, 
-  mockSelectWithWhereChain, 
-  mockUpdateChain, 
+import {
+  mockDb,
+  resetDbMocks,
+  mockInsertChain,
+  mockSelectChain,
+  mockSelectWithWhereChain,
+  mockUpdateChain,
   mockDeleteChain,
   mockInsertError,
   mockSelectError,
   mockSelectWithWhereError,
   mockUpdateError,
-  mockDeleteError
+  mockDeleteError,
 } from '@/tests/utils/drizzleMocks';
-import { CreateAccountManagerInput, UpdateAccountManagerInput } from '@/lib/validators/accountManager';
+import {
+  CreateAccountManagerInput,
+  UpdateAccountManagerInput,
+} from '@/lib/validators/accountManager';
 
 describe('AccountManager Server Actions', () => {
   beforeEach(() => {
@@ -27,8 +36,13 @@ describe('AccountManager Server Actions', () => {
   describe('createAccountManager', () => {
     it('should create an account manager successfully', async () => {
       const mockData = { name: 'John Doe', email: 'john@example.com' };
-      const mockReturnedData = { id: '1', ...mockData, createdAt: new Date(), updatedAt: new Date() };
-      
+      const mockReturnedData = {
+        id: '1',
+        ...mockData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
       const { returning, values } = mockInsertChain([mockReturnedData]);
 
       const result = await createAccountManager(mockData);
@@ -44,7 +58,9 @@ describe('AccountManager Server Actions', () => {
 
     it('should return error for invalid data', async () => {
       const invalidData = { name: '', email: 'invalid-email' };
-      const result = await createAccountManager(invalidData as CreateAccountManagerInput);
+      const result = await createAccountManager(
+        invalidData as CreateAccountManagerInput,
+      );
       expect(result.success).toBe(false);
       const error = JSON.parse(result.error as string);
       expect(error[0].path[0]).toBe('name');
@@ -66,10 +82,22 @@ describe('AccountManager Server Actions', () => {
   describe('getAccountManagers', () => {
     it('should fetch all account managers successfully', async () => {
       const mockData = [
-        { id: '1', name: 'John Doe', email: 'john@example.com', createdAt: new Date(), updatedAt: new Date() },
-        { id: '2', name: 'Jane Smith', email: 'jane@example.com', createdAt: new Date(), updatedAt: new Date() },
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: '2',
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ];
-      
+
       const { from } = mockSelectChain(mockData);
 
       const result = await getAccountManagers();
@@ -93,8 +121,14 @@ describe('AccountManager Server Actions', () => {
 
   describe('getAccountManager', () => {
     it('should fetch a single account manager successfully', async () => {
-      const mockData = { id: '1', name: 'John Doe', email: 'john@example.com', createdAt: new Date(), updatedAt: new Date() };
-      
+      const mockData = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
       const { where } = mockSelectWithWhereChain([mockData]);
 
       const result = await getAccountManager('1');
@@ -127,8 +161,14 @@ describe('AccountManager Server Actions', () => {
   describe('updateAccountManager', () => {
     it('should update an account manager successfully', async () => {
       const mockData = { name: 'John Updated' };
-      const mockReturnedData = { id: '1', name: 'John Updated', email: 'john@example.com', createdAt: new Date(), updatedAt: new Date() };
-      
+      const mockReturnedData = {
+        id: '1',
+        name: 'John Updated',
+        email: 'john@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
       const { set, where, returning } = mockUpdateChain([mockReturnedData]);
 
       const result = await updateAccountManager('1', mockData);
@@ -145,7 +185,10 @@ describe('AccountManager Server Actions', () => {
 
     it('should return error for invalid data', async () => {
       const invalidData = { email: 'invalid-email' };
-      const result = await updateAccountManager('1', invalidData as UpdateAccountManagerInput);
+      const result = await updateAccountManager(
+        '1',
+        invalidData as UpdateAccountManagerInput,
+      );
       expect(result.success).toBe(false);
       const error = JSON.parse(result.error as string);
       expect(error[0].path[0]).toBe('email');
@@ -154,7 +197,7 @@ describe('AccountManager Server Actions', () => {
 
     it('should return error when account manager not found', async () => {
       const mockData = { name: 'John Updated' };
-      
+
       mockUpdateChain([]);
 
       const result = await updateAccountManager('999', mockData);
@@ -165,7 +208,7 @@ describe('AccountManager Server Actions', () => {
 
     it('should handle database errors', async () => {
       const mockData = { name: 'John Updated' };
-      
+
       mockUpdateError(new Error('Database error'));
 
       const result = await updateAccountManager('1', mockData);
@@ -177,8 +220,14 @@ describe('AccountManager Server Actions', () => {
 
   describe('deleteAccountManager', () => {
     it('should delete an account manager successfully', async () => {
-      const mockReturnedData = { id: '1', name: 'John Doe', email: 'john@example.com', createdAt: new Date(), updatedAt: new Date() };
-      
+      const mockReturnedData = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
       const { where, returning } = mockDeleteChain([mockReturnedData]);
 
       const result = await deleteAccountManager('1');
@@ -210,4 +259,4 @@ describe('AccountManager Server Actions', () => {
       expect(result.error).toBe('Database error');
     });
   });
-}); 
+});

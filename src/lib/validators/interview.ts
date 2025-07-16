@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createInterviewSchema = z.object({
   candidateApplicationId: z.string().uuid(),
@@ -7,7 +7,7 @@ export const createInterviewSchema = z.object({
   recordingUrl: z.string().url().optional(),
 });
 
-export const updateInterviewSchema = createInterviewSchema.partial(); 
+export const updateInterviewSchema = createInterviewSchema.partial();
 
 export type CreateInterviewInput = z.infer<typeof createInterviewSchema>;
-export type UpdateInterviewInput = z.infer<typeof updateInterviewSchema>; 
+export type UpdateInterviewInput = z.infer<typeof updateInterviewSchema>;

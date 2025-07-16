@@ -1,16 +1,16 @@
 'use server';
 
-import { db } from "@/lib/db";
+import { db } from '@/lib/db';
 import {
   CreateOriginalAssignmentInput,
   createOriginalAssignmentSchema,
   UpdateOriginalAssignmentInput,
   updateOriginalAssignmentSchema,
-} from "@/lib/validators/originalAssignment";
-import { originalAssignments } from "@/db/schema";
-import { z } from "zod";
-import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+} from '@/lib/validators/originalAssignment';
+import { originalAssignments } from '@/db/schema';
+import { z } from 'zod';
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 
 export async function createOriginalAssignment(
   input: CreateOriginalAssignmentInput,
@@ -23,7 +23,7 @@ export async function createOriginalAssignment(
       .values(data)
       .returning();
 
-    revalidatePath("/assignments");
+    revalidatePath('/assignments');
     return { success: true, data: newAssignment };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -32,7 +32,10 @@ export async function createOriginalAssignment(
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: "Failed to create original assignment" };
+    return {
+      success: false,
+      error: 'Failed to create original assignment',
+    };
   }
 }
 
@@ -44,14 +47,14 @@ export async function getOriginalAssignment(id: string) {
       .where(eq(originalAssignments.id, id));
 
     if (!assignment) {
-      return { success: false, error: "Assignment not found" };
+      return { success: false, error: 'Assignment not found' };
     }
     return { success: true, data: assignment };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: "Failed to fetch assignment" };
+    return { success: false, error: 'Failed to fetch assignment' };
   }
 }
 
@@ -63,7 +66,7 @@ export async function getOriginalAssignments() {
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: "Failed to fetch assignments" };
+    return { success: false, error: 'Failed to fetch assignments' };
   }
 }
 
@@ -79,12 +82,12 @@ export async function updateOriginalAssignment(
       .set(data)
       .where(eq(originalAssignments.id, id))
       .returning();
-    
+
     if (!updatedAssignment) {
-      return { success: false, error: "Assignment not found" };
+      return { success: false, error: 'Assignment not found' };
     }
 
-    revalidatePath("/assignments");
+    revalidatePath('/assignments');
     revalidatePath(`/assignments/${id}`);
 
     return { success: true, data: updatedAssignment };
@@ -95,7 +98,7 @@ export async function updateOriginalAssignment(
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: "Failed to update assignment" };
+    return { success: false, error: 'Failed to update assignment' };
   }
 }
 
@@ -107,15 +110,15 @@ export async function deleteOriginalAssignment(id: string) {
       .returning();
 
     if (!deletedAssignment) {
-      return { success: false, error: "Assignment not found" };
+      return { success: false, error: 'Assignment not found' };
     }
 
-    revalidatePath("/assignments");
+    revalidatePath('/assignments');
     return { success: true, data: deletedAssignment };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: "Failed to delete assignment" };
+    return { success: false, error: 'Failed to delete assignment' };
   }
-} 
+}

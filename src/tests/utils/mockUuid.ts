@@ -8,4 +8,4 @@ export const generateMockUuid = (seed: number): string => {
   const seedStr = seed.toString().padStart(12, '0');
   // This format complies with the UUID v4 standard structure.
   return `00000000-0000-4000-8000-${seedStr}`;
-}; 
+};

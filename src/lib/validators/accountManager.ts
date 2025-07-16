@@ -10,5 +10,9 @@ export const updateAccountManagerSchema = z.object({
   email: z.string().email('Invalid email address').optional(),
 });
 
-export type CreateAccountManagerInput = z.infer<typeof createAccountManagerSchema>;
-export type UpdateAccountManagerInput = z.infer<typeof updateAccountManagerSchema>; 
+export type CreateAccountManagerInput = z.infer<
+  typeof createAccountManagerSchema
+>;
+export type UpdateAccountManagerInput = z.infer<
+  typeof updateAccountManagerSchema
+>;

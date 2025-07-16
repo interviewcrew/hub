@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   transcriptionProcessingStatusEnum,
   transcriptionTypeEnum,
-} from "@/db/schema";
+} from '@/db/schema';
 
 const transcriptionObjectSchema = z.object({
   interviewId: z.string().uuid(),
@@ -14,4 +14,4 @@ const transcriptionObjectSchema = z.object({
 
 export const createTranscriptionSchema = transcriptionObjectSchema;
 
-export const updateTranscriptionSchema = transcriptionObjectSchema.partial(); 
+export const updateTranscriptionSchema = transcriptionObjectSchema.partial();

@@ -50,7 +50,7 @@ describe('Interview Step Actions', () => {
     schedulingLink: null,
     emailTemplate: null,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   beforeEach(() => {
@@ -83,10 +83,10 @@ describe('Interview Step Actions', () => {
     });
 
     it('should fail if position does not exist', async () => {
-        mockDb.query.positions.findFirst.mockResolvedValue(undefined);
-        const result = await createInterviewStep(mockStepInput);
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Position not found');
+      mockDb.query.positions.findFirst.mockResolvedValue(undefined);
+      const result = await createInterviewStep(mockStepInput);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Position not found');
     });
 
     it('should fail if interview step type does not belong to the same client', async () => {
@@ -102,12 +102,12 @@ describe('Interview Step Actions', () => {
     });
 
     it('should return an error if the database call fails', async () => {
-        mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
-        mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(mockStepType);
-        mockInsertError(new Error('DB error'));
-        const result = await createInterviewStep(mockStepInput);
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('DB error');
+      mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
+      mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(mockStepType);
+      mockInsertError(new Error('DB error'));
+      const result = await createInterviewStep(mockStepInput);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB error');
     });
   });
 
@@ -184,29 +184,33 @@ describe('Interview Step Actions', () => {
     });
 
     it('should successfully update the typeId if it is valid for the client', async () => {
-        const typeUpdateData = { typeId: anotherTypeId };
-        const updatedStepWithNewType = { ...mockStep, ...typeUpdateData };
-        mockDb.query.interviewSteps.findFirst.mockResolvedValue(mockStep);
-        mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
-        mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(anotherMockStepType);
-        mockUpdateChain([updatedStepWithNewType]);
-        
-        const result = await updateInterviewStep(stepId, typeUpdateData);
-        
-        expect(result.success).toBe(true);
-        expect(result.data?.typeId).toBe(anotherTypeId);
+      const typeUpdateData = { typeId: anotherTypeId };
+      const updatedStepWithNewType = { ...mockStep, ...typeUpdateData };
+      mockDb.query.interviewSteps.findFirst.mockResolvedValue(mockStep);
+      mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
+      mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(
+        anotherMockStepType,
+      );
+      mockUpdateChain([updatedStepWithNewType]);
+
+      const result = await updateInterviewStep(stepId, typeUpdateData);
+
+      expect(result.success).toBe(true);
+      expect(result.data?.typeId).toBe(anotherTypeId);
     });
 
     it('should fail to update the typeId if it is invalid for the client', async () => {
-        const typeUpdateData = { typeId: anotherTypeId };
-        mockDb.query.interviewSteps.findFirst.mockResolvedValue(mockStep);
-        mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
-        mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(undefined); // Type not found for client
-        
-        const result = await updateInterviewStep(stepId, typeUpdateData);
-        
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Interview step type not found for this client');
+      const typeUpdateData = { typeId: anotherTypeId };
+      mockDb.query.interviewSteps.findFirst.mockResolvedValue(mockStep);
+      mockDb.query.positions.findFirst.mockResolvedValue(mockPosition);
+      mockDb.query.interviewStepTypes.findFirst.mockResolvedValue(undefined); // Type not found for client
+
+      const result = await updateInterviewStep(stepId, typeUpdateData);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe(
+        'Interview step type not found for this client',
+      );
     });
 
     it('should return an error if the database call fails', async () => {
@@ -243,4 +247,4 @@ describe('Interview Step Actions', () => {
       expect(result.error).toBe('DB error');
     });
   });
-}); 
+});

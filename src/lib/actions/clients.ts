@@ -2,7 +2,12 @@
 
 import { db } from '@/lib/db';
 import { clients, accountManagers } from '@/db/schema';
-import { CreateClientInput, createClientSchema, UpdateClientInput, updateClientSchema } from '@/lib/validators/client';
+import {
+  CreateClientInput,
+  createClientSchema,
+  UpdateClientInput,
+  updateClientSchema,
+} from '@/lib/validators/client';
 import { eq, asc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -20,12 +25,9 @@ export async function createClient(input: CreateClientInput) {
     if (!accountManager) {
       return { success: false, error: 'Account manager not found' };
     }
-    
-    const [client] = await db
-      .insert(clients)
-      .values(validatedData)
-      .returning();
-    
+
+    const [client] = await db.insert(clients).values(validatedData).returning();
+
     revalidatePath('/clients');
     return { success: true, data: client };
   } catch (error) {
@@ -46,7 +48,7 @@ export async function getClients(accountManagerId?: string) {
     if (accountManagerId) {
       query.where(eq(clients.accountManagerId, accountManagerId));
     }
-    
+
     const clientsList = await query;
     return { success: true, data: clientsList };
   } catch (error) {
@@ -59,15 +61,12 @@ export async function getClients(accountManagerId?: string) {
 
 export async function getClient(id: string) {
   try {
-    const [client] = await db
-      .select()
-      .from(clients)
-      .where(eq(clients.id, id));
-    
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+
     if (!client) {
       return { success: false, error: 'Client not found' };
     }
-    
+
     return { success: true, data: client };
   } catch (error) {
     if (error instanceof Error) {
@@ -77,23 +76,20 @@ export async function getClient(id: string) {
   }
 }
 
-export async function updateClient(
-  id: string,
-  input: UpdateClientInput,
-) {
+export async function updateClient(id: string, input: UpdateClientInput) {
   try {
     const validatedData = updateClientSchema.parse(input);
-    
+
     const [client] = await db
       .update(clients)
       .set(validatedData)
       .where(eq(clients.id, id))
       .returning();
-    
+
     if (!client) {
       return { success: false, error: 'Client not found' };
     }
-    
+
     revalidatePath('/clients');
     revalidatePath(`/clients/${id}`);
     return { success: true, data: client };
@@ -114,11 +110,11 @@ export async function deleteClient(id: string) {
       .delete(clients)
       .where(eq(clients.id, id))
       .returning();
-    
+
     if (!client) {
       return { success: false, error: 'Client not found' };
     }
-    
+
     revalidatePath('/clients');
     return { success: true, data: client };
   } catch (error) {
@@ -127,4 +123,4 @@ export async function deleteClient(id: string) {
     }
     return { success: false, error: 'Failed to delete client' };
   }
-} 
+}

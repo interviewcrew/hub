@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createInterviewAssignmentSchema = z.object({
   interviewId: z.string().uuid(),
@@ -8,7 +8,11 @@ export const createInterviewAssignmentSchema = z.object({
 });
 
 export const updateInterviewAssignmentSchema =
-  createInterviewAssignmentSchema.partial(); 
+  createInterviewAssignmentSchema.partial();
 
-export type CreateInterviewAssignmentInput = z.infer<typeof createInterviewAssignmentSchema>;
-export type UpdateInterviewAssignmentInput = z.infer<typeof updateInterviewAssignmentSchema>; 
+export type CreateInterviewAssignmentInput = z.infer<
+  typeof createInterviewAssignmentSchema
+>;
+export type UpdateInterviewAssignmentInput = z.infer<
+  typeof updateInterviewAssignmentSchema
+>;

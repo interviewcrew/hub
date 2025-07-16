@@ -33,7 +33,7 @@ export async function createCandidateApplication(
       resume_link: resumeLink,
     } = candidateData;
 
-    const newApplication = await db.transaction(async transaction => {
+    const newApplication = await db.transaction(async (transaction) => {
       let candidate: Candidate | undefined;
       const existingCandidates = await transaction
         .select()
@@ -52,14 +52,13 @@ export async function createCandidateApplication(
           .returning();
         candidate = newCandidates[0];
       } else {
-        const existingApplication = await transaction.query.candidateApplications.findFirst(
-          {
+        const existingApplication =
+          await transaction.query.candidateApplications.findFirst({
             where: and(
               eq(candidateApplications.candidateId, candidate.id),
               eq(candidateApplications.positionId, positionId),
             ),
-          },
-        );
+          });
         if (existingApplication) {
           throw new Error(
             'This candidate has already applied for this position.',
@@ -99,7 +98,10 @@ export async function createCandidateApplication(
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: 'Failed to create candidate application' };
+    return {
+      success: false,
+      error: 'Failed to create candidate application',
+    };
   }
 }
 
@@ -124,7 +126,10 @@ export async function getCandidateApplication(id: string) {
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: 'Failed to fetch candidate application' };
+    return {
+      success: false,
+      error: 'Failed to fetch candidate application',
+    };
   }
 }
 
@@ -158,15 +163,16 @@ export async function updateCandidateApplication(
     const data = updateCandidateApplicationSchema.parse(input);
 
     const updatedApplication = await db.transaction(async (transaction) => {
-      const currentApplication = await transaction.query.candidateApplications.findFirst({
-        where: eq(candidateApplications.id, id),
-      });
+      const currentApplication =
+        await transaction.query.candidateApplications.findFirst({
+          where: eq(candidateApplications.id, id),
+        });
 
       if (!currentApplication) {
         throw new Error('Candidate application not found');
       }
 
-      const updateData: Partial<NewCandidateApplication> = { 
+      const updateData: Partial<NewCandidateApplication> = {
         ...data,
       };
 
@@ -202,7 +208,10 @@ export async function updateCandidateApplication(
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: 'Failed to update candidate application' };
+    return {
+      success: false,
+      error: 'Failed to update candidate application',
+    };
   }
 }
 
@@ -224,6 +233,9 @@ export async function deleteCandidateApplication(id: string) {
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
-    return { success: false, error: 'Failed to delete candidate application' };
+    return {
+      success: false,
+      error: 'Failed to delete candidate application',
+    };
   }
-} 
+}

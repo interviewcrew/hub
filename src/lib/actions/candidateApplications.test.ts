@@ -76,7 +76,9 @@ describe('Candidate Application Actions', () => {
 
     it('should use an EXISTING candidate to create an application', async () => {
       mockSelectChain([mockCandidate]); // 1. Find existing candidate
-      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(undefined); // 2. Check for existing application (none found)
+      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(
+        undefined,
+      ); // 2. Check for existing application (none found)
       mockInsertChain([mockApplication]); // 3. Create application
       mockInsertChain([]); // 4. Create event
 
@@ -88,12 +90,16 @@ describe('Candidate Application Actions', () => {
 
     it('should fail if the candidate has already applied for the position', async () => {
       mockSelectChain([mockCandidate]); // 1. Find existing candidate
-      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(mockApplication); // 2. Check for existing application (found)
+      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(
+        mockApplication,
+      ); // 2. Check for existing application (found)
 
       const result = await createCandidateApplication(mockApplicationInput);
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe('This candidate has already applied for this position.');
+      expect(result.error).toBe(
+        'This candidate has already applied for this position.',
+      );
     });
 
     it('should fail if input validation fails', async () => {
@@ -162,11 +168,16 @@ describe('Candidate Application Actions', () => {
       const updateData = { status: CANDIDATE_STATUSES.INVITATION_SENT };
       const updatedApplication = { ...mockApplication, ...updateData };
 
-      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(mockApplication);
+      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(
+        mockApplication,
+      );
       mockInsertChain([]); // For the status change event
       mockUpdateChain([updatedApplication]);
 
-      const result = await updateCandidateApplication(applicationId, updateData);
+      const result = await updateCandidateApplication(
+        applicationId,
+        updateData,
+      );
 
       expect(result.success).toBe(true);
       expect(result.data?.status).toBe(CANDIDATE_STATUSES.INVITATION_SENT);
@@ -174,19 +185,28 @@ describe('Candidate Application Actions', () => {
 
     it('should update client_notified_at without creating a status change event', async () => {
       const notificationDate = new Date();
-      const updatedApplication = { ...mockApplication, client_notified_at: notificationDate };
+      const updatedApplication = {
+        ...mockApplication,
+        client_notified_at: notificationDate,
+      };
 
-      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(mockApplication);
+      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(
+        mockApplication,
+      );
       mockUpdateChain([updatedApplication]);
 
-      const result = await updateCandidateApplication(applicationId, { clientNotifiedAt: notificationDate });
+      const result = await updateCandidateApplication(applicationId, {
+        clientNotifiedAt: notificationDate,
+      });
 
       expect(result.success).toBe(true);
       expect(result.data?.client_notified_at).toEqual(notificationDate);
     });
 
     it('should fail if application is not found', async () => {
-      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(undefined);
+      mockDb.query.candidateApplications.findFirst.mockResolvedValueOnce(
+        undefined,
+      );
 
       const result = await updateCandidateApplication(applicationId, {
         status: CANDIDATE_STATUSES.INVITATION_SENT,
@@ -223,4 +243,4 @@ describe('Candidate Application Actions', () => {
       expect(result.error).toBe('Candidate application not found');
     });
   });
-}); 
+});
