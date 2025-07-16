@@ -9,6 +9,7 @@ This phase focuses on setting up the development environment, installing core de
 ### Prompt 1.1: Initialize Next.js Project
 
 Initialize a new Next.js project named "interview-crew-platform" using TypeScript.
+
 - Set up Tailwind CSS for styling.
 - Ensure the project can be run locally (e.g., `npm run dev`).
 - Create a basic `README.md` with setup instructions.
@@ -21,37 +22,37 @@ In the "interview-crew-platform" Next.js project:
 2. Install Zod for validation (`zod`).
 3. Install Vitest (`vitest`), `@vitest/ui`, and `jsdom` for testing.
 4. Configure Drizzle Kit:
-    - Create a `drizzle.config.ts` file. Configure it for PostgreSQL, pointing to a schema file (e.g., `./src/db/schema.ts`) and an output directory for migrations (e.g., `./drizzle`).
-    - Add scripts to `package.json` for generating migrations (`db:generate`), applying migrations (`db:migrate`), and opening the Drizzle Studio (`db:studio`).
+   - Create a `drizzle.config.ts` file. Configure it for PostgreSQL, pointing to a schema file (e.g., `./src/db/schema.ts`) and an output directory for migrations (e.g., `./drizzle`).
+   - Add scripts to `package.json` for generating migrations (`db:generate`), applying migrations (`db:migrate`), and opening the Drizzle Studio (`db:studio`).
 5. Configure Vitest:
-    - Create a `vitest.config.ts` file. Configure it for testing TypeScript files, including React components, and enabling a testing environment like `jsdom`.
-    - Add a test script to `package.json` (e.g., `test`, `test:ui`).
+   - Create a `vitest.config.ts` file. Configure it for testing TypeScript files, including React components, and enabling a testing environment like `jsdom`.
+   - Add a test script to `package.json` (e.g., `test`, `test:ui`).
 6. Initialize shadcn/ui:
-    - Run the shadcn/ui init command (`npx shadcn-ui@latest init`).
-    - Configure it to use TypeScript, your preferred style (e.g., Default), base color (e.g., Slate), and CSS variables. Set up `tailwind.config.js` and `globals.css` as per its instructions.
-    - Set the components alias to `@/components` and utils alias to `@/lib/utils`.
+   - Run the shadcn/ui init command (`npx shadcn-ui@latest init`).
+   - Configure it to use TypeScript, your preferred style (e.g., Default), base color (e.g., Slate), and CSS variables. Set up `tailwind.config.js` and `globals.css` as per its instructions.
+   - Set the components alias to `@/components` and utils alias to `@/lib/utils`.
 
 ### Prompt 1.3: Basic Project Structure and DB Connection
 
 In the "interview-crew-platform" project:
 
 1. Create the following directory structure within the `src` folder:
-    - `app/` (for Next.js app router)
-    - `components/` (for UI components, further sub-organized by feature or commonality)
-        - `ui/` (for shadcn-ui generated components)
-    - `lib/` (for utility functions, constants, etc.)
-        - `db.ts` (for Drizzle client instance and connection)
-        - `utils.ts` (for shadcn/ui and other general utilities)
-    - `db/`
-        - `schema.ts` (for Drizzle ORM schemas)
-        - `migrations/` (will be managed by Drizzle Kit)
-    - `services/` (for business logic interacting with external APIs or complex internal operations)
-    - `app/api/` (for Next.js API routes)
+   - `app/` (for Next.js app router)
+   - `components/` (for UI components, further sub-organized by feature or commonality)
+     - `ui/` (for shadcn-ui generated components)
+   - `lib/` (for utility functions, constants, etc.)
+     - `db.ts` (for Drizzle client instance and connection)
+     - `utils.ts` (for shadcn/ui and other general utilities)
+   - `db/`
+     - `schema.ts` (for Drizzle ORM schemas)
+     - `migrations/` (will be managed by Drizzle Kit)
+   - `services/` (for business logic interacting with external APIs or complex internal operations)
+   - `app/api/` (for Next.js API routes)
 
 2. Implement the Drizzle client setup in `src/lib/db.ts`:
-    - Import necessary Drizzle and `pg` modules.
-    - Set up the database connection using environment variables for connection details (e.g., `POSTGRES_URL`).
-    - Export the `db` client instance.
+   - Import necessary Drizzle and `pg` modules.
+   - Set up the database connection using environment variables for connection details (e.g., `POSTGRES_URL`).
+   - Export the `db` client instance.
 
 3. Create an initial empty schema file at `src/db/schema.ts`.
 
@@ -190,12 +191,12 @@ In `src/db/schema.ts`:
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
    - Add a unique constraint on (`positionId`, `sequenceNumber`).
-3. Create corresponding Zod schemas in `src/lib/validators/interviewStep.ts`:
+4. Create corresponding Zod schemas in `src/lib/validators/interviewStep.ts`:
    - `createInterviewStepSchema`: requires `positionId`, `sequenceNumber`, `name`, `typeId`. Other fields optional.
    - `updateInterviewStepSchema`: all fields optional, but `sequenceNumber` might need special handling if reordering is complex.
-4. Write unit tests for these Zod schemas in `src/lib/validators/interviewStep.test.ts`.
-5. Generate the database migration: `npm run db:generate -- --name="create_interview_step_types_and_steps_tables"`.
-6. Apply the migration.
+5. Write unit tests for these Zod schemas in `src/lib/validators/interviewStep.test.ts`.
+6. Generate the database migration: `npm run db:generate -- --name="create_interview_step_types_and_steps_tables"`.
+7. Apply the migration.
 
 ## Phase 4: Schemas for Participants (Candidate, Interviewer) & Interview Artifacts
 
@@ -206,20 +207,20 @@ This phase defines schemas for candidates, interviewers, and the artifacts gener
 In `src/db/schema.ts`:
 
 1.  **Redefine `candidates` table:** This table will now store unique information about a person.
-    -   Fields: `id`, `name` (not null), `email` (not null, unique), `resume_link` (nullable), timestamps.
+    - Fields: `id`, `name` (not null), `email` (not null, unique), `resume_link` (nullable), timestamps.
 2.  **Define new `candidate_applications` table:** This table links a candidate to a specific position.
-    -   Fields: `id`, `candidateId` (FK to `candidates`), `positionId` (FK to `positions`).
-    -   **Status Management:**
-        -   `status` (using the `candidateStatusEnum`).
-        -   `status_updated_at` (timestamp, not null, updates when status changes).
-        -   `client_notified_at` (timestamp, nullable, set when client is notified).
-    -   Other application-specific fields: `currentInterviewStepId`, timestamps.
-    -   Add a unique constraint on (`candidateId`, `positionId`).
+    - Fields: `id`, `candidateId` (FK to `candidates`), `positionId` (FK to `positions`).
+    - **Status Management:**
+      - `status` (using the `candidateStatusEnum`).
+      - `status_updated_at` (timestamp, not null, updates when status changes).
+      - `client_notified_at` (timestamp, nullable, set when client is notified).
+    - Other application-specific fields: `currentInterviewStepId`, timestamps.
+    - Add a unique constraint on (`candidateId`, `positionId`).
 3.  **Define new `interview_events` table:** This table will provide a structured audit log for each application.
     - Fields: `id`, `candidateApplicationId` (FK to `candidate_applications`), `eventName` (text), `details` (jsonb), `createdAt`.
 4.  Create corresponding Zod schemas:
-    -   In `src/lib/validators/candidate.ts`: `createCandidateSchema`, `updateCandidateSchema`, `createCandidateApplicationSchema`, `updateCandidateApplicationSchema`.
-    -   In a new file, `src/lib/validators/interviewEvent.ts`: `createInterviewEventSchema`.
+    - In `src/lib/validators/candidate.ts`: `createCandidateSchema`, `updateCandidateSchema`, `createCandidateApplicationSchema`, `updateCandidateApplicationSchema`.
+    - In a new file, `src/lib/validators/interviewEvent.ts`: `createInterviewEventSchema`.
 5.  Write comprehensive unit tests for these Zod schemas in their respective test files.
 6.  Generate the database migration.
 7.  Apply the migration.
@@ -229,8 +230,8 @@ In `src/db/schema.ts`:
 In `src/db/schema.ts`:
 
 1.  Define the Drizzle schema for `Interviewer` (`interviewers` table).
-    -   Fields: `id`, `name`, `email` (unique), `schedulingToolIdentifier`, `isActive`, timestamps.
-    -   `accruedCredits` will be calculated, not stored.
+    - Fields: `id`, `name`, `email` (unique), `schedulingToolIdentifier`, `isActive`, timestamps.
+    - `accruedCredits` will be calculated, not stored.
 2.  Define the `interviewer_tech_stacks` join table to create a many-to-many relationship between `interviewers` and `tech_stacks`.
 3.  Create corresponding Zod schemas in `src/lib/validators/interviewer.ts`. The schemas will not include `skills`, as that relationship will be managed in the server action.
 4.  Write unit tests for these Zod schemas.
@@ -242,13 +243,13 @@ In `src/db/schema.ts`:
 In `src/db/schema.ts`:
 
 1.  **Define the `interviews` table:** This is the new central table for any given interview event.
-    -   Fields: `id`, `candidateApplicationId` (FK), `interviewStepId` (FK), `interviewerId` (FK, nullable), `scheduledAt` (timestamp, nullable), `completedAt` (timestamp, nullable), `recordingUrl` (text, nullable), timestamps.
+    - Fields: `id`, `candidateApplicationId` (FK), `interviewStepId` (FK), `interviewerId` (FK, nullable), `scheduledAt` (timestamp, nullable), `completedAt` (timestamp, nullable), `recordingUrl` (text, nullable), timestamps.
 2.  **Refine the `interview_assignments` table:** This table now links a specific resource (like a Google Doc) to an interview.
-    -   It no longer contains participant information.
-    -   Fields: `id`, `interviewId` (FK to `interviews`, unique), `originalAssignmentId` (FK, to trace back to the template), `resourceUrl` (the link to the live document), `resourceIdentifier` (e.g., the Google Doc file ID), `resourceDeletedAt` (for auditing soft deletes), timestamps.
+    - It no longer contains participant information.
+    - Fields: `id`, `interviewId` (FK to `interviews`, unique), `originalAssignmentId` (FK, to trace back to the template), `resourceUrl` (the link to the live document), `resourceIdentifier` (e.g., the Google Doc file ID), `resourceDeletedAt` (for auditing soft deletes), timestamps.
 3.  Create corresponding Zod schemas:
-    -   In a new file `src/lib/validators/interview.ts` for the `interviews` table.
-    -   In `src/lib/validators/interviewAssignment.ts` for the `interview_assignments` table.
+    - In a new file `src/lib/validators/interview.ts` for the `interviews` table.
+    - In `src/lib/validators/interviewAssignment.ts` for the `interview_assignments` table.
 4.  Write comprehensive unit tests for these Zod schemas in their respective test files.
 5.  Generate the database migration.
 6.  Apply the migration.
@@ -259,9 +260,9 @@ In `src/db/schema.ts`:
 
 1.  Define enums for `evaluationOutcome` ('Strong Hire', 'Hire', 'Fail', 'Hold') and `evaluationFormat` ('structured_json', 'drive_doc').
 2.  Define the Drizzle schema for `Evaluation` (`evaluations` table). An interview can have multiple evaluations (e.g., from a panel).
-    -   Fields: `id`, `interviewId` (FK to `interviews`), `evaluatorId` (FK to `interviewers`), `outcome` (enum), `format` (enum), `structuredData` (jsonb, optional), `driveDocUrl` (text, optional), `submittedAt`, timestamps.
+    - Fields: `id`, `interviewId` (FK to `interviews`), `evaluatorId` (FK to `interviewers`), `outcome` (enum), `format` (enum), `structuredData` (jsonb, optional), `driveDocUrl` (text, optional), `submittedAt`, timestamps.
 3.  Create corresponding Zod schemas in `src/lib/validators/evaluation.ts`.
-    -   Implement a `.refine()` rule to ensure `structuredData` is present if format is `structured_json`, and `driveDocUrl` is present if format is `drive_doc`.
+    - Implement a `.refine()` rule to ensure `structuredData` is present if format is `structured_json`, and `driveDocUrl` is present if format is `drive_doc`.
 4.  Write comprehensive unit tests for these Zod schemas in `src/lib/validators/evaluation.test.ts`, including tests for the `.refine()` logic.
 5.  Generate the database migration.
 6.  Apply the migration.
@@ -329,18 +330,18 @@ This phase focuses on creating Server Actions for managing entities central to t
 
 1.  Create Server Actions to manage `candidate_applications` and associated `candidates` in `src/lib/actions/candidateApplications.ts`.
 2.  Implement a `createCandidateApplication` action. This is a critical workflow that combines candidate creation/retrieval with application creation:
-    -   The action should accept `positionId` and candidate details (`name`, `email`).
-    -   It must first search for an existing candidate by email.
-    -   If the candidate does not exist, it must create a new record in the `candidates` table.
-    -   If the candidate exists, it will use their ID, but first check if they have already applied for the same position to prevent duplicates.
-    -   After securing a `candidateId`, it will create the new `candidate_applications` record.
-    -   Finally, it must create an initial "CANDIDATE_APPLIED" event in the `interview_events` table.
-    -   This entire process must be wrapped in a database transaction for data integrity.
+    - The action should accept `positionId` and candidate details (`name`, `email`).
+    - It must first search for an existing candidate by email.
+    - If the candidate does not exist, it must create a new record in the `candidates` table.
+    - If the candidate exists, it will use their ID, but first check if they have already applied for the same position to prevent duplicates.
+    - After securing a `candidateId`, it will create the new `candidate_applications` record.
+    - Finally, it must create an initial "CANDIDATE_APPLIED" event in the `interview_events` table.
+    - This entire process must be wrapped in a database transaction for data integrity.
 3.  Implement `getCandidateApplication` and other getter actions as needed.
 4.  Implement `updateCandidateApplication`. This action is critical for workflow progression:
-    -   It must handle status changes, updating both the `status` and the `status_updated_at` fields simultaneously.
-    -   When the status changes, it must also log a new "STATUS_CHANGED" event to the `interview_events` table, recording the old and new status.
-    -   It should also handle updating other fields like `client_notified_at`.
+    - It must handle status changes, updating both the `status` and the `status_updated_at` fields simultaneously.
+    - When the status changes, it must also log a new "STATUS_CHANGED" event to the `interview_events` table, recording the old and new status.
+    - It should also handle updating other fields like `client_notified_at`.
 5.  Write comprehensive unit tests for these server actions, covering the logic for finding or creating a candidate, preventing duplicate applications, creating the application, and handling status updates.
 
 ### Prompt 5.5: Interviewer CRUD Server Actions
@@ -350,98 +351,136 @@ This phase focuses on creating Server Actions for managing entities central to t
 3.  Create a separate function `getInterviewerWithCredits(interviewerId)` that dynamically calculates credits.
 4.  Write unit tests for these server actions.
 
-## Phase 6: Account Manager (AM) UI - Basic Management Pages
+## Phase 6: Codebase Refactoring & Quality Improvements
+
+This phase is dedicated to improving the overall quality, stability, and security of the codebase.
+
+### Prompt 6.1: Fix Linting Issues and Add Pre-commit Hook
+
+- Identify and fix all existing ESLint issues across the codebase.
+- Install and configure Husky to manage Git hooks.
+- Install and configure `lint-staged` to run checks only on staged files.
+- Create a `pre-commit` hook that runs `lint-staged`.
+- Configure `lint-staged` to:
+  - Run `eslint --fix` on all staged `*.{js,jsx,ts,tsx}` files.
+  - Run the `npm test` script to execute all unit tests.
+- Verify that commits are blocked if linting or tests fail.
+
+### Prompt 6.2: Set Up Integration Testing with a Test Database
+
+- In `docker-compose.yml`, add a new service for a dedicated test database (e.g., `test-db`).
+- Create a new Vitest configuration file (e.g., `vitest.config.integration.ts`) that:
+  - Connects to the test database using a specific environment variable (e.g., `TEST_DATABASE_URL`).
+  - Specifies a different test file pattern to find integration tests (e.g., `**/*.integration.test.ts`).
+- Create a setup file for integration tests (`src/tests/setup-integration.ts`) that:
+  - Connects to the test database.
+  - Runs all migrations before tests start.
+  - Truncates all tables between tests to ensure isolation.
+- Add a new script to `package.json`: `"test:integration": "vitest --config vitest.config.integration.ts --run"`.
+- Update the `.husky/pre-commit` script to run both `npm test` and `npm run test:integration`.
+- Write a sample integration test for a server action (e.g., `createClient.integration.test.ts`) to verify the setup.
+
+### Prompt 6.3: Remediate NPM Package Vulnerabilities
+
+- Run `npm audit` and save the report to analyze vulnerabilities.
+- For each vulnerability, determine the best course of action (update, override, etc.).
+- Run `npm audit fix` or manually update `package.json` for packages that need a major version bump.
+- After updating, run all tests (`npm test` and `npm run test:integration`) to ensure no breaking changes were introduced.
+- If necessary, update the code to conform to the new package versions.
+- Commit the `package-lock.json` and any code changes.
+
+## Phase 7: Account Manager (AM) UI - Basic Management Pages
 
 This phase starts building the frontend for Account Managers to manage the core entities. We'll use shadcn/ui components.
 
-### Prompt 6.1: Placeholder Authentication & AM Layout
+### Prompt 7.1: Placeholder Authentication & AM Layout
 
 1. Implement a very basic placeholder authentication mechanism for AMs. For MVP, this could be:
-    - A single, hardcoded AM user or a simple check for a specific header/cookie.
-    - Create a `src/lib/auth.ts` with a function like `getCurrentUser()` that returns a mock AM object or null.
-    - Protect relevant API routes and pages using this mock authentication.
+   - A single, hardcoded AM user or a simple check for a specific header/cookie.
+   - Create a `src/lib/auth.ts` with a function like `getCurrentUser()` that returns a mock AM object or null.
+   - Protect relevant API routes and pages using this mock authentication.
 2. Create a basic layout for the AM section of the application in `src/app/(am)/layout.tsx`. This layout should include:
-    - A simple sidebar navigation (using shadcn/ui `Sheet` for mobile and a fixed sidebar for desktop if desired, or just simple links).
-    - Links to: Dashboard (to be created), Clients, Positions, Candidates, Interviewers, Assignment Library.
-    - A main content area.
+   - A simple sidebar navigation (using shadcn/ui `Sheet` for mobile and a fixed sidebar for desktop if desired, or just simple links).
+   - Links to: Dashboard (to be created), Clients, Positions, Candidates, Interviewers, Assignment Library.
+   - A main content area.
 3. Use shadcn/ui components for styling.
 
-### Prompt 6.2: AM UI - Client Management Page
+### Prompt 7.2: AM UI - Client Management Page
 
 1. Create a new page at `src/app/(am)/clients/page.tsx`.
 2. This page should allow AMs to:
-    - List all Clients in a shadcn/ui `Table`. Display columns like Name, Contact Info, Assigned AM (Name/Email).
-    - Include a "Create New Client" button (using shadcn/ui `Button` and `Dialog` with a `Form`).
-    - The form (using `zod` for validation via `react-hook-form`, and shadcn/ui `Form` components) should allow input for Client `name`, `contactInfo`, and selection of an `AccountManager` (fetch AMs to populate a `Select` component).
-    - Actions per client in the table: Edit (opens a similar dialog/form), Delete (with confirmation dialog).
+   - List all Clients in a shadcn/ui `Table`. Display columns like Name, Contact Info, Assigned AM (Name/Email).
+   - Include a "Create New Client" button (using shadcn/ui `Button` and `Dialog` with a `Form`).
+   - The form (using `zod` for validation via `react-hook-form`, and shadcn/ui `Form` components) should allow input for Client `name`, `contactInfo`, and selection of an `AccountManager` (fetch AMs to populate a `Select` component).
+   - Actions per client in the table: Edit (opens a similar dialog/form), Delete (with confirmation dialog).
 3. Implement Server Actions for data operations (e.g., using Server Actions for create, update, delete operations) and use `useEffect` for initial data fetching with Server Actions.
 4. Ensure proper state management for the form, dialogs, and list updates.
 5. Write basic component tests with Vitest if possible (e.g., for form validation logic or component rendering).
 
-### Prompt 6.3: AM UI - Position Management Page
+### Prompt 7.3: AM UI - Position Management Page
 
 1. Create a new page at `src/app/(am)/positions/page.tsx`.
 2. This page should allow AMs to:
-    - List all Positions in a shadcn/ui `Table`. Columns: Job Title, Client Name, AM Name, Status (derived or simple).
-    - Filter positions by Client (using a `Select` populated with clients).
-    - "Create New Position" button (Dialog + Form).
-        - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. AM is pre-filled or selectable.
-    - Actions per position: Edit, Delete, View Details (navigates to a position detail page - to be created next).
+   - List all Positions in a shadcn/ui `Table`. Columns: Job Title, Client Name, AM Name, Status (derived or simple).
+   - Filter positions by Client (using a `Select` populated with clients).
+   - "Create New Position" button (Dialog + Form).
+     - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. AM is pre-filled or selectable.
+   - Actions per position: Edit, Delete, View Details (navigates to a position detail page - to be created next).
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components and `react-hook-form` with Zod.
 
-### Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
+### Prompt 7.4: AM UI - Position Detail Page & Interview Step Management
 
 1. Create a dynamic route page at `src/app/(am)/positions/[positionId]/page.tsx`.
 2. This page should display details of a specific Position (fetched using `positionId`).
 3. Below the position details, display a section for managing its `InterviewStep`s:
-    - List existing steps in a table (Sequence, Name, Type, Assignment Name).
-    - Allow reordering of steps (drag-and-drop if feasible for MVP, otherwise manual sequence number editing).
-    - "Add Interview Step" button (Dialog + Form).
-        - Form fields: Sequence Number, Name, Type (Select: Live Coding, System Design etc.), Original Assignment (Select populated from `OriginalAssignment` library), Scheduling Link (text input), Email Template (textarea).
-    - Actions per step: Edit, Delete.
+   - List existing steps in a table (Sequence, Name, Type, Assignment Name).
+   - Allow reordering of steps (drag-and-drop if feasible for MVP, otherwise manual sequence number editing).
+   - "Add Interview Step" button (Dialog + Form).
+     - Form fields: Sequence Number, Name, Type (Select: Live Coding, System Design etc.), Original Assignment (Select populated from `OriginalAssignment` library), Scheduling Link (text input), Email Template (textarea).
+   - Actions per step: Edit, Delete.
 4. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 5. Use shadcn/ui components.
 
-### Prompt 6.5: AM UI - Original Assignment Library Page
+### Prompt 7.5: AM UI - Original Assignment Library Page
 
 1. Create a new page at `src/app/(am)/assignments/page.tsx`.
 2. This page should allow AMs to:
-    - List all `OriginalAssignment`s in a shadcn/ui `Table`. Columns: Name, Google Doc File ID, Drive Folder Path.
-    - "Add New Assignment" button (Dialog + Form).
-        - Form fields: Name, Google Doc File ID (manually entered string), Drive Folder Path (manually entered string).
-    - Actions per assignment: Edit, Delete.
+   - List all `OriginalAssignment`s in a shadcn/ui `Table`. Columns: Name, Google Doc File ID, Drive Folder Path.
+   - "Add New Assignment" button (Dialog + Form).
+     - Form fields: Name, Google Doc File ID (manually entered string), Drive Folder Path (manually entered string).
+   - Actions per assignment: Edit, Delete.
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
+### Prompt 7.6: AM UI - Candidate Management Page (Manual Import & List)
 
 1. Create a new page at `src/app/(am)/candidates/page.tsx`.
 2. This page should allow AMs to:
-    - List all `Candidate`s in a shadcn/ui `Table`. Columns: Name, Email, Position (Job Title), Current Status, Current Step Name (if applicable).
-    - Filter candidates by Position and/or Status.
-    - "Import Candidate" (Create New) button (Dialog + Form).
-        - Form fields: Select Position, Name, Email, Resume Info (textarea or link). Status defaults to 'New'.
-    - Actions per candidate: View Details (navigates to candidate detail page - to be created), Edit basic info, Delete.
+   - List all `Candidate`s in a shadcn/ui `Table`. Columns: Name, Email, Position (Job Title), Current Status, Current Step Name (if applicable).
+   - Filter candidates by Position and/or Status.
+   - "Import Candidate" (Create New) button (Dialog + Form).
+     - Form fields: Select Position, Name, Email, Resume Info (textarea or link). Status defaults to 'New'.
+   - Actions per candidate: View Details (navigates to candidate detail page - to be created), Edit basic info, Delete.
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 6.7: AM UI - Interviewer Management Page
+### Prompt 7.7: AM UI - Interviewer Management Page
 
 1. Create a new page at `src/app/(am)/interviewers/page.tsx`.
 2. This page should allow AMs to:
-    - List all `Interviewer`s in a shadcn/ui `Table`. Columns: Name, Email, Accrued Credits, Active Status.
-    - "Add New Interviewer" button (Dialog + Form).
-        - Form fields: Name, Email, Scheduling Tool Identifier (optional). Credits default to 0.
-    - Actions per interviewer: Edit, Toggle Active Status, Manually Adjust Credits (simple +/- form).
+   - List all `Interviewer`s in a shadcn/ui `Table`. Columns: Name, Email, Accrued Credits, Active Status.
+   - "Add New Interviewer" button (Dialog + Form).
+     - Form fields: Name, Email, Scheduling Tool Identifier (optional). Credits default to 0.
+   - Actions per interviewer: Edit, Toggle Active Status, Manually Adjust Credits (simple +/- form).
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-## Phase 7: AM Dashboard & Candidate Workflow UI
+## Phase 8: AM Dashboard & Candidate Workflow UI
 
 This phase focuses on the AM's primary interface for managing the candidate flow.
 
-### Prompt 7.1: AM Dashboard UI - Candidate Workflow Display
+### Prompt 8.1: AM Dashboard UI - Candidate Workflow Display
 
 1. Create the AM Dashboard page at `src/app/(am)/dashboard/page.tsx`.
 2. The dashboard should display candidates requiring AM action. A Kanban board (using a library like `react-beautiful-dnd` or simpler columns if dnd is too complex for MVP) or a task-oriented list is suitable.
@@ -451,34 +490,34 @@ This phase focuses on the AM's primary interface for managing the candidate flow
 4. Fetch candidate data, potentially with their associated position and current step details.
 5. Use shadcn/ui components for cards and layout.
 
-### Prompt 7.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
+### Prompt 8.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
 
 1. On the AM Dashboard candidate cards (or a candidate detail view linked from the dashboard):
-    - Implement Server Actions and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
-        - For a 'New' candidate: "Review Resume" (moves to 'PendingAmReview').
-        - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their position), "Reject Resume" (moves to 'ResumeRejected').
-        - For 'ResumeApproved' (for a specific step): Display `schedulingLink` and `emailTemplate` from the `InterviewStep`. Add "Mark Invite Sent" button (moves to 'InviteSent' for that `currentInterviewStepId`).
-        - (Other transitions like 'EvaluationRejected', 'PipelineCompleted' will be added after evaluation/transcription parts).
+   - Implement Server Actions and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
+     - For a 'New' candidate: "Review Resume" (moves to 'PendingAmReview').
+     - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their position), "Reject Resume" (moves to 'ResumeRejected').
+     - For 'ResumeApproved' (for a specific step): Display `schedulingLink` and `emailTemplate` from the `InterviewStep`. Add "Mark Invite Sent" button (moves to 'InviteSent' for that `currentInterviewStepId`).
+     - (Other transitions like 'EvaluationRejected', 'PipelineCompleted' will be added after evaluation/transcription parts).
 2. The Server Actions should handle the logic for updating `currentStatus` and `currentInterviewStepId` and potentially adding to `interviewHistory`.
 3. Update the UI optimistically or re-fetch data after status changes.
 4. Write unit tests for the Server Actions handling these status transitions.
 
-## Phase 8: Google Drive Integration (Service & Basic API)
+## Phase 9: Google Drive Integration (Service & Basic API)
 
 This phase implements the core logic for interacting with Google Drive for assignment management. This requires setting up Google API credentials.
 
-### Prompt 8.1: Google Drive Service Setup & Credentials
+### Prompt 9.1: Google Drive Service Setup & Credentials
 
 1. Create a new service module `src/services/googleDriveService.ts`.
 2. Set up the Google API client library for Node.js (`googleapis`).
 3. Guide on setting up Google Cloud Project, enabling Drive API & Docs API, and creating a Service Account:
-    - Store the Service Account JSON key securely (e.g., as a base64 encoded environment variable `GOOGLE_SERVICE_ACCOUNT_KEY_JSON`).
-    - The service should load these credentials to authenticate.
+   - Store the Service Account JSON key securely (e.g., as a base64 encoded environment variable `GOOGLE_SERVICE_ACCOUNT_KEY_JSON`).
+   - The service should load these credentials to authenticate.
 4. Implement helper functions within the service for initializing the Drive and Docs API clients.
 5. Ensure the necessary scopes are requested (e.g., `https://www.googleapis.com/auth/drive`, `https://www.googleapis.com/auth/documents`).
 6. Add a configuration for the target "Generated Assignment Copies" folder ID in Google Drive (e.g., `GOOGLE_GENERATED_ASSIGNMENTS_FOLDER_ID` env var).
 
-### Prompt 8.2: Google Drive Service - Copy Document Function
+### Prompt 9.2: Google Drive Service - Copy Document Function
 
 In `src/services/googleDriveService.ts`:
 
@@ -490,7 +529,7 @@ In `src/services/googleDriveService.ts`:
    - Implement comprehensive error handling (e.g., original file not found, copy failed, permission issues).
 2. Write unit tests for `copyDocument`, mocking the `googleapis` calls. Test success and failure scenarios.
 
-### Prompt 8.3: Google Drive Service - Personalize & Set Permissions
+### Prompt 9.3: Google Drive Service - Personalize & Set Permissions
 
 In `src/services/googleDriveService.ts`:
 
@@ -503,7 +542,7 @@ In `src/services/googleDriveService.ts`:
    - Add error handling.
 3. Write unit tests for these functions, mocking API calls.
 
-### Prompt 8.4: API Endpoint for Assignment Generation
+### Prompt 9.4: API Endpoint for Assignment Generation
 
 1. Create a Next.js API route `POST /api/interviews/generate-assignment`.
    - Request body: `candidateApplicationId: string`, `interviewStepId: string`, `interviewerId: string` (nullable).
@@ -521,11 +560,11 @@ In `src/services/googleDriveService.ts`:
 3. Add a button on the AM dashboard (e.g., next to a candidate scheduled for a step that needs an assignment) to trigger this API endpoint.
 4. Write integration tests for this API endpoint, mocking the Google Drive service functions to avoid actual API calls during tests, but testing the overall flow and database interactions.
 
-## Phase 9: Interviewer View & Evaluation Submission
+## Phase 10: Interviewer View & Evaluation Submission
 
 This phase builds the minimal interface for interviewers.
 
-### Prompt 9.1: Basic Interviewer View Page
+### Prompt 10.1: Basic Interviewer View Page
 
 1. Create a public-facing (or minimally protected) Next.js page, e.g., `src/app/interview/[interviewId]/page.tsx`.
    - The `interviewId` is the ID of an `interviews` record.
@@ -537,7 +576,7 @@ This phase builds the minimal interface for interviewers.
    - Prominently display an iframe or a link to the `InterviewAssignment.resourceUrl` if it exists.
 3. Use basic styling (shadcn/ui if easily applicable, but focus on functionality).
 
-### Prompt 9.2: Evaluation Form and Submission API
+### Prompt 10.2: Evaluation Form and Submission API
 
 1. On the Interviewer View page (`src/app/interview/[interviewId]/page.tsx`):
    - Add an evaluation form (using shadcn/ui `Form`, `Textarea`, `Input`).
@@ -558,11 +597,11 @@ This phase builds the minimal interface for interviewers.
 3. Implement client-side logic on the Interviewer View page to submit this form to the API. Show a success/error message.
 4. Write integration tests for the `/api/evaluations` endpoint.
 
-## Phase 10: Transcription Service Integration (Placeholder & Basic Flow)
+## Phase 11: Transcription Service Integration (Placeholder & Basic Flow)
 
 This phase sets up the transcription process. Initially with a placeholder, then with a real service.
 
-### Prompt 10.1: Transcription Service Module & Placeholder
+### Prompt 11.1: Transcription Service Module & Placeholder
 
 1. Create a new service module `src/services/transcriptionService.ts`.
 2. Implement a placeholder function:
@@ -575,9 +614,9 @@ This phase sets up the transcription process. Initially with a placeholder, then
    - It should also be able to simulate failure.
 3. This function will be called by a background job.
 
-### Prompt 10.2: API/Job to Trigger Transcription
+### Prompt 11.2: API/Job to Trigger Transcription
 
-1. Modify the `POST /api/evaluations` endpoint (from Prompt 9.2):
+1. Modify the `POST /api/evaluations` endpoint (from Prompt 10.2):
    - After successfully saving the `Evaluation`, it should check if a `recordingUrl` was included in the parent `Interview` record.
    - If it was, it should create a `Transcription` record with `status: 'Pending'`, linking it to the `interviewId`.
    - Then, it should trigger a background job (or directly call a service function for now if background jobs aren't fully set up) to process this transcription.
@@ -590,42 +629,45 @@ This phase sets up the transcription process. Initially with a placeholder, then
      - If failed: update `Transcription` record with `status: 'Failed'`, store `errorMessage`. Update `CandidateApplication.status` to "TranscriptionFailed".
 3. Write integration tests for the transcription triggering and processing logic (mocking the actual `transcribeAudioFromLink` call).
 
-## Phase 11: Background Job System & Integrating Long-Running Tasks
+## Phase 12: Background Job System & Integrating Long-Running Tasks
 
 This phase formalizes background job processing.
 
-### Prompt 11.1: Setup Background Job System (e.g., BullMQ or Vercel Cron Jobs)
+### Prompt 12.1: Setup Background Job System (e.g., BullMQ or Vercel Cron Jobs)
 
 Choose and set up a background job processing system suitable for Next.js/Vercel:
 
 Option A (BullMQ - more robust, requires Redis):
+
 1. Install BullMQ (`bullmq`) and a Redis client (`ioredis`).
 2. Configure a BullMQ queue (e.g., "interviewcrew-jobs").
 3. Create worker functions for tasks:
-    - `processAssignmentGeneration(jobData: { candidateId, interviewStepId })` (refactors logic from Prompt 8.4).
-    - `processTranscription(jobData: { evaluationId, recordingLink })` (refactors logic from Prompt 10.2).
-    - `processAssignmentCleanup()` (for Prompt 11.2).
+   - `processAssignmentGeneration(jobData: { candidateId, interviewStepId })` (refactors logic from Prompt 9.4).
+   - `processTranscription(jobData: { evaluationId, recordingLink })` (refactors logic from Prompt 11.2).
+   - `processAssignmentCleanup()` (for Prompt 12.2).
 4. Modify API endpoints to add jobs to the queue instead of direct execution.
 5. Set up a worker process to listen to the queue. This might be a separate Node.js script or an API route designed to be kept alive/triggered.
 
 Option B (Vercel Cron Jobs - simpler, for scheduled tasks & can trigger API routes for pseudo-queuing):
+
 1. Define Vercel Cron Jobs in `vercel.json` to trigger API routes at intervals.
 2. For "queue-like" behavior: an API route adds a task to a database table (e.g., `PendingJobs`), and a cron job periodically triggers another API route that processes items from this table.
    - `POST /api/queues/add-job`: Adds a job (type, payload) to the `PendingJobs` table.
    - `GET /api/queues/run-worker` (triggered by cron): Fetches and processes jobs from `PendingJobs`.
 
 For this prompt, choose one approach. Let's assume Vercel Cron Jobs with a DB table for tasks for simplicity if BullMQ is too heavy for initial setup.
+
 1. Create a Drizzle schema for `PendingJob` (`pendingJobs` table): `id`, `jobType` (enum: 'generateAssignment', 'transcribe', 'cleanupAssignments'), `payload` (jsonb), `status` ('pending', 'processing', 'complete', 'failed'), `attempts` (integer), `createdAt`, `updatedAt`.
 2. Refactor `POST /api/interviews/generate-assignment` to add a 'generateAssignment' job to `PendingJobs`.
 3. Refactor `POST /api/evaluations` to add a 'transcribe' job to `PendingJobs` (payload includes `evaluationId`).
 4. Create an API route `POST /api/worker` (protected, perhaps by a secret key) that can be triggered by a Vercel Cron Job (e.g., every minute).
    - This worker fetches a batch of 'pending' jobs from `PendingJobs`.
    - Marks them 'processing'.
-   - Based on `jobType`, calls the appropriate service function (e.g., the core logic from Prompt 8.4 for assignment generation, or Prompt 10.2 for transcription).
+   - Based on `jobType`, calls the appropriate service function (e.g., the core logic from Prompt 9.4 for assignment generation, or Prompt 11.2 for transcription).
    - Updates job status to 'complete' or 'failed' (with error message and retry logic).
 5. Configure a Vercel Cron Job in `vercel.json` to call `/api/worker`.
 
-### Prompt 11.2: Background Job - Assignment Cleanup
+### Prompt 12.2: Background Job - Assignment Cleanup
 
 1. Implement the logic for the assignment cleanup background job:
    - Service function in `googleDriveService.ts`: `deleteFile(fileId: string): Promise<void>`.
@@ -637,11 +679,11 @@ For this prompt, choose one approach. Let's assume Vercel Cron Jobs with a DB ta
 2. Add a mechanism to periodically queue a 'cleanupAssignments' job (e.g., a daily Vercel Cron Job that adds this job type to `PendingJobs`, or directly calls a cleanup API endpoint).
 3. Write integration tests for the cleanup logic (mocking Drive API calls).
 
-## Phase 12: Finalizing AM Workflow & UI Polish
+## Phase 13: Finalizing AM Workflow & UI Polish
 
 This phase completes the AM's ability to manage the candidate lifecycle and polishes the UI.
 
-### Prompt 12.1: AM Dashboard - Reviewing Results & Final Decisions
+### Prompt 13.1: AM Dashboard - Reviewing Results & Final Decisions
 
 1. On the AM Dashboard (or Candidate Detail Page):
    - For candidates with status "Waiting for evaluation review":
@@ -654,23 +696,24 @@ This phase completes the AM's ability to manage the candidate lifecycle and poli
 2. Implement the necessary API endpoint updates (likely on `PUT /api/applications/[id]`) to handle these complex status transitions and logic.
 3. Write integration tests for these API transition logics.
 
-### Prompt 12.2: UI Polish and Navigation
+### Prompt 13.2: UI Polish and Navigation
 
 1. Review all AM-facing pages (`Clients`, `Positions`, `Assignments`, `Candidates`, `Interviewers`, `Dashboard`).
 2. Ensure consistent use of shadcn/ui components for layout, tables, forms, dialogs, buttons, and notifications/toasts (e.g., using shadcn/ui `toast` for success/error messages after API calls).
 3. Improve navigation:
-    - Ensure the sidebar layout (Prompt 6.1) is functional and links are correct.
-    - Add breadcrumbs if helpful for nested views (e.g., Client > Position > Step).
-    - Make tables sortable and potentially add pagination if lists become long.
+   - Ensure the sidebar layout (Prompt 7.1) is functional and links are correct.
+   - Add breadcrumbs if helpful for nested views (e.g., Client > Position > Step).
+   - Make tables sortable and potentially add pagination if lists become long.
 4. Test responsiveness of the AM interface.
 
-## Phase 13: Real Transcription Service & End-to-End Testing
+## Phase 14: Real Transcription Service & End-to-End Testing
 
 This phase replaces the placeholder transcription with a real service and focuses on broader testing.
 
-### Prompt 13.1: (Optional - if time/budget allows) Integrate Real Transcription Service
+### Prompt 14.1: (Optional - if time/budget allows) Integrate Real Transcription Service
 
 This is a larger step, choose one service (e.g., AssemblyAI, Google Speech-to-Text via Gemini if suitable for long audio).
 Example for AssemblyAI:
+
 1. Sign up for AssemblyAI and get an API key. Store it securely as an environment variable.
 2. In `src/services/transcriptionService.ts`, replace the placeholder `

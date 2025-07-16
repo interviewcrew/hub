@@ -146,125 +146,145 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] The create/update actions must also handle linking/unlinking skills in the `interviewer_tech_stacks` join table.
 - [x] Write unit tests for these server actions.
 
-## Phase 6: Account Manager (AM) UI - Basic Management Pages
+## Phase 6: Codebase Refactoring & Quality Improvements
 
-### [ ] Prompt 6.1: Placeholder Authentication & AM Layout
-- [ ] Implement basic placeholder AM authentication (src/lib/auth.ts, getCurrentUser())
-- [ ] Protect relevant API routes and pages
-- [ ] Create AM layout src/app/(am)/layout.tsx (sidebar navigation, main content area)
-- [ ] Use shadcn/ui for styling
+### [ ] Prompt 6.1: Fix Linting Issues and Add Pre-commit Hook
+- [ ] Fix ESLint issues in `src/tests/utils/drizzleMocks.ts`
+- [ ] Install and configure Husky for Git hooks.
+- [ ] Install and configure `lint-staged` for efficient pre-commit checks.
+- [ ] Set up a pre-commit hook to run linting and tests.
+- [ ] Verify all tests pass and linting is clean.
 
-### [ ] Prompt 6.2: AM UI - Client Management Page
-- [ ] Create page src/app/(am)/clients/page.tsx
-- [ ] List Clients (shadcn/ui Table)
-- [ ] "Create New Client" button (shadcn/ui Button, Dialog, Form with react-hook-form, Zod)
-- [ ] Form: name, contactInfo, select AccountManager
-- [ ] Table actions: Edit, Delete (with confirmation)
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] State management for form, dialogs, list updates
-- [ ] Basic component tests (Vitest)
+### [ ] Prompt 6.2: Set Up Integration Testing with a Test Database
+- [ ] Configure a separate test database using Docker Compose.
+- [ ] Create a script to run migrations and seed data for the test database.
+- [ ] Add a new `test:integration` script to `package.json` that runs Vitest with a specific configuration pointing to the test database.
+- [ ] Update the pre-commit hook to run both `test` (unit) and `test:integration` scripts.
 
-### [ ] Prompt 6.3: AM UI - Position Management Page
-- [ ] Create page src/app/(am)/positions/page.tsx
-- [ ] List Positions (shadcn/ui Table)
-- [ ] Filter positions by Client
-- [ ] "Create New Position" button (Dialog + Form)
-- [ ] Form fields: Select Client, Job Title, Details, Tech Stacks, Comp Range, Culture Notes
-- [ ] Table actions: Edit, Delete, View Details (link)
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] Use shadcn/ui, react-hook-form, Zod
+### [ ] Prompt 6.3: Remediate NPM Package Vulnerabilities
+- [ ] Run `npm audit` to identify all vulnerabilities.
+- [ ] Run `npm audit fix` or manually update packages to resolve vulnerabilities.
+- [ ] Verify that the application and all tests still function correctly after updates.
 
-### [ ] Prompt 6.4: AM UI - Position Detail Page & Interview Step Management
-- [ ] Create dynamic route src/app/(am)/positions/[positionId]/page.tsx
-- [ ] Display Position details
+## Phase 7: Account Manager (AM) UI - Basic Management Pages
+
+### [ ] Prompt 7.1: Placeholder Authentication & AM Layout
+- [ ] Implement basic placeholder AM authentication (`src/lib/auth.ts`, `getCurrentUser()`)
+- [ ] Protect relevant API routes and pages.
+- [ ] Create AM layout `src/app/(am)/layout.tsx` (sidebar navigation, main content area).
+- [ ] Use shadcn/ui for styling.
+
+### [ ] Prompt 7.2: AM UI - Client Management Page
+- [ ] Create page `src/app/(am)/clients/page.tsx`.
+- [ ] List Clients (shadcn/ui Table).
+- [ ] "Create New Client" button (shadcn/ui Button, Dialog, Form with react-hook-form, Zod).
+- [ ] Form: name, contactInfo, select AccountManager.
+- [ ] Table actions: Edit, Delete (with confirmation).
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] State management for form, dialogs, list updates.
+- [ ] Basic component tests (Vitest).
+
+### [ ] Prompt 7.3: AM UI - Position Management Page
+- [ ] Create page `src/app/(am)/positions/page.tsx`.
+- [ ] List Positions (shadcn/ui Table).
+- [ ] Filter positions by Client.
+- [ ] "Create New Position" button (Dialog + Form).
+- [ ] Form fields: Select Client, Job Title, Details, Tech Stacks, Comp Range, Culture Notes.
+- [ ] Table actions: Edit, Delete, View Details (link).
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] Use shadcn/ui, react-hook-form, Zod.
+
+### [ ] Prompt 7.4: AM UI - Position Detail Page & Interview Step Management
+- [ ] Create dynamic route `src/app/(am)/positions/[positionId]/page.tsx`.
+- [ ] Display Position details.
 - [ ] Section for InterviewSteps management:
-  - [ ] List steps (Table: Sequence, Name, Type, Assignment)
-  - [ ] Allow reordering (manual sequence edit or dnd)
-  - [ ] "Add Interview Step" button (Dialog + Form)
-  - [ ] Form fields: Sequence, Name, Type, Original Assignment (Select), Scheduling Link, Email Template
-  - [ ] Step actions: Edit, Delete
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] Use shadcn/ui
+  - [ ] List steps (Table: Sequence, Name, Type, Assignment).
+  - [ ] Allow reordering (manual sequence edit or dnd).
+  - [ ] "Add Interview Step" button (Dialog + Form).
+  - [ ] Form fields: Sequence, Name, Type, Original Assignment (Select), Scheduling Link, Email Template.
+  - [ ] Step actions: Edit, Delete.
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] Use shadcn/ui.
 
-### [ ] Prompt 6.5: AM UI - Original Assignment Library Page
-- [ ] Create page src/app/(am)/assignments/page.tsx
-- [ ] List OriginalAssignments (Table: Name, Google Doc ID, Drive Path)
-- [ ] "Add New Assignment" button (Dialog + Form)
-- [ ] Form fields: Name, Google Doc File ID, Drive Folder Path
-- [ ] Table actions: Edit, Delete
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] Use shadcn/ui
+### [ ] Prompt 7.5: AM UI - Original Assignment Library Page
+- [ ] Create page `src/app/(am)/assignments/page.tsx`.
+- [ ] List OriginalAssignments (Table: Name, Google Doc ID, Drive Path).
+- [ ] "Add New Assignment" button (Dialog + Form).
+- [ ] Form fields: Name, Google Doc File ID, Drive Folder Path.
+- [ ] Table actions: Edit, Delete.
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] Use shadcn/ui.
 
-### [ ] Prompt 6.6: AM UI - Candidate Management Page (Manual Import & List)
-- [ ] Create page src/app/(am)/candidates/page.tsx
-- [ ] List Candidates (Table: Name, Email, Position, Status, Current Step)
-- [ ] Filter by Position, Status
-- [ ] "Import Candidate" button (Dialog + Form)
-- [ ] Form fields: Select Position, Name, Email, Resume Info
-- [ ] Table actions: View Details (link), Edit, Delete
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] Use shadcn/ui
+### [ ] Prompt 7.6: AM UI - Candidate Management Page (Manual Import & List)
+- [ ] Create page `src/app/(am)/candidates/page.tsx`.
+- [ ] List Candidates (Table: Name, Email, Position, Status, Current Step).
+- [ ] Filter by Position, Status.
+- [ ] "Import Candidate" button (Dialog + Form).
+- [ ] Form fields: Select Position, Name, Email, Resume Info.
+- [ ] Table actions: View Details (link), Edit, Delete.
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] Use shadcn/ui.
 
-### [ ] Prompt 6.7: AM UI - Interviewer Management Page
-- [ ] Create page src/app/(am)/interviewers/page.tsx
-- [ ] List Interviewers (Table: Name, Email, Credits, Active Status)
-- [ ] "Add New Interviewer" button (Dialog + Form)
-- [ ] Form fields: Name, Email, Scheduling Tool ID
-- [ ] Table actions: Edit, Toggle Active, Adjust Credits
-- [ ] Implement Server Actions for data operations and useEffect for initial data fetching
-- [ ] Use shadcn/ui
+### [ ] Prompt 7.7: AM UI - Interviewer Management Page
+- [ ] Create page `src/app/(am)/interviewers/page.tsx`.
+- [ ] List Interviewers (Table: Name, Email, Credits, Active Status).
+- [ ] "Add New Interviewer" button (Dialog + Form).
+- [ ] Form fields: Name, Email, Scheduling Tool ID.
+- [ ] Table actions: Edit, Toggle Active, Adjust Credits.
+- [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
+- [ ] Use shadcn/ui.
 
-## Phase 7: AM Dashboard & Candidate Workflow UI
+## Phase 8: AM Dashboard & Candidate Workflow UI
 
-### [ ] Prompt 7.1: AM Dashboard UI - Candidate Workflow Display
-- [ ] Create AM Dashboard page src/app/(am)/dashboard/page.tsx
-- [ ] Display candidates requiring action (Kanban or task list)
-- [ ] Columns/Sections for statuses/action buckets
-- [ ] Candidate card details: Name, Position, Current Step, Status
-- [ ] Implement dashboard filters (by Position)
-- [ ] Fetch candidate data with associations
-- [ ] Use shadcn/ui for cards and layout
+### [ ] Prompt 8.1: AM Dashboard UI - Candidate Workflow Display
+- [ ] Create AM Dashboard page `src/app/(am)/dashboard/page.tsx`.
+- [ ] Display candidates requiring action (Kanban or task list).
+- [ ] Columns/Sections for statuses/action buckets.
+- [ ] Candidate card details: Name, Position, Current Step, Status.
+- [ ] Implement dashboard filters (by Position).
+- [ ] Fetch candidate data with associations.
+- [ ] Use shadcn/ui for cards and layout.
 
-### [ ] Prompt 7.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
+### [ ] Prompt 8.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
 - [ ] On Dashboard/Candidate Detail: UI buttons/actions for AM to transition candidate statuses:
   - [ ] 'New' -> "Review Resume" -> 'PendingAmReview'
   - [ ] 'PendingAmReview' -> "Approve Resume" / "Reject Resume"
   - [ ] 'ResumeApproved' -> Display scheduling/email info, "Mark Invite Sent" button
-- [ ] Server Actions to handle status updates, currentInterviewStepId, interviewHistory
-- [ ] Optimistic UI updates or re-fetch
-- [ ] Unit tests for Server Actions status transition logic
+- [ ] Server Actions to handle status updates, `currentInterviewStepId`, `interviewHistory`.
+- [ ] Optimistic UI updates or re-fetch.
+- [ ] Unit tests for Server Actions status transition logic.
 
-## Phase 8: Google Drive Integration (Service & Basic API)
+## Phase 9: Google Drive Integration (Service & Basic API)
 
-### [ ] Prompt 8.1: Google Drive Service Setup & Credentials
-- [ ] Create src/services/googleDriveService.ts
-- [ ] Set up googleapis client library
-- [ ] Document Google Cloud Project setup (Drive & Docs API, Service Account)
-- [ ] Securely store Service Account JSON key (env var GOOGLE_SERVICE_ACCOUNT_KEY_JSON)
-- [ ] Implement helper functions for initializing Drive/Docs API clients
-- [ ] Ensure correct scopes
-- [ ] Configure "Generated Assignment Copies" folder ID (env var GOOGLE_GENERATED_ASSIGNMENTS_FOLDER_ID)
+### [ ] Prompt 9.1: Google Drive Service Setup & Credentials
+- [ ] Create `src/services/googleDriveService.ts`.
+- [ ] Set up `googleapis` client library.
+- [ ] Document Google Cloud Project setup (Drive & Docs API, Service Account).
+- [ ] Securely store Service Account JSON key (env var `GOOGLE_SERVICE_ACCOUNT_KEY_JSON`).
+- [ ] Implement helper functions for initializing Drive/Docs API clients.
+- [ ] Ensure correct scopes.
+- [ ] Configure "Generated Assignment Copies" folder ID (env var `GOOGLE_GENERATED_ASSIGNMENTS_FOLDER_ID`).
 
-### [ ] Prompt 8.2: Google Drive Service - Copy Document Function
-- [ ] Implement copyDocument(originalDocFileId, newFileName, candidateName) in googleDriveService.ts
-- [ ] Use Drive API files.copy
-- [ ] Name file distinctively
-- [ ] Use Drive API files.get for id, webViewLink
-- [ ] Return details
-- [ ] Comprehensive error handling
-- [ ] Unit tests for copyDocument (mock googleapis)
+### [ ] Prompt 9.2: Google Drive Service - Copy Document Function
+- [ ] Implement `copyDocument(originalDocFileId, newFileName, candidateName)` in `googleDriveService.ts`.
+- [ ] Use Drive API `files.copy`.
+- [ ] Name file distinctively.
+- [ ] Use Drive API `files.get` for id, `webViewLink`.
+- [ ] Return details.
+- [ ] Comprehensive error handling.
+- [ ] Unit tests for `copyDocument` (mock `googleapis`).
 
-### [ ] Prompt 8.3: Google Drive Service - Personalize & Set Permissions
-- [ ] Implement personalizeDocument(copiedDocFileId, candidateName) in googleDriveService.ts
-- [ ] Use Docs API documents.batchUpdate to replace {{CANDIDATE_NAME}}
-- [ ] Error handling
-- [ ] Implement setDocumentPermissionsAnyoneReader(fileId) in googleDriveService.ts
-- [ ] Use Drive API permissions.create (type=anyone, role=reader)
-- [ ] Error handling
-- [ ] Unit tests for these functions (mock API calls)
+### [ ] Prompt 9.3: Google Drive Service - Personalize & Set Permissions
+- [ ] Implement `personalizeDocument(copiedDocFileId, candidateName)` in `googleDriveService.ts`.
+- [ ] Use Docs API `documents.batchUpdate` to replace `{{CANDIDATE_NAME}}`.
+- [ ] Error handling.
+- [ ] Implement `setDocumentPermissionsAnyoneReader(fileId)` in `googleDriveService.ts`.
+- [ ] Use Drive API `permissions.create` (`type=anyone`, `role=reader`).
+- [ ] Error handling.
+- [ ] Unit tests for these functions (mock API calls).
 
-### [ ] Prompt 8.4: API Endpoint for Assignment Generation
-- [ ] Create API route POST /api/interviews/generate-assignment (req body: candidateApplicationId, interviewStepId, interviewerId).
+### [ ] Prompt 9.4: API Endpoint for Assignment Generation
+- [ ] Create API route `POST /api/interviews/generate-assignment` (req body: `candidateApplicationId`, `interviewStepId`, `interviewerId`).
 - [ ] Endpoint logic:
   - [ ] Create `Interview` record first.
   - [ ] Fetch related data (`OriginalAssignment`, `Candidate`).
@@ -275,36 +295,36 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Add button on AM dashboard to trigger this API.
 - [ ] Integration tests (mock Google Drive service).
 
-## Phase 9: Interviewer View & Evaluation Submission
+## Phase 10: Interviewer View & Evaluation Submission
 
-### [ ] Prompt 9.1: Basic Interviewer View Page
-- [ ] Create page src/app/interview/[interviewId]/page.tsx.
+### [ ] Prompt 10.1: Basic Interviewer View Page
+- [ ] Create page `src/app/interview/[interviewId]/page.tsx`.
 - [ ] Fetch `Interview`, `InterviewAssignment` (if exists), `CandidateApplication`, and `InterviewStep` info.
 - [ ] Display interview details.
 - [ ] Display iframe or link to `InterviewAssignment.resourceUrl`.
 - [ ] Basic styling.
 
-### [ ] Prompt 9.2: Evaluation Form and Submission API
+### [ ] Prompt 10.2: Evaluation Form and Submission API
 - [ ] On Interviewer View page: add evaluation form.
 - [ ] Fields: `format` selector, `outcome` selector, `structuredData`/`driveDocUrl`, `evaluatorId`.
 - [ ] "Submit Evaluation" button.
-- [ ] Create API route POST /api/evaluations (req body matching `createEvaluationSchema`).
+- [ ] Create API route `POST /api/evaluations` (req body matching `createEvaluationSchema`).
 - [ ] Endpoint logic:
   - [ ] Validate input.
   - [ ] Create `Evaluation` DB record, linking it to the `interviewId`.
   - [ ] Update `CandidateApplication.status` to "Waiting for evaluation review".
 - [ ] Client-side form submission logic.
-- [ ] Integration tests for /api/evaluations.
+- [ ] Integration tests for `/api/evaluations`.
 
-## Phase 10: Transcription Service Integration (Placeholder & Basic Flow)
+## Phase 11: Transcription Service Integration (Placeholder & Basic Flow)
 
-### [ ] Prompt 10.1: Transcription Service Module & Placeholder
-- [ ] Create src/services/transcriptionService.ts
+### [ ] Prompt 11.1: Transcription Service Module & Placeholder
+- [ ] Create `src/services/transcriptionService.ts`.
 - [ ] Implement placeholder `transcribeAudioFromLink(recordingLink, interviewId)`.
 - [ ] Simulate success and failure.
 
-### [ ] Prompt 10.2: API/Job to Trigger Transcription
-- [ ] Modify POST /api/evaluations:
+### [ ] Prompt 11.2: API/Job to Trigger Transcription
+- [ ] Modify `POST /api/evaluations`:
   - [ ] Check for `recordingUrl` on the parent `Interview` record.
   - [ ] If present, create `Transcription` record (status: 'Pending') linked to `interviewId`.
   - [ ] Trigger background job for transcription.
@@ -316,9 +336,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] On failure: update `Transcription` status to 'Failed', update `CandidateApplication` status.
 - [ ] Integration tests for transcription triggering/processing.
 
-## Phase 11: Background Job System & Integrating Long-Running Tasks
+## Phase 12: Background Job System & Integrating Long-Running Tasks
 
-### [ ] Prompt 11.1: Setup Background Job System (Vercel Cron Jobs + DB Table)
+### [ ] Prompt 12.1: Setup Background Job System (Vercel Cron Jobs + DB Table)
 - [ ] Create Drizzle schema for `PendingJob`.
 - [ ] Refactor `POST /api/interviews/generate-assignment` to add a 'generateAssignment' job.
 - [ ] Refactor `POST /api/evaluations` to add a 'transcribe' job.
@@ -326,8 +346,8 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Worker logic to fetch and process jobs from the `PendingJobs` table.
 - [ ] Configure Vercel Cron Job in `vercel.json`.
 
-### [ ] Prompt 11.2: Background Job - Assignment Cleanup
-- [ ] Implement `deleteFile(fileId)` in googleDriveService.ts.
+### [ ] Prompt 12.2: Background Job - Assignment Cleanup
+- [ ] Implement `deleteFile(fileId)` in `googleDriveService.ts`.
 - [ ] Worker function for 'cleanupAssignments' job type:
   - [ ] Find `InterviewAssignment` records where parent `Interview.completedAt` is past a threshold.
   - [ ] Call `googleDriveService.deleteFile()` for each.
@@ -335,9 +355,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Mechanism to queue 'cleanupAssignments' job periodically (Vercel Cron).
 - [ ] Integration tests for cleanup logic.
 
-## Phase 12: Finalizing AM Workflow & UI Polish
+## Phase 13: Finalizing AM Workflow & UI Polish
 
-### [ ] Prompt 12.1: AM Dashboard - Reviewing Results & Final Decisions
+### [ ] Prompt 13.1: AM Dashboard - Reviewing Results & Final Decisions
 - [ ] On AM Dashboard/Candidate Detail for "Waiting for evaluation review" candidates:
   - [ ] Display all `Evaluation` outcomes for the interview.
   - [ ] Display `Evaluation` data/links.
@@ -347,22 +367,22 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] API endpoint updates for these complex status transitions.
 - [ ] Integration tests for API transition logic.
 
-### [ ] Prompt 12.2: UI Polish and Navigation
+### [ ] Prompt 13.2: UI Polish and Navigation
 - [ ] Review all AM-facing pages.
 - [ ] Consistent shadcn/ui components.
 - [ ] Improve navigation (sidebar, breadcrumbs).
 - [ ] Make tables sortable, consider pagination.
 - [ ] Test AM interface responsiveness.
 
-## Phase 13: Real Transcription Service & End-to-End Testing
+## Phase 14: Real Transcription Service & End-to-End Testing
 
-### [ ] Prompt 13.1: (Optional) Integrate Real Transcription Service
+### [ ] Prompt 14.1: (Optional) Integrate Real Transcription Service
 - [ ] Choose service, get API key (store securely).
 - [ ] Replace placeholder `transcribeAudioFromLink` in `src/services/transcriptionService.ts` with real implementation.
 - [ ] Handle async processing (polling/webhooks).
 - [ ] Update tests for `transcriptionService.ts`.
 
-### [ ] Prompt 13.2: Comprehensive End-to-End Testing
+### [ ] Prompt 14.2: Comprehensive End-to-End Testing
 - [ ] Manually test full AM workflow:
   - [ ] Create Client, Position, Original Assignment, Interview Steps.
   - [ ] Import Candidate and create a Candidate Application.
