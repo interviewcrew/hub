@@ -12,7 +12,13 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "test": "vitest --run",
+    "test:unit": "vitest --run",
+    "test:integration": "vitest --run --config vitest.integration.config.ts",
+    "test:all": "npm run test:unit && npm run test:integration",
     "test:ui": "vitest --ui",
+    "test:integration:ui": "vitest --ui --config vitest.integration.config.ts",
+    "db:test:start": "docker-compose --profile test up test_db -d",
+    "db:test:stop": "docker-compose --profile test down --remove-orphans",
     "prepare": "husky"
   },
   "lint-staged": {

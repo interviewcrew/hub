@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -13,5 +11,22 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  test_db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: interviewcrew_test
+    ports:
+      - '5433:5432'
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+    # Only start test_db when explicitly requested
+    # docker compose up --profile test
+    profiles:
+      - test
+
 volumes:
   postgres_data:
+  test_postgres_data:

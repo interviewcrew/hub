@@ -40,12 +40,91 @@ You can start editing the main page by modifying `src/app/page.tsx`. The page au
 - **Framework**: Next.js with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (to be configured)
-- **ORM**: Drizzle ORM (to be configured)
-- **Validation**: Zod (to be configured)
-- **Testing**: Vitest (to be configured)
+- **UI Components**: shadcn/ui
+- **ORM**: Drizzle ORM
+- **Validation**: Zod
+- **Testing**: Vitest
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Testing
+
+This project uses Vitest for both unit and integration testing.
+
+### Prerequisites
+
+For integration tests, you'll need Docker running on your machine to spin up a test database.
+
+### Test Commands
+
+```bash
+# Run all tests (unit + integration)
+npm run test:all
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+
+# Run tests in watch mode with UI
+npm run test:ui
+
+# Run integration tests in watch mode with UI
+npm run test:integration:ui
+```
+
+### Setting Up Integration Tests
+
+Integration tests require a PostgreSQL test database. The project includes Docker Compose configuration for this:
+
+1. **Start the test database:**
+
+   ```bash
+   npm run db:test:start
+   ```
+
+2. **Run integration tests:**
+
+   ```bash
+   npm run test:integration
+   ```
+
+3. **Stop and clean up the test database:**
+   ```bash
+   npm run db:test:stop
+   ```
+
+### Test Database Management
+
+- **Test database runs on port 5433** (different from dev database on 5432)
+- **Automatic cleanup:** The `db:test:stop` script includes `--remove-orphans` to prevent port conflicts
+- **Isolated environment:** Each test runs in a transaction that's rolled back, ensuring test isolation
+
+### Integration Test Features
+
+- **Real database operations:** Tests use actual PostgreSQL database
+- **Transaction isolation:** Each test is wrapped in a transaction that's rolled back
+- **Migration management:** Database schema is automatically migrated before tests
+- **Connection pooling:** Proper database connection management with cleanup
+
+### Troubleshooting Tests
+
+**Database connection errors:**
+
+- Ensure Docker is running: `docker --version`
+- Start the test database: `npm run db:test:start`
+- Check if port 5433 is available: `lsof -i :5433`
+
+**Port conflicts:**
+
+- Stop and clean up: `npm run db:test:stop`
+- If issues persist: `docker-compose --profile test down --remove-orphans`
+
+**Test isolation issues:**
+
+- Integration tests automatically roll back transactions
+- Each test starts with a clean database state
 
 ## Learn More about Next.js
 

@@ -178,12 +178,14 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Set up a pre-commit hook to automatically format code, run linting, and execute tests.
 - [ ] Verify all tests pass and linting is clean.
 
-### [ ] Prompt 6.2: Set Up Integration Testing with a Test Database
+### [x] Prompt 6.2: Set Up Integration Testing with a Test Database
 
-- [ ] Configure a separate test database using Docker Compose.
-- [ ] Create a script to run migrations and seed data for the test database.
-- [ ] Add a new `test:integration` script to `package.json` that runs Vitest with a specific configuration pointing to the test database.
-- [ ] Update the pre-commit hook to run both `test` (unit) and `test:integration` scripts.
+- [x] Configure a separate test database using Docker Compose.
+- [x] Create integration test setup with transaction rollback strategy for fast database isolation.
+- [x] Add separate `test:integration` script to `package.json` with dedicated Vitest configuration.
+- [x] Create example integration tests demonstrating the transaction rollback approach.
+- [x] Update pre-commit hook to run only `test:unit` for fast feedback (integration tests run on CI/webhooks).
+- [x] Create comprehensive documentation and helper scripts for integration testing.
 
 ### [ ] Prompt 6.3: Remediate NPM Package Vulnerabilities
 
