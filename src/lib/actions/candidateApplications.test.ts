@@ -10,10 +10,10 @@ import {
   mockDb,
   resetDbMocks,
   mockInsertChain,
-  mockDeleteChain,
-  mockDeleteError,
   mockUpdateChain,
   mockSelectChain,
+  mockDeleteChain,
+  mockDeleteError,
 } from '@/tests/utils/drizzleMocks';
 import { generateMockUuid } from '@/tests/utils/mockUuid';
 import { revalidatePath } from 'next/cache';
@@ -229,7 +229,9 @@ describe('Candidate Application Actions', () => {
 
   describe('deleteCandidateApplication', () => {
     it('should delete an application successfully', async () => {
-      mockDeleteChain([mockApplication]);
+      mockDeleteChain([]); // Deleting from interviewEvents
+      mockDeleteChain([mockApplication]); // Deleting from candidateApplications
+
       const result = await deleteCandidateApplication(applicationId);
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockApplication);
@@ -237,10 +239,20 @@ describe('Candidate Application Actions', () => {
     });
 
     it('should fail if application is not found', async () => {
-      mockDeleteError(new Error('Candidate application not found'));
+      mockDeleteChain([]); // for interviewEvents
+      mockDeleteChain([]); // for candidateApplications (returns empty array, meaning not found)
+
       const result = await deleteCandidateApplication(applicationId);
       expect(result.success).toBe(false);
       expect(result.error).toBe('Candidate application not found');
+    });
+
+    it('should return an error if the database call fails', async () => {
+      mockDeleteError(new Error('DB error'));
+
+      const result = await deleteCandidateApplication(applicationId);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('DB error');
     });
   });
 });

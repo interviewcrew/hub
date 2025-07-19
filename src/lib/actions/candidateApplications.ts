@@ -217,14 +217,24 @@ export async function updateCandidateApplication(
 
 export async function deleteCandidateApplication(id: string) {
   try {
-    const [deletedApplication] = await db
-      .delete(candidateApplications)
-      .where(eq(candidateApplications.id, id))
-      .returning();
+    const deletedApplication = await db.transaction(async (transaction) => {
+      // First delete all dependent interview_events
+      await transaction
+        .delete(interviewEvents)
+        .where(eq(interviewEvents.candidateApplicationId, id));
 
-    if (!deletedApplication) {
-      throw new Error('Candidate application not found');
-    }
+      // Then delete the candidate application
+      const [deleted] = await transaction
+        .delete(candidateApplications)
+        .where(eq(candidateApplications.id, id))
+        .returning();
+
+      if (!deleted) {
+        throw new Error('Candidate application not found');
+      }
+
+      return deleted;
+    });
 
     revalidatePath(`/positions/${deletedApplication.positionId}`);
 
