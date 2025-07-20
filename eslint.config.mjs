@@ -20,6 +20,15 @@ const eslintConfig = [
     rules: {
       ...eslintConfigPrettier.rules,
       'prettier/prettier': 'error',
+      // Allow variables starting with underscore to be unused (common pattern for intentionally unused variables)
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 ];
