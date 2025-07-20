@@ -4,7 +4,7 @@
  * @param seed A number to base the UUID on.
  * @returns A valid UUID string that conforms to the v4 format.
  */
-export const generateMockUuid = (seed: number): string => {
+export const generateMockUuid = (seed: number = 1): string => {
   const seedStr = seed.toString().padStart(12, '0');
   // This format complies with the UUID v4 standard structure.
   return `00000000-0000-4000-8000-${seedStr}`;
