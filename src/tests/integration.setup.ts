@@ -6,15 +6,28 @@ import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import * as schema from '@/db/schema';
 
+dotenv.config({ path: '.env.test' });
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+});
+
+const db = drizzle(pool, { schema });
+
+// Mock the database module BEFORE any other imports
+vi.mock('@/lib/db', () => ({
+  db: db,
+}));
+
 // Mock next/cache at the module level to prevent revalidatePath errors
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(() => {
     // No-op - prevent errors in test environment
   }),
 }));
-
-// Load test environment variables
-dotenv.config({ path: '.env.test' });
 
 // Extend Vitest test context to include database transaction
 declare module 'vitest' {
@@ -23,19 +36,8 @@ declare module 'vitest' {
   }
 }
 
-// Main database connection pool for integration tests
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 20,
-});
-
-// Single Drizzle instance for the entire test run
-const db = drizzle(pool, { schema });
-
 // 1. Runs ONCE before all tests
 beforeAll(async () => {
-  console.log('🔧 Setting up integration tests...');
-
   if (!process.env.DATABASE_URL) {
     throw new Error(
       'DATABASE_URL environment variable is not set in .env.test',
@@ -44,20 +46,17 @@ beforeAll(async () => {
 
   try {
     await migrate(db, { migrationsFolder: './src/db/migrations' });
-    console.log('✅ Database migrations completed');
   } catch (error) {
-    console.error('❌ Failed to run migrations:', error);
+    console.error(
+      '❌ Failed to setup integration tests and run migrations:',
+      error,
+    );
     throw error;
   }
 
   // Clear any mocks from unit tests that might interfere
   vi.clearAllMocks();
   vi.resetAllMocks();
-
-  // Override the database mock with the real database for integration tests
-  vi.doMock('@/lib/db', () => ({
-    db: db,
-  }));
 });
 
 // 2. Runs BEFORE EACH test
@@ -127,12 +126,12 @@ afterEach(async () => {
 
 // 4. Runs ONCE after all tests
 afterAll(async () => {
-  console.log('🧹 Cleaning up integration tests...');
-
   try {
     await pool.end();
-    console.log('✅ Database connection pool closed');
   } catch (error) {
-    console.error('❌ Error closing database pool:', error);
+    console.error(
+      '❌ Failed to clean up integration tests and close database pool:',
+      error,
+    );
   }
 });
