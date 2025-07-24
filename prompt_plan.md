@@ -393,19 +393,56 @@ This phase is dedicated to improving the overall quality, stability, and securit
 
 This phase starts building the frontend for Account Managers to manage the core entities. We'll use shadcn/ui components.
 
-### Prompt 7.1: Placeholder Authentication & AM Layout
+### Prompt 7.1: WorkOS Project Setup (External Configuration)
 
-1. Implement a very basic placeholder authentication mechanism for AMs. For MVP, this could be:
-   - A single, hardcoded AM user or a simple check for a specific header/cookie.
-   - Create a `src/lib/auth.ts` with a function like `getCurrentUser()` that returns a mock AM object or null.
-   - Protect relevant API routes and pages using this mock authentication.
-2. Create a basic layout for the AM section of the application in `src/app/(am)/layout.tsx`. This layout should include:
-   - A simple sidebar navigation (using shadcn/ui `Sheet` for mobile and a fixed sidebar for desktop if desired, or just simple links).
-   - Links to: Dashboard (to be created), Clients, Positions, Candidates, Interviewers, Assignment Library.
+**Prerequisites:** Before implementing authentication, complete these external setup steps:
+1. Create a WorkOS account at [WorkOS Dashboard](https://dashboard.workos.com).
+2. Create a new project in WorkOS dashboard.
+3. Navigate to the "User Management" section and set up AuthKit.
+4. Configure redirect URIs:
+   - For development: `http://localhost:3000/auth/callback`
+   - Add logout redirect URI: `http://localhost:3000/`
+5. Configure the initiate login URL: `http://localhost:3000/login`
+6. Note down your API keys and Client ID from the WorkOS dashboard.
+7. Generate a secure cookie password (32+ characters) using `openssl rand -base64 32`.
+
+### Prompt 7.2: WorkOS AuthKit Integration & Account Manager Layout
+
+1. Install and configure WorkOS AuthKit for Next.js authentication:
+   - Install `@workos-inc/authkit-nextjs` package.
+   - Set up environment variables:
+     - `WORKOS_API_KEY` (from WorkOS dashboard)
+     - `WORKOS_CLIENT_ID` (from WorkOS dashboard)  
+     - `WORKOS_COOKIE_PASSWORD` (generate a secure 32+ character password)
+     - `NEXT_PUBLIC_WORKOS_REDIRECT_URI` (e.g., "http://localhost:3000/auth/callback")
+   - Configure redirect URIs and initiate login URL in WorkOS dashboard.
+2. Implement WorkOS AuthKit in the application:
+   - Wrap the root layout with `AuthKitProvider` component in `src/app/layout.tsx`.
+   - Create middleware (`middleware.ts`) using `authkitMiddleware` to protect `/` routes with page-based auth.
+   - Create auth callback route at `src/app/auth/callback/route.ts` using WorkOS callback handler.
+   - Create login route at `src/app/login/route.ts` using `getSignInUrl()` and redirect.
+   - Create logout functionality using `signOut()` action.
+3. Create protected Account Manager layout in `src/app/(account-manager)/layout.tsx`:
+   - Use `withAuth({ ensureSignedIn: true })` to protect the entire Account Manager section.
+   - Display current user info from `withAuth()` result.
+   - Include sidebar navigation (using shadcn/ui components).
+   - Links to: Dashboard, Clients, Positions, Candidates, Interviewers, Assignment Library.
+   - Add sign out button/form in the layout.
    - A main content area.
-3. Use shadcn/ui components for styling.
+4. Update root page (`src/app/page.tsx`) to handle unauthenticated users:
+   - Show sign in/sign up links using `getSignInUrl()` and `getSignUpUrl()`.
+   - Redirect authenticated users to Account Manager dashboard.
+5. Use shadcn/ui components for styling throughout.
 
-### Prompt 7.2: Account Manager UI - Client Management Page
+**Note on API Route Protection:** With WorkOS AuthKit integrated, update existing Server Actions and API routes to use `withAuth()` for authentication checks. For Server Actions, call `withAuth({ ensureSignedIn: true })` at the beginning of protected actions. For API routes, use the WorkOS session validation methods to ensure only authenticated users can access protected endpoints.
+
+**Note on User-AccountManager Relationship:** Consider adding a mapping between WorkOS User IDs and AccountManager records. This could be done by:
+- Adding a `workosUserId` field to the `accountManagers` table, or
+- Creating a separate mapping table, or  
+- Using WorkOS user metadata to store the AccountManager ID.
+This will allow the application to identify which AccountManager record corresponds to the authenticated WorkOS user.
+
+### Prompt 7.3: Account Manager UI - Client Management Page
 
 1. Create a new page at `src/app/(account-manager)/clients/page.tsx`.
 2. This page should allow Account Managers to:
@@ -417,7 +454,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 4. Ensure proper state management for the form, dialogs, and list updates.
 5. Write basic component tests with Vitest if possible (e.g., for form validation logic or component rendering).
 
-### Prompt 7.3: Account Manager UI - Position Management Page
+### Prompt 7.4: Account Manager UI - Position Management Page
 
 1. Create a new page at `src/app/(account-manager)/positions/page.tsx`.
 2. This page should allow Account Managers to:
@@ -429,7 +466,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components and `react-hook-form` with Zod.
 
-### Prompt 7.4: Account Manager UI - Position Detail Page & Interview Step Management
+### Prompt 7.5: Account Manager UI - Position Detail Page & Interview Step Management
 
 1. Create a dynamic route page at `src/app/(account-manager)/positions/[positionId]/page.tsx`.
 2. This page should display details of a specific Position (fetched using `positionId`).
@@ -442,7 +479,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 4. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 5. Use shadcn/ui components.
 
-### Prompt 7.5: Account Manager UI - Original Assignment Library Page
+### Prompt 7.6: Account Manager UI - Original Assignment Library Page
 
 1. Create a new page at `src/app/(account-manager)/assignments/page.tsx`.
 2. This page should allow Account Managers to:
@@ -453,7 +490,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 7.6: Account Manager UI - Candidate Management Page (Manual Import & List)
+### Prompt 7.7: Account Manager UI - Candidate Management Page (Manual Import & List)
 
 1. Create a new page at `src/app/(account-manager)/candidates/page.tsx`.
 2. This page should allow Account Managers to:
@@ -465,7 +502,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 7.7: Account Manager UI - Interviewer Management Page
+### Prompt 7.8: Account Manager UI - Interviewer Management Page
 
 1. Create a new page at `src/app/(account-manager)/interviewers/page.tsx`.
 2. This page should allow Account Managers to:

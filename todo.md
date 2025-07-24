@@ -195,14 +195,32 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 7: Account Manager UI - Basic Management Pages
 
-### [ ] Prompt 7.1: Placeholder Authentication & AM Layout
+### [ ] Prompt 7.1: WorkOS Project Setup (External Configuration)
 
-- [ ] Implement basic placeholder AM authentication (`src/lib/auth.ts`, `getCurrentUser()`)
-- [ ] Protect relevant API routes and pages.
-- [ ] Create AM layout `src/app/(am)/layout.tsx` (sidebar navigation, main content area).
-- [ ] Use shadcn/ui for styling.
+- [ ] Create WorkOS account and new project at [WorkOS Dashboard](https://dashboard.workos.com).
+- [ ] Set up AuthKit in User Management section.
+- [ ] Configure redirect URIs (`http://localhost:3000/auth/callback`, logout: `http://localhost:3000/`).
+- [ ] Configure initiate login URL (`http://localhost:3000/login`).
+- [ ] Note down API keys and Client ID from WorkOS dashboard.
+- [ ] Generate secure cookie password using `openssl rand -base64 32`.
 
-### [ ] Prompt 7.2: Account Manager UI - Client Management Page
+### [ ] Prompt 7.2: WorkOS AuthKit Integration & Account Manager Layout
+
+- [ ] Install `@workos-inc/authkit-nextjs` package.
+- [ ] Set up WorkOS environment variables (`WORKOS_API_KEY`, `WORKOS_CLIENT_ID`, `WORKOS_COOKIE_PASSWORD`, `NEXT_PUBLIC_WORKOS_REDIRECT_URI`).
+- [ ] Configure redirect URIs and initiate login URL in WorkOS dashboard.
+- [ ] Wrap root layout with `AuthKitProvider` component in `src/app/layout.tsx`.
+- [ ] Create middleware (`middleware.ts`) using `authkitMiddleware` with page-based auth.
+- [ ] Create auth callback route at `src/app/auth/callback/route.ts`.
+- [ ] Create login route at `src/app/login/route.ts` using `getSignInUrl()`.
+- [ ] Create protected Account Manager layout `src/app/(account-manager)/layout.tsx` using `withAuth({ ensureSignedIn: true })`.
+- [ ] Include sidebar navigation, user info display, and sign out functionality.
+- [ ] Update root page to handle authenticated/unauthenticated states.
+- [ ] Use shadcn/ui for styling throughout.
+- [ ] Update existing Server Actions and API routes to use `withAuth()` for authentication checks.
+- [ ] Consider adding WorkOS User ID mapping to AccountManager records for user identification.
+
+### [ ] Prompt 7.3: Account Manager UI - Client Management Page
 
 - [ ] Create page `src/app/(account-manager)/clients/page.tsx`.
 - [ ] List Clients (shadcn/ui Table).
@@ -213,7 +231,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] State management for form, dialogs, list updates.
 - [ ] Basic component tests (Vitest).
 
-### [ ] Prompt 7.3: Account Manager UI - Position Management Page
+### [ ] Prompt 7.4: Account Manager UI - Position Management Page
 
 - [ ] Create page `src/app/(account-manager)/positions/page.tsx`.
 - [ ] List Positions (shadcn/ui Table).
@@ -224,7 +242,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui, react-hook-form, Zod.
 
-### [ ] Prompt 7.4: Account Manager UI - Position Detail Page & Interview Step Management
+### [ ] Prompt 7.5: Account Manager UI - Position Detail Page & Interview Step Management
 
 - [ ] Create dynamic route `src/app/(account-manager)/positions/[positionId]/page.tsx`.
 - [ ] Display Position details.
@@ -237,7 +255,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-### [ ] Prompt 7.5: AM UI - Original Assignment Library Page
+### [ ] Prompt 7.6: Account Manager UI - Original Assignment Library Page
 
 - [ ] Create page `src/app/(account-manager)/assignments/page.tsx`.
 - [ ] List OriginalAssignments (Table: Name, Google Doc ID, Drive Path).
@@ -247,7 +265,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-### [ ] Prompt 7.6: Account Manager UI - Candidate Management Page (Manual Import & List)
+### [ ] Prompt 7.7: Account Manager UI - Candidate Management Page (Manual Import & List)
 
 - [ ] Create page `src/app/(account-manager)/candidates/page.tsx`.
 - [ ] List Candidates (Table: Name, Email, Position, Status, Current Step).
@@ -258,7 +276,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-### [ ] Prompt 7.7: Account Manager UI - Interviewer Management Page
+### [ ] Prompt 7.8: Account Manager UI - Interviewer Management Page
 
 - [ ] Create page `src/app/(account-manager)/interviewers/page.tsx`.
 - [ ] List Interviewers (Table: Name, Email, Credits, Active Status).
