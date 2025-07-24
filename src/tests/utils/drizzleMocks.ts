@@ -1,5 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
+
+type MockedTable = {
+  findFirst: Mock;
+  findMany: Mock;
+};
 
 /**
  * A cache to store the dynamically created mocks for each table.
@@ -7,7 +11,7 @@ import { vi } from 'vitest';
  * will return the exact same mock object, preserving any state or spy assertions.
  * The key is the table name (e.g., 'users'), and the value is the mock object.
  */
-const queryMocksCache = new Map<string | symbol, any>();
+const queryMocksCache = new Map<string | symbol, MockedTable>();
 
 /**
  * A Proxy handler for `mockDb.query`.
@@ -15,7 +19,7 @@ const queryMocksCache = new Map<string | symbol, any>();
  * Instead of needing to define every possible table mock, we dynamically generate a mock
  * on the fly for any table that is accessed.
  */
-const queryProxyHandler: ProxyHandler<any> = {
+const queryProxyHandler: ProxyHandler<Record<string, unknown>> = {
   /**
    * The `get` trap is called whenever a property of the target object is accessed.
    * @param target The original object (in this case, an empty object).
@@ -27,7 +31,7 @@ const queryProxyHandler: ProxyHandler<any> = {
       return queryMocksCache.get(prop);
     }
     // If no mock exists, create a new one with `findFirst` and `findMany` spies.
-    const newMock = {
+    const newMock: MockedTable = {
       findFirst: vi.fn(),
       findMany: vi.fn(),
     };
@@ -75,32 +79,35 @@ export function resetDbMocks() {
   // Reset all dynamically created query mocks.
   queryMocksCache.forEach((table) => {
     // `table` here is the mock object with { findFirst, findMany }
-    Object.values(table).forEach((mockFn: any) => mockFn.mockReset());
+    Object.values(table).forEach((mockFn: Mock) => mockFn.mockReset());
   });
   // Clear the cache to ensure mocks are fresh for the next test.
   queryMocksCache.clear();
 }
 
 // Mock chain helpers
-export function mockInsertChain(returningValue: any) {
+export function mockInsertChain(returningValue: unknown) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
   const values = vi.fn().mockReturnValue({ returning });
-  mockDb.insert.mockReturnValueOnce({ values } as any);
+  mockDb.insert.mockReturnValueOnce({ values } as never);
   return { returning, values };
 }
 
-export function mockInsertError(error: any) {
+export function mockInsertError(error: Error) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
   const values = vi.fn().mockReturnValue({ returning });
-  mockDb.insert.mockReturnValueOnce({ values } as any);
+  mockDb.insert.mockReturnValueOnce({ values } as never);
   return { returning, values };
 }
 
 // A flexible mock that can handle various chaining.
-function createChainableMock(finalValue: any, error: any = null) {
-  const then = (onFulfilled: any, onRejected: any) => {
+function createChainableMock(finalValue: unknown, error: Error | null = null) {
+  const then = (
+    onFulfilled: (value: unknown) => unknown,
+    onRejected: (reason: unknown) => unknown,
+  ) => {
     if (error) {
       return Promise.reject(error).catch(onRejected);
     }
@@ -117,64 +124,64 @@ function createChainableMock(finalValue: any, error: any = null) {
   return chain;
 }
 
-export function mockSelectChain(fromValue: any) {
+export function mockSelectChain(fromValue: unknown) {
   const mock = createChainableMock(fromValue);
 
-  mockDb.select.mockReturnValueOnce(mock as any);
+  mockDb.select.mockReturnValueOnce(mock as never);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-export function mockSelectError(error: any) {
+export function mockSelectError(error: Error) {
   const mock = createChainableMock(null, error);
 
-  mockDb.select.mockReturnValueOnce(mock as any);
+  mockDb.select.mockReturnValueOnce(mock as never);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-export function mockSelectWithWhereChain(whereValue: any) {
+export function mockSelectWithWhereChain(whereValue: unknown) {
   const mock = createChainableMock(whereValue);
 
-  mockDb.select.mockReturnValueOnce(mock as any);
+  mockDb.select.mockReturnValueOnce(mock as never);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-export function mockSelectWithWhereError(error: any) {
+export function mockSelectWithWhereError(error: Error) {
   const mock = createChainableMock(null, error);
 
-  mockDb.select.mockReturnValueOnce(mock as any);
+  mockDb.select.mockReturnValueOnce(mock as never);
   return { from: mock.from, where: mock.where, orderBy: mock.orderBy };
 }
 
-export function mockUpdateChain(returningValue: any) {
+export function mockUpdateChain(returningValue: unknown) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
   const where = vi.fn().mockReturnValue({ ...chain, returning });
   const set = vi.fn().mockReturnValue({ where });
-  mockDb.update.mockReturnValueOnce({ set } as any);
+  mockDb.update.mockReturnValueOnce({ set } as never);
   return { set, where, returning };
 }
 
-export function mockUpdateError(error: any) {
+export function mockUpdateError(error: Error) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
   const where = vi.fn().mockReturnValue({ ...chain, returning });
   const set = vi.fn().mockReturnValue({ where });
-  mockDb.update.mockReturnValueOnce({ set } as any);
+  mockDb.update.mockReturnValueOnce({ set } as never);
   return { set, where, returning };
 }
 
-export function mockDeleteChain(returningValue: any) {
+export function mockDeleteChain(returningValue: unknown) {
   const chain = createChainableMock(returningValue);
   const returning = vi.fn().mockReturnValue(chain);
   const where = vi.fn().mockReturnValue({ ...chain, returning });
-  mockDb.delete.mockReturnValueOnce({ where } as any);
+  mockDb.delete.mockReturnValueOnce({ where } as never);
   return { where, returning };
 }
 
-export function mockDeleteError(error: any) {
+export function mockDeleteError(error: Error) {
   const chain = createChainableMock(null, error);
   const returning = vi.fn().mockReturnValue(chain);
   const where = vi.fn().mockReturnValue({ ...chain, returning });
-  mockDb.delete.mockReturnValueOnce({ where } as any);
+  mockDb.delete.mockReturnValueOnce({ where } as never);
   return { where, returning };
 }

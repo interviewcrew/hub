@@ -168,7 +168,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 6: Codebase Refactoring & Quality Improvements
 
-### [ ] Prompt 6.1: Fix Linting Issues and Add Pre-commit Hook
+### [x] Prompt 6.1: Fix Linting Issues and Add Pre-commit Hook
 
 - [x] Fix ESLint issues in `src/tests/utils/drizzleMocks.ts`.
 - [x] Install and configure Prettier for consistent code formatting.
@@ -176,7 +176,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Install and configure Husky for Git hooks.
 - [x] Install and configure `lint-staged` for efficient pre-commit checks.
 - [x] Set up a pre-commit hook to automatically format code, run linting, and execute tests.
-- [ ] Verify all tests pass and linting is clean.
+- [x] Verify all tests pass and linting is clean.
 
 ### [x] Prompt 6.2: Set Up Integration Testing with a Test Database
 
