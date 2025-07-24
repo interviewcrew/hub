@@ -27,13 +27,17 @@
       "eslint --fix"
     ]
   },
+  "overrides": {
+    "esbuild": "^0.25.8"
+  },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-kit": "^0.31.1",
+    "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.43.1",
+    "esbuild": "^0.25.8",
     "lucide-react": "^0.511.0",
-    "next": "15.3.2",
+    "next": "^15.4.3",
     "pg": "^8.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

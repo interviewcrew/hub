@@ -187,11 +187,11 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Update pre-commit hook to run only `test:unit` for fast feedback (integration tests run on CI/webhooks).
 - [x] Create comprehensive documentation and helper scripts for integration testing.
 
-### [ ] Prompt 6.3: Remediate NPM Package Vulnerabilities
+### [x] Prompt 6.3: Remediate NPM Package Vulnerabilities
 
-- [ ] Run `npm audit` to identify all vulnerabilities.
-- [ ] Run `npm audit fix` or manually update packages to resolve vulnerabilities.
-- [ ] Verify that the application and all tests still function correctly after updates.
+- [x] Run `npm audit` to identify all vulnerabilities.
+- [x] Run `npm audit fix` or manually update packages to resolve vulnerabilities.
+- [x] Verify that the application and all tests still function correctly after updates.
 
 ## Phase 7: Account Manager (AM) UI - Basic Management Pages
 
