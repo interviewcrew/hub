@@ -193,7 +193,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [x] Run `npm audit fix` or manually update packages to resolve vulnerabilities.
 - [x] Verify that the application and all tests still function correctly after updates.
 
-## Phase 7: Account Manager (AM) UI - Basic Management Pages
+## Phase 7: Account Manager UI - Basic Management Pages
 
 ### [ ] Prompt 7.1: Placeholder Authentication & AM Layout
 
@@ -202,9 +202,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Create AM layout `src/app/(am)/layout.tsx` (sidebar navigation, main content area).
 - [ ] Use shadcn/ui for styling.
 
-### [ ] Prompt 7.2: AM UI - Client Management Page
+### [ ] Prompt 7.2: Account Manager UI - Client Management Page
 
-- [ ] Create page `src/app/(am)/clients/page.tsx`.
+- [ ] Create page `src/app/(account-manager)/clients/page.tsx`.
 - [ ] List Clients (shadcn/ui Table).
 - [ ] "Create New Client" button (shadcn/ui Button, Dialog, Form with react-hook-form, Zod).
 - [ ] Form: name, contactInfo, select AccountManager.
@@ -213,9 +213,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] State management for form, dialogs, list updates.
 - [ ] Basic component tests (Vitest).
 
-### [ ] Prompt 7.3: AM UI - Position Management Page
+### [ ] Prompt 7.3: Account Manager UI - Position Management Page
 
-- [ ] Create page `src/app/(am)/positions/page.tsx`.
+- [ ] Create page `src/app/(account-manager)/positions/page.tsx`.
 - [ ] List Positions (shadcn/ui Table).
 - [ ] Filter positions by Client.
 - [ ] "Create New Position" button (Dialog + Form).
@@ -224,9 +224,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui, react-hook-form, Zod.
 
-### [ ] Prompt 7.4: AM UI - Position Detail Page & Interview Step Management
+### [ ] Prompt 7.4: Account Manager UI - Position Detail Page & Interview Step Management
 
-- [ ] Create dynamic route `src/app/(am)/positions/[positionId]/page.tsx`.
+- [ ] Create dynamic route `src/app/(account-manager)/positions/[positionId]/page.tsx`.
 - [ ] Display Position details.
 - [ ] Section for InterviewSteps management:
   - [ ] List steps (Table: Sequence, Name, Type, Assignment).
@@ -239,7 +239,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 7.5: AM UI - Original Assignment Library Page
 
-- [ ] Create page `src/app/(am)/assignments/page.tsx`.
+- [ ] Create page `src/app/(account-manager)/assignments/page.tsx`.
 - [ ] List OriginalAssignments (Table: Name, Google Doc ID, Drive Path).
 - [ ] "Add New Assignment" button (Dialog + Form).
 - [ ] Form fields: Name, Google Doc File ID, Drive Folder Path.
@@ -247,9 +247,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-### [ ] Prompt 7.6: AM UI - Candidate Management Page (Manual Import & List)
+### [ ] Prompt 7.6: Account Manager UI - Candidate Management Page (Manual Import & List)
 
-- [ ] Create page `src/app/(am)/candidates/page.tsx`.
+- [ ] Create page `src/app/(account-manager)/candidates/page.tsx`.
 - [ ] List Candidates (Table: Name, Email, Position, Status, Current Step).
 - [ ] Filter by Position, Status.
 - [ ] "Import Candidate" button (Dialog + Form).
@@ -258,9 +258,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-### [ ] Prompt 7.7: AM UI - Interviewer Management Page
+### [ ] Prompt 7.7: Account Manager UI - Interviewer Management Page
 
-- [ ] Create page `src/app/(am)/interviewers/page.tsx`.
+- [ ] Create page `src/app/(account-manager)/interviewers/page.tsx`.
 - [ ] List Interviewers (Table: Name, Email, Credits, Active Status).
 - [ ] "Add New Interviewer" button (Dialog + Form).
 - [ ] Form fields: Name, Email, Scheduling Tool ID.
@@ -268,11 +268,11 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Implement Server Actions for data operations and `useEffect` for initial data fetching.
 - [ ] Use shadcn/ui.
 
-## Phase 8: AM Dashboard & Candidate Workflow UI
+## Phase 8: Account Manager Dashboard & Candidate Workflow UI
 
-### [ ] Prompt 8.1: AM Dashboard UI - Candidate Workflow Display
+### [ ] Prompt 8.1: Account Manager Dashboard UI - Candidate Workflow Display
 
-- [ ] Create AM Dashboard page `src/app/(am)/dashboard/page.tsx`.
+- [ ] Create Account Manager Dashboard page `src/app/(account-manager)/dashboard/page.tsx`.
 - [ ] Display candidates requiring action (Kanban or task list).
 - [ ] Columns/Sections for statuses/action buckets.
 - [ ] Candidate card details: Name, Position, Current Step, Status.
@@ -280,9 +280,9 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Fetch candidate data with associations.
 - [ ] Use shadcn/ui for cards and layout.
 
-### [ ] Prompt 8.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
+### [ ] Prompt 8.2: Account Manager Dashboard UI - Candidate Status Transitions (Manual Actions)
 
-- [ ] On Dashboard/Candidate Detail: UI buttons/actions for AM to transition candidate statuses:
+- [ ] On Dashboard/Candidate Detail: UI buttons/actions for Account Manager to transition candidate statuses:
   - [ ] 'New' -> "Review Resume" -> 'PendingAmReview'
   - [ ] 'PendingAmReview' -> "Approve Resume" / "Reject Resume"
   - [ ] 'ResumeApproved' -> Display scheduling/email info, "Mark Invite Sent" button
@@ -332,7 +332,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
   - [ ] Create `InterviewAssignment` DB record, linking it to the new `Interview`.
   - [ ] Return the new assignment details.
 - [ ] Error handling, transactionality.
-- [ ] Add button on AM dashboard to trigger this API.
+- [ ] Add button on Account Manager dashboard to trigger this API.
 - [ ] Integration tests (mock Google Drive service).
 
 ## Phase 10: Interviewer View & Evaluation Submission
@@ -401,16 +401,16 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Mechanism to queue 'cleanupAssignments' job periodically (Vercel Cron).
 - [ ] Integration tests for cleanup logic.
 
-## Phase 13: Finalizing AM Workflow & UI Polish
+## Phase 13: Finalizing Account Manager Workflow & UI Polish
 
-### [ ] Prompt 13.1: AM Dashboard - Reviewing Results & Final Decisions
+### [ ] Prompt 13.1: Account Manager Dashboard - Reviewing Results & Final Decisions
 
-- [ ] On AM Dashboard/Candidate Detail for "Waiting for evaluation review" candidates:
+- [ ] On Account Manager Dashboard/Candidate Detail for "Waiting for evaluation review" candidates:
   - [ ] Display all `Evaluation` outcomes for the interview.
   - [ ] Display `Evaluation` data/links.
   - [ ] Link to `Interview.recordingUrl`.
   - [ ] Link to `Transcription` data if available.
-  - [ ] Add AM action buttons ("Approve for Next Step", "Reject Candidate", "Put on Hold").
+  - [ ] Add Account Manager action buttons ("Approve for Next Step", "Reject Candidate", "Put on Hold").
 - [ ] API endpoint updates for these complex status transitions.
 - [ ] Integration tests for API transition logic.
 
@@ -420,7 +420,7 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 - [ ] Consistent shadcn/ui components.
 - [ ] Improve navigation (sidebar, breadcrumbs).
 - [ ] Make tables sortable, consider pagination.
-- [ ] Test AM interface responsiveness.
+- [ ] Test Account Manager interface responsiveness.
 
 ## Phase 14: Real Transcription Service & End-to-End Testing
 
@@ -433,14 +433,14 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ### [ ] Prompt 14.2: Comprehensive End-to-End Testing
 
-- [ ] Manually test full AM workflow:
+- [ ] Manually test full Account Manager workflow:
   - [ ] Create Client, Position, Original Assignment, Interview Steps.
   - [ ] Import Candidate and create a Candidate Application.
   - [ ] Move Candidate through statuses.
   - [ ] Trigger assignment generation (verifies creation of `Interview` and `InterviewAssignment` records).
   - [ ] As an interviewer, view the assignment and submit an `Evaluation` for the `Interview`.
-  - [ ] Verify that the AM sees the `Evaluation` results.
+  - [ ] Verify that the Account Manager sees the `Evaluation` results.
   - [ ] Verify that the `Transcription` process kicks off for the `Interview` if a recording link is present.
-  - [ ] AM reviews all artifacts and makes a final decision on the application.
+  - [ ] Account Manager reviews all artifacts and makes a final decision on the application.
 - [ ] Write automated E2E tests (Playwright/Cypress) for critical paths (if feasible).
 - [ ] Review error handling and logging.

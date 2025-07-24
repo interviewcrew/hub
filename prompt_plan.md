@@ -101,7 +101,7 @@ In `src/db/schema.ts`:
      - `techStacks` (jsonb, store as string[]; provide a Drizzle `.$type<string[]>()` hint)
      - `compensationRange` (text)
      - `culturalFitCriteria` (text)
-     - `accountManagerId` (UUID, foreign key referencing `accountManagers.id`, not null) // Denormalized for easier querying by AM, or could be derived via Client.
+     - `accountManagerId` (UUID, foreign key referencing `accountManagers.id`, not null) // Denormalized for easier querying by Account Manager, or could be derived via Client.
      - `workflowTemplateId` (UUID, nullable - for future use with Workflow Templates)
      - `createdAt` (timestamp, default now)
      - `updatedAt` (timestamp, default now, auto-update on change)
@@ -158,7 +158,7 @@ In `src/db/schema.ts`:
 1. Define the Drizzle schema for `OriginalAssignment` (`originalAssignments` table).
    - Fields:
      - `id` (UUID, primary key, auto-generated)
-     - `name` (text, not null, unique within a certain context if necessary, e.g., per AM or globally)
+     - `name` (text, not null, unique within a certain context if necessary, e.g., per Account Manager or globally)
      - `googleDocFileId` (text, not null, unique) // The ID of the master Google Doc
      - `driveFolderPath` (text) // Path within Google Drive where this original resides, for informational purposes
      - `createdAt` (timestamp, default now)
@@ -389,7 +389,7 @@ This phase is dedicated to improving the overall quality, stability, and securit
 - If necessary, update the code to conform to the new package versions.
 - Commit the `package-lock.json` and any code changes.
 
-## Phase 7: Account Manager (AM) UI - Basic Management Pages
+## Phase 7: Account Manager UI - Basic Management Pages
 
 This phase starts building the frontend for Account Managers to manage the core entities. We'll use shadcn/ui components.
 
@@ -405,33 +405,33 @@ This phase starts building the frontend for Account Managers to manage the core 
    - A main content area.
 3. Use shadcn/ui components for styling.
 
-### Prompt 7.2: AM UI - Client Management Page
+### Prompt 7.2: Account Manager UI - Client Management Page
 
-1. Create a new page at `src/app/(am)/clients/page.tsx`.
-2. This page should allow AMs to:
-   - List all Clients in a shadcn/ui `Table`. Display columns like Name, Contact Info, Assigned AM (Name/Email).
+1. Create a new page at `src/app/(account-manager)/clients/page.tsx`.
+2. This page should allow Account Managers to:
+   - List all Clients in a shadcn/ui `Table`. Display columns like Name, Contact Info, Assigned Account Manager (Name/Email).
    - Include a "Create New Client" button (using shadcn/ui `Button` and `Dialog` with a `Form`).
-   - The form (using `zod` for validation via `react-hook-form`, and shadcn/ui `Form` components) should allow input for Client `name`, `contactInfo`, and selection of an `AccountManager` (fetch AMs to populate a `Select` component).
+   - The form (using `zod` for validation via `react-hook-form`, and shadcn/ui `Form` components) should allow input for Client `name`, `contactInfo`, and selection of an `AccountManager` (fetch Account Managers to populate a `Select` component).
    - Actions per client in the table: Edit (opens a similar dialog/form), Delete (with confirmation dialog).
 3. Implement Server Actions for data operations (e.g., using Server Actions for create, update, delete operations) and use `useEffect` for initial data fetching with Server Actions.
 4. Ensure proper state management for the form, dialogs, and list updates.
 5. Write basic component tests with Vitest if possible (e.g., for form validation logic or component rendering).
 
-### Prompt 7.3: AM UI - Position Management Page
+### Prompt 7.3: Account Manager UI - Position Management Page
 
-1. Create a new page at `src/app/(am)/positions/page.tsx`.
-2. This page should allow AMs to:
-   - List all Positions in a shadcn/ui `Table`. Columns: Job Title, Client Name, AM Name, Status (derived or simple).
+1. Create a new page at `src/app/(account-manager)/positions/page.tsx`.
+2. This page should allow Account Managers to:
+   - List all Positions in a shadcn/ui `Table`. Columns: Job Title, Client Name, Account Manager Name, Status (derived or simple).
    - Filter positions by Client (using a `Select` populated with clients).
    - "Create New Position" button (Dialog + Form).
-     - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. AM is pre-filled or selectable.
+     - Form fields: Select Client, Job Title, Job Posting Details, Tech Stacks (e.g., a tag input or comma-separated string), Comp Range, Culture Notes. Account Manager is pre-filled or selectable.
    - Actions per position: Edit, Delete, View Details (navigates to a position detail page - to be created next).
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components and `react-hook-form` with Zod.
 
-### Prompt 7.4: AM UI - Position Detail Page & Interview Step Management
+### Prompt 7.4: Account Manager UI - Position Detail Page & Interview Step Management
 
-1. Create a dynamic route page at `src/app/(am)/positions/[positionId]/page.tsx`.
+1. Create a dynamic route page at `src/app/(account-manager)/positions/[positionId]/page.tsx`.
 2. This page should display details of a specific Position (fetched using `positionId`).
 3. Below the position details, display a section for managing its `InterviewStep`s:
    - List existing steps in a table (Sequence, Name, Type, Assignment Name).
@@ -442,10 +442,10 @@ This phase starts building the frontend for Account Managers to manage the core 
 4. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 5. Use shadcn/ui components.
 
-### Prompt 7.5: AM UI - Original Assignment Library Page
+### Prompt 7.5: Account Manager UI - Original Assignment Library Page
 
-1. Create a new page at `src/app/(am)/assignments/page.tsx`.
-2. This page should allow AMs to:
+1. Create a new page at `src/app/(account-manager)/assignments/page.tsx`.
+2. This page should allow Account Managers to:
    - List all `OriginalAssignment`s in a shadcn/ui `Table`. Columns: Name, Google Doc File ID, Drive Folder Path.
    - "Add New Assignment" button (Dialog + Form).
      - Form fields: Name, Google Doc File ID (manually entered string), Drive Folder Path (manually entered string).
@@ -453,10 +453,10 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 7.6: AM UI - Candidate Management Page (Manual Import & List)
+### Prompt 7.6: Account Manager UI - Candidate Management Page (Manual Import & List)
 
-1. Create a new page at `src/app/(am)/candidates/page.tsx`.
-2. This page should allow AMs to:
+1. Create a new page at `src/app/(account-manager)/candidates/page.tsx`.
+2. This page should allow Account Managers to:
    - List all `Candidate`s in a shadcn/ui `Table`. Columns: Name, Email, Position (Job Title), Current Status, Current Step Name (if applicable).
    - Filter candidates by Position and/or Status.
    - "Import Candidate" (Create New) button (Dialog + Form).
@@ -465,10 +465,10 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-### Prompt 7.7: AM UI - Interviewer Management Page
+### Prompt 7.7: Account Manager UI - Interviewer Management Page
 
-1. Create a new page at `src/app/(am)/interviewers/page.tsx`.
-2. This page should allow AMs to:
+1. Create a new page at `src/app/(account-manager)/interviewers/page.tsx`.
+2. This page should allow Account Managers to:
    - List all `Interviewer`s in a shadcn/ui `Table`. Columns: Name, Email, Accrued Credits, Active Status.
    - "Add New Interviewer" button (Dialog + Form).
      - Form fields: Name, Email, Scheduling Tool Identifier (optional). Credits default to 0.
@@ -476,24 +476,24 @@ This phase starts building the frontend for Account Managers to manage the core 
 3. Implement Server Actions for data operations and use `useEffect` for initial data fetching with Server Actions.
 4. Use shadcn/ui components.
 
-## Phase 8: AM Dashboard & Candidate Workflow UI
+## Phase 8: Account Manager Dashboard & Candidate Workflow UI
 
-This phase focuses on the AM's primary interface for managing the candidate flow.
+This phase focuses on the Account Manager's primary interface for managing the candidate flow.
 
-### Prompt 8.1: AM Dashboard UI - Candidate Workflow Display
+### Prompt 8.1: Account Manager Dashboard UI - Candidate Workflow Display
 
-1. Create the AM Dashboard page at `src/app/(am)/dashboard/page.tsx`.
-2. The dashboard should display candidates requiring AM action. A Kanban board (using a library like `react-beautiful-dnd` or simpler columns if dnd is too complex for MVP) or a task-oriented list is suitable.
+1. Create the Account Manager Dashboard page at `src/app/(account-manager)/dashboard/page.tsx`.
+2. The dashboard should display candidates requiring Account Manager action. A Kanban board (using a library like `react-beautiful-dnd` or simpler columns if dnd is too complex for MVP) or a task-oriented list is suitable.
    - Columns/Sections could represent key statuses or action buckets (e.g., "New Resumes", "Pending Invite", "Review Evaluations").
    - Each candidate card should display: Name, Pipeline (Job Title), Current Step (if applicable), current status.
 3. Implement filters for the dashboard: by Position.
 4. Fetch candidate data, potentially with their associated position and current step details.
 5. Use shadcn/ui components for cards and layout.
 
-### Prompt 8.2: AM Dashboard UI - Candidate Status Transitions (Manual Actions)
+### Prompt 8.2: Account Manager Dashboard UI - Candidate Status Transitions (Manual Actions)
 
-1. On the AM Dashboard candidate cards (or a candidate detail view linked from the dashboard):
-   - Implement Server Actions and UI buttons/actions for AMs to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
+1. On the Account Manager Dashboard candidate cards (or a candidate detail view linked from the dashboard):
+   - Implement Server Actions and UI buttons/actions for Account Managers to manually transition candidate statuses according to the flow in Section 4 of the spec. Examples:
      - For a 'New' candidate: "Review Resume" (moves to 'PendingAmReview').
      - For 'PendingAmReview': "Approve Resume" (moves to 'ResumeApproved', set `currentInterviewStepId` to the first step of their position), "Reject Resume" (moves to 'ResumeRejected').
      - For 'ResumeApproved' (for a specific step): Display `schedulingLink` and `emailTemplate` from the `InterviewStep`. Add "Mark Invite Sent" button (moves to 'InviteSent' for that `currentInterviewStepId`).
@@ -557,7 +557,7 @@ In `src/services/googleDriveService.ts`:
    - Create an `InterviewAssignment` record in the database, linking it to the newly created `interviewId` and storing the `resourceIdentifier` and `resourceUrl`.
    - Return the `InterviewAssignment` record or at least the `resourceUrl`.
    - Implement robust error handling and transactionality.
-3. Add a button on the AM dashboard (e.g., next to a candidate scheduled for a step that needs an assignment) to trigger this API endpoint.
+3. Add a button on the Account Manager dashboard (e.g., next to a candidate scheduled for a step that needs an assignment) to trigger this API endpoint.
 4. Write integration tests for this API endpoint, mocking the Google Drive service functions to avoid actual API calls during tests, but testing the overall flow and database interactions.
 
 ## Phase 10: Interviewer View & Evaluation Submission
@@ -584,7 +584,7 @@ This phase builds the minimal interface for interviewers.
    - Fields:
      - Based on format selection, show either a "structured data" input (e.g., textarea) or a "Drive Doc URL" input.
      - "Outcome" (Select: 'Strong Hire', 'Hire', 'Fail', 'Hold').
-     - A field for `evaluatorId` (for MVP, could be a hidden input or simple text input; in future, it would come from interviewer auth).
+     - A field for `evaluatorId` (for MVP, could be a hidden input or simple text input; in future, it would come from interviewer auth using WorkOS organizations or role-based access).
    - "Submit Evaluation" button.
 2. Create a Next.js API route `POST /api/evaluations`.
    - Request body should match the `createEvaluationSchema` (e.g., `interviewId`, `evaluatorId`, `outcome`, etc.).
@@ -679,32 +679,32 @@ For this prompt, choose one approach. Let's assume Vercel Cron Jobs with a DB ta
 2. Add a mechanism to periodically queue a 'cleanupAssignments' job (e.g., a daily Vercel Cron Job that adds this job type to `PendingJobs`, or directly calls a cleanup API endpoint).
 3. Write integration tests for the cleanup logic (mocking Drive API calls).
 
-## Phase 13: Finalizing AM Workflow & UI Polish
+## Phase 13: Finalizing Account Manager Workflow & UI Polish
 
-This phase completes the AM's ability to manage the candidate lifecycle and polishes the UI.
+This phase completes the Account Manager's ability to manage the candidate lifecycle and polishes the UI.
 
-### Prompt 13.1: AM Dashboard - Reviewing Results & Final Decisions
+### Prompt 13.1: Account Manager Dashboard - Reviewing Results & Final Decisions
 
-1. On the AM Dashboard (or Candidate Detail Page):
+1. On the Account Manager Dashboard (or Candidate Detail Page):
    - For candidates with status "Waiting for evaluation review":
      - Display the `Evaluation.outcome` for each evaluation linked to the interview.
      - Display a summary of/link to the `Evaluation.structuredData` or `Evaluation.driveDocUrl` based on the `format`.
      - Display a link to the `Interview.recordingUrl`.
      - If a transcription is available, display a summary of/link to the `Transcription.transcriptionData`.
-   - Add AM action buttons:
+   - Add Account Manager action buttons:
      - "Approve for Next Step", "Reject Candidate", "Put on Hold".
 2. Implement the necessary API endpoint updates (likely on `PUT /api/applications/[id]`) to handle these complex status transitions and logic.
 3. Write integration tests for these API transition logics.
 
 ### Prompt 13.2: UI Polish and Navigation
 
-1. Review all AM-facing pages (`Clients`, `Positions`, `Assignments`, `Candidates`, `Interviewers`, `Dashboard`).
+1. Review all Account Manager-facing pages (`Clients`, `Positions`, `Assignments`, `Candidates`, `Interviewers`, `Dashboard`).
 2. Ensure consistent use of shadcn/ui components for layout, tables, forms, dialogs, buttons, and notifications/toasts (e.g., using shadcn/ui `toast` for success/error messages after API calls).
 3. Improve navigation:
    - Ensure the sidebar layout (Prompt 7.1) is functional and links are correct.
    - Add breadcrumbs if helpful for nested views (e.g., Client > Position > Step).
    - Make tables sortable and potentially add pagination if lists become long.
-4. Test responsiveness of the AM interface.
+4. Test responsiveness of the Account Manager interface.
 
 ## Phase 14: Real Transcription Service & End-to-End Testing
 
