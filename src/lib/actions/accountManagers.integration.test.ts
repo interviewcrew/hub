@@ -1,6 +1,3 @@
-// Integration tests for Account Manager actions
-// These tests use a real database with transaction rollback for isolation
-
 import { describe, it, expect } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { accountManagers } from '@/db/schema';
@@ -11,43 +8,38 @@ import {
   updateAccountManager,
   deleteAccountManager,
 } from './accountManagers';
+import { createAccountManagerFixture } from '@/tests/fixtures';
 
 describe('Account Manager Actions - Integration Tests', () => {
   it('should create and retrieve an account manager with real database', async ({
     db,
   }) => {
-    // ARRANGE: Create account manager data
-    const newAccountManager = {
+    // ARRANGE & ACT: Create account manager using fixture
+    const createResult = await createAccountManagerFixture({
       name: 'John Doe',
       email: 'john.doe@example.com',
-    };
-
-    // ACT: Create the account manager using the server action
-    const createResult = await createAccountManager(newAccountManager);
+    });
 
     // ASSERT: Creation should succeed
     expect(createResult.success).toBe(true);
     expect(createResult.data).toBeDefined();
-    expect(createResult.data?.name).toBe(newAccountManager.name);
-    expect(createResult.data?.email).toBe(newAccountManager.email);
+    expect(createResult.data?.name).toBe('John Doe');
+    expect(createResult.data?.email).toBe('john.doe@example.com');
 
     // Verify the record exists in the database directly
     const dbRecords = await db
       .select()
       .from(accountManagers)
-      .where(eq(accountManagers.email, newAccountManager.email));
+      .where(eq(accountManagers.email, 'john.doe@example.com'));
 
     expect(dbRecords).toHaveLength(1);
-    expect(dbRecords[0].name).toBe(newAccountManager.name);
-    expect(dbRecords[0].email).toBe(newAccountManager.email);
+    expect(dbRecords[0].name).toBe('John Doe');
+    expect(dbRecords[0].email).toBe('john.doe@example.com');
   });
 
   it('should demonstrate transaction isolation between tests', async ({
     db,
   }) => {
-    // This test should not see any data from the previous test
-    // because each test runs in its own transaction that gets rolled back
-
     // ARRANGE: Check that no account managers exist at start of this test
     const initialRecords = await db.select().from(accountManagers);
     expect(initialRecords).toHaveLength(0);
@@ -98,8 +90,8 @@ describe('Account Manager Actions - Integration Tests', () => {
   it('should test complete CRUD operations with database persistence', async ({
     db,
   }) => {
-    // CREATE
-    const createResult = await createAccountManager({
+    // CREATE using fixture
+    const createResult = await createAccountManagerFixture({
       name: 'Alice Johnson',
       email: 'alice.johnson@example.com',
     });
@@ -147,9 +139,6 @@ describe('Account Manager Actions - Integration Tests', () => {
   it('should demonstrate that changes from previous test are not visible', async ({
     db,
   }) => {
-    // This test runs after the CRUD test above, but because of transaction rollback,
-    // none of the changes from that test should be visible here
-
     // ARRANGE & ASSERT: Database should be clean
     const allRecords = await db.select().from(accountManagers);
     expect(allRecords).toHaveLength(0);
