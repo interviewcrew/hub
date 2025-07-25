@@ -1,8 +1,38 @@
+import {
+  withAuth,
+  getSignInUrl,
+  getSignUpUrl,
+  signOut,
+} from '@workos-inc/authkit-nextjs';
 import Image from 'next/image';
+import Link from 'next/link';
 
-export default function Home() {
+export default async function Home() {
+  const { user } = await withAuth();
+
+  const signUpUrl = await getSignUpUrl();
+  const signInUrl = await getSignInUrl();
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      {user ? (
+        <div>
+          <form
+            action={async () => {
+              'use server';
+              await signOut();
+            }}
+          >
+            <div>Welcome, {user.firstName}</div>
+            <button type="submit">Sign out</button>
+          </form>
+        </div>
+      ) : (
+        <div className="flex gap-4">
+          <Link href={signInUrl}>Sign in</Link>
+          <Link href={signUpUrl}>Sign up</Link>
+        </div>
+      )}
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"

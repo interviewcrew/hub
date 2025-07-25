@@ -31,6 +31,7 @@
     "esbuild": "^0.25.8"
   },
   "dependencies": {
+    "@workos-inc/authkit-nextjs": "^2.4.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-kit": "^0.31.4",

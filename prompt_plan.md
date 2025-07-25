@@ -400,7 +400,7 @@ This phase starts building the frontend for Account Managers to manage the core 
 2. Create a new project in WorkOS dashboard.
 3. Navigate to the "User Management" section and set up AuthKit.
 4. Configure redirect URIs:
-   - For development: `http://localhost:3000/auth/callback`
+   - For development: `http://localhost:3000/callback`
    - Add logout redirect URI: `http://localhost:3000/`
 5. Configure the initiate login URL: `http://localhost:3000/login`
 6. Note down your API keys and Client ID from the WorkOS dashboard.
@@ -414,12 +414,12 @@ This phase starts building the frontend for Account Managers to manage the core 
      - `WORKOS_API_KEY` (from WorkOS dashboard)
      - `WORKOS_CLIENT_ID` (from WorkOS dashboard)  
      - `WORKOS_COOKIE_PASSWORD` (generate a secure 32+ character password)
-     - `NEXT_PUBLIC_WORKOS_REDIRECT_URI` (e.g., "http://localhost:3000/auth/callback")
+     - `NEXT_PUBLIC_WORKOS_REDIRECT_URI` (e.g., "http://localhost:3000/callback")
    - Configure redirect URIs and initiate login URL in WorkOS dashboard.
 2. Implement WorkOS AuthKit in the application:
    - Wrap the root layout with `AuthKitProvider` component in `src/app/layout.tsx`.
    - Create middleware (`middleware.ts`) using `authkitMiddleware` to protect `/` routes with page-based auth.
-   - Create auth callback route at `src/app/auth/callback/route.ts` using WorkOS callback handler.
+   - Create auth callback route at `src/app/callback/route.ts` using WorkOS callback handler.
    - Create login route at `src/app/login/route.ts` using `getSignInUrl()` and redirect.
    - Create logout functionality using `signOut()` action.
 3. Create protected Account Manager layout in `src/app/(account-manager)/layout.tsx`:

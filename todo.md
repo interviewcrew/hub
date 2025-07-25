@@ -195,23 +195,23 @@ This checklist is derived from the "InterviewCrew MVP: Development Blueprint & L
 
 ## Phase 7: Account Manager UI - Basic Management Pages
 
-### [ ] Prompt 7.1: WorkOS Project Setup (External Configuration)
+### [x] Prompt 7.1: WorkOS Project Setup (External Configuration)
 
-- [ ] Create WorkOS account and new project at [WorkOS Dashboard](https://dashboard.workos.com).
-- [ ] Set up AuthKit in User Management section.
-- [ ] Configure redirect URIs (`http://localhost:3000/auth/callback`, logout: `http://localhost:3000/`).
-- [ ] Configure initiate login URL (`http://localhost:3000/login`).
-- [ ] Note down API keys and Client ID from WorkOS dashboard.
-- [ ] Generate secure cookie password using `openssl rand -base64 32`.
+- [x] Create WorkOS account and new project at [WorkOS Dashboard](https://dashboard.workos.com).
+- [x] Set up AuthKit in User Management section.
+- [x] Configure redirect URIs (`http://localhost:3000/callback`, logout: `http://localhost:3000/`).
+- [x] Configure initiate login URL (`http://localhost:3000/login`).
+- [x] Note down API keys and Client ID from WorkOS dashboard.
+- [x] Generate secure cookie password using `openssl rand -base64 32`.
 
-### [ ] Prompt 7.2: WorkOS AuthKit Integration & Account Manager Layout
+### [x] Prompt 7.2: WorkOS AuthKit Integration & Account Manager Layout
 
-- [ ] Install `@workos-inc/authkit-nextjs` package.
-- [ ] Set up WorkOS environment variables (`WORKOS_API_KEY`, `WORKOS_CLIENT_ID`, `WORKOS_COOKIE_PASSWORD`, `NEXT_PUBLIC_WORKOS_REDIRECT_URI`).
-- [ ] Configure redirect URIs and initiate login URL in WorkOS dashboard.
-- [ ] Wrap root layout with `AuthKitProvider` component in `src/app/layout.tsx`.
-- [ ] Create middleware (`middleware.ts`) using `authkitMiddleware` with page-based auth.
-- [ ] Create auth callback route at `src/app/auth/callback/route.ts`.
+- [x] Install `@workos-inc/authkit-nextjs` package.
+- [x] Set up WorkOS environment variables (`WORKOS_API_KEY`, `WORKOS_CLIENT_ID`, `WORKOS_COOKIE_PASSWORD`, `NEXT_PUBLIC_WORKOS_REDIRECT_URI`).
+- [x] Configure redirect URIs and initiate login URL in WorkOS dashboard.
+- [x] Wrap root layout with `AuthKitProvider` component in `src/app/layout.tsx`.
+- [x] Create middleware (`middleware.ts`) using `authkitMiddleware` with page-based auth.
+- [x] Create auth callback route at `src/app/callback/route.ts`.
 - [ ] Create login route at `src/app/login/route.ts` using `getSignInUrl()`.
 - [ ] Create protected Account Manager layout `src/app/(account-manager)/layout.tsx` using `withAuth({ ensureSignedIn: true })`.
 - [ ] Include sidebar navigation, user info display, and sign out functionality.
